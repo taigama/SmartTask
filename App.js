@@ -1,8 +1,14 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer, createTabNavigator, createBottomTabNavigator } from 'react-navigation';
 import WorkspaceScreen from './app/screens/WorkspaceScreen';
 import TaskDetailScreen from './app/screens/TaskDetailScreen';
 import ProjectScreen from './app/screens/ProjectScreen';
 import SplashScreen from './app/screens/SplashScreen';
+
+
+export const TabNavigator = createBottomTabNavigator({
+  Workspace: WorkspaceScreen,
+  Project: ProjectScreen,
+});
 
 
 export const RootStack  = createStackNavigator({
@@ -32,4 +38,4 @@ export const RootStack  = createStackNavigator({
   },
 });
 
-export const App = createAppContainer(RootStack);
+export const App = createAppContainer(TabNavigator);
