@@ -1,0 +1,18 @@
+{
+      // The setting `json.colorDecorators.enable` has been deprecated in favor of `editor.colorDecorators`.
+  // Enables or disables color decorators
+  "json.colorDecorators.enable": true,
+
+  // Associate schemas to JSON files in the current project
+  "json.schemas": [],
+
+  // Traces the communication between VS Code and the JSON language server.
+  "json.trace.server": "off",
+
+  // Enable/disable default JSON formatter
+  "json.format.enable": true,
+
+  "flow.useNPMPackagedFlow": true,
+
+  "javascript.validate.enable": false,
+}
