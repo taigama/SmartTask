@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Dimensions } from 'react-native';
 import { List, ListItem  } from 'react-native-elements';
-import Card from '../components/Card';
-import CardList from '../components/CardList';
-import Carousel from 'react-native-snap-carousel';
+import { Platform, StyleSheet, Text, View, Dimensions } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+
+import Card from '../components/Card';
+import Carousel from 'react-native-snap-carousel';
+import CardGroup from '../components/CardGroup';
 
 const window = Dimensions.get('window');
 
@@ -79,7 +80,8 @@ export default class WorkspaceScreen extends Component {
   render() { 
     return (
       <View>
-        <View>{this.renderCardList(this.state.cards, 1)}</View>
+        <CardGroup label={'myLabel'} /> 
+        {/* <View>{this.renderCardList(this.state.cards, 1)}</View> */}
         {/* <Text>HELLO</Text> */}
       </View>
      

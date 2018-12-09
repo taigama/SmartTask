@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
-export default class CardList extends React.Component {
+export type CardGroupProps = {
+  label?: string,
+  content?: string
+}
+
+export default class CardGroup extends React.Component<CardGroupProps> {
   constructor(props) {
     super(props);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    return true;
   }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
+    return null;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -26,7 +33,7 @@ export default class CardList extends React.Component {
 
   render() { 
     return (
-      <Text>CardList</Text>
+      <Text>{this.props.label}</Text>
     );
   }
 }
