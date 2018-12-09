@@ -1,13 +1,35 @@
-import { createStackNavigator, createAppContainer, createTabNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator, createAppContainer, createTabNavigator, createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation';
 import WorkspaceScreen from './app/screens/WorkspaceScreen';
 import TaskDetailScreen from './app/screens/TaskDetailScreen';
 import ProjectScreen from './app/screens/ProjectScreen';
 import SplashScreen from './app/screens/SplashScreen';
 
 
-export const TabNavigator = createBottomTabNavigator({
-  Workspace: WorkspaceScreen,
-  Project: ProjectScreen,
+export const TabNavigator = createMaterialTopTabNavigator({
+  Workspace: {
+    screen: WorkspaceScreen,
+    tabBarOptions: {
+      activeTintColor: '#e91e63',
+      labelStyle: {
+        fontSize: 12,
+      },
+      style: {
+        backgroundColor: 'blue',
+      },
+    }
+  },
+  Project: {
+    screen: ProjectScreen,
+    tabBarOptions: {
+      activeTintColor: '#e91e63',
+      labelStyle: {
+        fontSize: 12,
+      },
+      style: {
+        backgroundColor: 'blue',
+      },
+    }
+  },
 });
 
 

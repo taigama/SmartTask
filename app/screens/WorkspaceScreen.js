@@ -79,7 +79,7 @@ export default class WorkspaceScreen extends Component {
   render() { 
     return (
       <View>
-        <View>{this.renderCardList(this.state.cards)}</View>
+        <View>{this.renderCardList(this.state.cards, 1)}</View>
         {/* <Text>HELLO</Text> */}
       </View>
      
@@ -87,30 +87,48 @@ export default class WorkspaceScreen extends Component {
     );
   }
 
-  renderCardList(cards) {
-    // console.log(this.window.width);
-    // return <FlatList horizontal={true} pagingEnabled={true}
-    //   data={cards}
-    //   keyExtractor={item => item.name}
-    //   renderItem={({item}) => this.renderCard(item)}
-    // />
-    return (
-      <Carousel 
-        layout={'default'}
-        ref={(c) => { this._carousel = c; }}
-        data={cards}
-        renderItem={(item) => this.renderCard(item)}
-        sliderWidth={window.width}
-        itemWidth={window.width}
-      />
-    );
+
+  /**
+   * @param cards
+   * @param styleType : 1 for stack, else for default
+   */
+  renderCardList(cards, styleType?: number) {
+    if (styleType === 1) {
+      return (
+        <Carousel 
+          layout={'stack'}
+          layoutCardOffset={window.width}
+          ref={(c) => { this._carousel = c; }}
+          data={cards}
+          renderItem={(item) => this.renderCard(item)}
+          sliderWidth={window.width}
+          itemWidth={window.width * 0.85}
+        />
+      )
+    } else {
+      return (
+        <Carousel 
+          layout={'default'}
+          ref={(c) => { this._carousel = c; }}
+          data={cards}
+          renderItem={(item) => this.renderCard(item)}
+          sliderWidth={window.width}
+          itemWidth={window.width * 0.85}
+        />
+      )
+    };
   }
+
+  renderCardList
 
   renderCard(card) {
     return(
-      <View style={{backgroundColor: 'blue', height: '100%'}}>
+      <View style={{justifyContent:"center", height: '100%'}}>
+        <View style={{flex: 1, backgroundColor: 'blue', justifyContent:"center", marginTop: 25}}>
           <Text>HELLO</Text>
+        </View>
       </View>
+      
     )
   }
 };
