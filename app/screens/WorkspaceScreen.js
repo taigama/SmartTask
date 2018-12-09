@@ -1,61 +1,107 @@
 import React, { Component } from 'react';
-import { List, ListItem  } from 'react-native-elements';
-import { Platform, StyleSheet, Text, View, Dimensions } from 'react-native';
+import { List, ListItem, Header, Icon  } from 'react-native-elements';
+import { Platform, StyleSheet, Text, Button, View, Dimensions, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 import Card from '../components/Card';
 import Carousel from 'react-native-snap-carousel';
 import CardGroup from '../components/CardGroup';
+import { IData } from '../components/IData';
+import { Window } from '../components/Utils';
 
-const window = Dimensions.get('window');
+export default class WorkspaceScreen extends Component<IData> {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: "Board's name",
+      headerStyle: {
+        backgroundColor: '#026AA7',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+      headerLeft: (
+        <TouchableOpacity
+          onPress={() => alert('This is a button!')}
+          title="Info"
+          color="#fff">
+          {/* <Image style={{width:35, height: 35}} source={require('../resources/back_icon.png')} /> */}
+          <Icon name='arrow-bold-left' />
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <Button
+          onPress={() => alert('This is a button!')}
+          title="Info"
+          color="#fff"
+        />
+      ),
+    };
+  };
 
-export default class WorkspaceScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      seed: 1,
-      page: 0,
-      cards: [
+      board: [
         {
-          name: 'A',
-          age: 8
+          label: 'Group 1',
+          group: [
+            {
+              label: 'Card 1',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 2',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 3',
+              content: 'This is content',
+            }
+          ]
         },
         {
-          name: 'B',
-          age: 9
+          label: 'Group 2',
+          group: [
+            {
+              label: 'Card 1',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 2',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 3',
+              content: 'This is content',
+            }
+          ]
         },
         {
-          name: 'B',
-          age: 9
-        },
-        {
-          name: 'B',
-          age: 9
-        },
-        {
-          name: 'B',
-          age: 9
-        },
-        {
-          name: 'B',
-          age: 9
+          label: 'Group 3',
+          group: [
+            {
+              label: 'Card 1',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 2',
+              content: 'This is content',
+            },
+            {
+              label: 'Card 3',
+              content: 'This is content',
+            }
+          ]
         }
-      ]
-    };
-
-    // setInterval(() => {
-    //   this.setState({
-    //     seed: this.state.seed + 1
-    //   });
-    // }, 1000);
+      ],
+      testData: [{}, {}, {}]
+    }
   }
 
   keyExtractor = item => item.name;
 
   componentDidMount() {
-    this.setState({
-      page: this.state.page + 1
-    });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -79,58 +125,19 @@ export default class WorkspaceScreen extends Component {
 
   render() { 
     return (
-      <View>
-        <CardGroup label={'myLabel'} /> 
-        {/* <View>{this.renderCardList(this.state.cards, 1)}</View> */}
-        {/* <Text>HELLO</Text> */}
-      </View>
-     
-      
-    );
-  }
-
-
-  /**
-   * @param cards
-   * @param styleType : 1 for stack, else for default
-   */
-  renderCardList(cards, styleType?: number) {
-    if (styleType === 1) {
-      return (
-        <Carousel 
-          layout={'stack'}
-          layoutCardOffset={window.width}
-          ref={(c) => { this._carousel = c; }}
-          data={cards}
-          renderItem={(item) => this.renderCard(item)}
-          sliderWidth={window.width}
-          itemWidth={window.width * 0.85}
-        />
-      )
-    } else {
-      return (
+      <ImageBackground
+        source={require('../resources/night_sky.jpg')}
+        style={{width: '100%', height: '100%'}}>
         <Carousel 
           layout={'default'}
+          layoutCardOffset={Window.width}
           ref={(c) => { this._carousel = c; }}
-          data={cards}
-          renderItem={(item) => this.renderCard(item)}
-          sliderWidth={window.width}
-          itemWidth={window.width * 0.85}
+          data={this.state.board}
+          renderItem={(item) => <CardGroup data={item.item}/>}
+          sliderWidth={Window.width}
+          itemWidth={Window.width}
         />
-      )
-    };
-  }
-
-  renderCardList
-
-  renderCard(card) {
-    return(
-      <View style={{justifyContent:"center", height: '100%'}}>
-        <View style={{flex: 1, backgroundColor: 'blue', justifyContent:"center", marginTop: 25}}>
-          <Text>HELLO</Text>
-        </View>
-      </View>
-      
-    )
+      </ImageBackground>
+    );
   }
 };

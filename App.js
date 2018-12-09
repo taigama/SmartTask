@@ -5,59 +5,16 @@ import ProjectScreen from './app/screens/ProjectScreen';
 import SplashScreen from './app/screens/SplashScreen';
 
 
-export const TabNavigator = createMaterialTopTabNavigator({
-  Workspace: {
-    screen: WorkspaceScreen,
-    tabBarOptions: {
-      activeTintColor: '#e91e63',
-      labelStyle: {
-        fontSize: 12,
-      },
-      style: {
-        backgroundColor: 'blue',
-      },
-    }
-  },
-  Project: {
-    screen: ProjectScreen,
-    tabBarOptions: {
-      activeTintColor: '#e91e63',
-      labelStyle: {
-        fontSize: 12,
-      },
-      style: {
-        backgroundColor: 'blue',
-      },
-    }
-  },
+export const TabNavigator = createBottomTabNavigator({
+  Workspace: WorkspaceScreen,
+  Project: ProjectScreen
 });
 
 
 export const RootStack  = createStackNavigator({
-  Splash: { 
-    screen: SplashScreen,
-    navigationOptions: ({ navigation }) => ({
-      headerTitle: 'Splash',
-    }),
-  },
-  Project: { 
-    screen: ProjectScreen,
-    navigationOptions: ({ navigation }) => ({
-      headerTitle: 'Project',
-    }),
-  },
-  Workspace: { 
-    screen: WorkspaceScreen,
-    navigationOptions: ({ navigation }) => ({
-      headerTitle: 'Workspace',
-    }),
-  },
-  TaskDetail: { 
-    screen: TaskDetailScreen,
-    navigationOptions: ({ navigation }) => ({
-      headerTitle: 'TaskDetail',
-    }),
-  },
+  Workspace: WorkspaceScreen,
+  Project: ProjectScreen,
+  TaskDetail: TaskDetailScreen,
 });
 
-export const App = createAppContainer(TabNavigator);
+export const App = createAppContainer(RootStack);
