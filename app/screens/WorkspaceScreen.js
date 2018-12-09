@@ -21,20 +21,26 @@ export default class WorkspaceScreen extends Component<IData> {
         fontWeight: 'bold',
       },
       headerLeft: (
-        <TouchableOpacity
-          onPress={() => alert('This is a button!')}
-          title="Info"
-          color="#fff">
-          {/* <Image style={{width:35, height: 35}} source={require('../resources/back_icon.png')} /> */}
-          <Icon name='arrow-bold-left' />
-        </TouchableOpacity>
+        <Icon 
+          name='keyboard-arrow-left'
+          onPress={() => alert('Coming soon')}
+          color='white'
+          size={35} 
+          containerStyle={{
+            marginLeft: 20
+          }}
+        />  
       ),
       headerRight: (
-        <Button
-          onPress={() => alert('This is a button!')}
-          title="Info"
-          color="#fff"
-        />
+        <Icon 
+          name='dehaze'
+          onPress={() => alert('Coming soon')}
+          color='white'
+          size={35} 
+          containerStyle={{
+            marginRight: 20
+          }}
+      />  
       ),
     };
   };
