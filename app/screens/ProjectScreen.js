@@ -6,18 +6,38 @@ const Realm = require('realm');
 const PersonSchema = {
   name: 'Person',
   properties: {
-    name: 'string'
+    name: 'string',
   }
 };
 
-// schemaVersion defaults to 0
-Realm.open({schema: [PersonSchema]});
+const realm = new Realm({schema: [PersonSchema]});
+let people = realm.objects('Person');
+
+realm.write(() => {
+  savedPerson = realm.create('Person', {
+      name: 'Hal Incandenza',
+      age: 17,
+    })
+  }
+);
 
 
 export default class ProjectScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    realm.beginTransaction();
+    realm.deleteAll();
+    realm.commitTransaction();
+  }
+
+  componentDidMount() {
+    
+  }
+
   render() {
     return (
-      <Text>This is ProjectScreen</Text>
+      <Text>{people.length}</Text>
     );
   }
 }
