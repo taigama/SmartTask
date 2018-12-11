@@ -101,7 +101,6 @@ export default class WorkspaceScreen extends Component<IData> {
           ]
         }
       ],
-      testData: [{}, {}, {}]
     }
   }
 

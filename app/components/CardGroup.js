@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TextInput, Keyboard, Button } from 'react-native';
+import Modal from 'react-native-modal';
 import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
@@ -9,27 +10,66 @@ export default class CardGroup extends React.Component<IData> {
     super(props);
     this.state = {
       data: this.props.data,
+      modalVisible: false,
+      newCardTitle: '',
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
+  //#region Methods
+  showAddCardModal(visible) {
+    this.setState({ modalVisible: visible });
   }
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    return null;
+  addCard(title) {
+
   }
+  //#endregion
+
+  //#region View Methods
+  viewAddCard() {
+    return (
+      <Modal 
+        isVisible={this.state.modalVisible}
+        onBackdropPress={() => this.showAddCardModal(false)}
+        onBackButtonPress={() => this.showAddCardModal(false)}
+        onSwipe={() => this.showAddCardModal(false)}
+        swipeDirection='left'>
+        <View style={styles.modal}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalHeadline}>Add a card..</Text>
+          </View>
+          <View style={styles.modalContainer}>
+            <TextInput
+              autoFocus={true}
+              multiline={true}
+              style={styles.modalTextInput}
+              placeholder="Enter a title for this card"
+              onChangeText={(text) => input = text}
+            />
+            <Button 
+              title='ADD'
+              color='green'
+              onPress={() => this.addCard('')} 
+            />
+          </View>
+          
+        </View>
+      </Modal>
+    );
+  }
+
+  //#endregion
 
   componentDidUpdate(prevProps, prevState, snapshot) {
    
   }
 
-  componentWillUnmount() {
+  componentDidMount() {
 
   }
 
-  componentDidCatch(error, info) {
-    logComponentStackToMyService(info.componentStack);
+  componentWillUnmount() {
+
   }
 
   render() { 
@@ -41,10 +81,13 @@ export default class CardGroup extends React.Component<IData> {
           </View>
           <View style={styles.groupContainer}>
             <View style={{height: 50, justifyContent: "center"}}>
-              <Text style={{color: '#95A4AE', fontSize: 16}}>+ Add a card</Text>
+              <TouchableOpacity onPress={() => this.setState({modalVisible: true})}>
+                <Text style={{color: '#95A4AE', fontSize: 16}}>+ Add a card</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
+        {this.viewAddCard()}
       </View>
     );
   }
@@ -76,4 +119,50 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: "center"
   },
+  modal: {
+    backgroundColor:'#DFE3E6',
+    borderRadius:10,
+    borderWidth: 1,
+    borderColor: '#000000',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+  },
+  modalHeader: {
+    height: 60,
+    fontWeight: 'bold',
+    justifyContent: "center",
+    // backgroundColor: 'steelblue',
+    // borderTopLeftRadius: 10,
+    // borderTopRightRadius: 10,
+  },
+  modalHeadline: {
+    textAlign: 'center', // <-- the magic
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: 0,
+  },
+  modalContainer: {
+    width: '100%',
+    justifyContent: "center"
+  },
+  modalButtonGroup: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  modalTextInput: {
+    textAlignVertical: 'top', 
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    height: 150, 
+    backgroundColor: 'white', 
+    padding: 10, 
+    fontSize: 18
+  },
+  modalButton: {
+    backgroundColor: 'green',
+    width: '50%',
+    height: 40
+  }
 });
