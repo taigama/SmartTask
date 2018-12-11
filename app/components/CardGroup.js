@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TextInput, Keyboard, Button } from 'react-native';
+import { 
+  Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, 
+  TextInput, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
+import { Button, ButtonGroup } from 'react-native-elements';
 
 export default class CardGroup extends React.Component<IData> {
   constructor(props) {
@@ -27,6 +30,8 @@ export default class CardGroup extends React.Component<IData> {
 
   //#region View Methods
   viewAddCard() {
+    const buttons = ['Hello', 'World', 'Buttons'];
+
     return (
       <Modal 
         isVisible={this.state.modalVisible}
@@ -46,13 +51,23 @@ export default class CardGroup extends React.Component<IData> {
               placeholder="Enter a title for this card"
               onChangeText={(text) => input = text}
             />
-            <Button 
-              title='ADD'
-              color='green'
-              onPress={() => this.addCard('')} 
+            <Button
+              title="ADD"
+              fontWeight='bold'
+              fontSize={20}
+              raised
+              buttonStyle={{
+                backgroundColor: "#00BB27",
+                width: '100%',
+                height: 45,
+                borderColor: "transparent",
+                borderWidth: 0,
+                borderRadius: 5,
+                margin: 0,
+              }}
+              containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5,}}
             />
           </View>
-          
         </View>
       </Modal>
     );

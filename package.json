@@ -12,6 +12,7 @@
     "npm": "^6.4.1",
     "react": "16.6.1",
     "react-native": "0.57.7",
+    "react-native-action-button": "^2.8.5",
     "react-native-elements": "^0.19.1",
     "react-native-gesture-handler": "^1.0.10",
     "react-native-modal": "^7.0.2",
