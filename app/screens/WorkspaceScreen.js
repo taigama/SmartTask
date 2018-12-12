@@ -21,26 +21,22 @@ export default class WorkspaceScreen extends Component<IData> {
         fontWeight: 'bold',
       },
       headerLeft: (
-        <Icon 
-          name='keyboard-arrow-left'
-          onPress={() => alert('Coming soon')}
-          color='white'
-          size={35} 
-          containerStyle={{
-            marginLeft: 20
-          }}
-        />  
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{marginLeft: 20}}>
+          <Icon 
+            name='keyboard-arrow-left'
+            color='white'
+            size={30}
+          /> 
+        </TouchableOpacity>
       ),
       headerRight: (
-        <Icon 
-          name='dehaze'
-          onPress={() => alert('Coming soon')}
-          color='white'
-          size={35} 
-          containerStyle={{
-            marginRight: 20
-          }}
-      />  
+        <TouchableOpacity onPress={() => null} style={{marginRight: 20}}>
+          <Icon 
+            name='dehaze'
+            color='white'
+            size={30}
+          /> 
+        </TouchableOpacity>
       ),
     };
   };

@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import React, { Component,  } from 'react';
+import { Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, Button } from 'react-native';
 import realm, { getNewId } from '../realm/Realm';
 import {Icon} from 'react-native-elements';
+import { createDrawerNavigator } from 'react-navigation';
 import ActionButton from 'react-native-action-button';
+import SideMenu from 'react-native-side-menu';
 
 export default class ProjectScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -16,26 +18,22 @@ export default class ProjectScreen extends Component {
         fontWeight: 'bold',
       },
       headerLeft: (
-        <Icon 
-          name='dehaze'
-          onPress={() => alert('Coming soon')}
-          color='white'
-          size={30} 
-          containerStyle={{
-            marginLeft: 20
-          }}
-      />  
+        <TouchableOpacity onPress={() => navigation.navigate('Workspace')} style={{marginLeft: 20}}>
+          <Icon 
+            name='dehaze'
+            color='white'
+            size={30}
+          /> 
+        </TouchableOpacity>
       ),
       headerRight: (
-        <Icon 
-          name='search'
-          onPress={() => alert('Coming soon')}
-          color='white'
-          size={30} 
-          containerStyle={{
-            marginRight: 20
-          }}
-        />  
+        <TouchableOpacity onPress={() => null} style={{marginRight: 20}}>
+          <Icon 
+            name='search'
+            color='white'
+            size={30}
+          /> 
+        </TouchableOpacity>
       ),
     };
   }
@@ -50,7 +48,7 @@ export default class ProjectScreen extends Component {
   componentDidMount() {
     this.setState({
       boards: realm.objects('Board'),
-    })
+    });
   }
 
   render() {
@@ -87,12 +85,8 @@ export default class ProjectScreen extends Component {
       })
     });
   }
-}
 
-const styles = StyleSheet.create({
-  actionButtonIcon: {
-    fontSize: 20,
-    height: 22,
-    color: 'white',
-  },
-});
+  navigate(screen) {
+    this.props.navigation.navigate(screen);
+  }
+}
