@@ -12,8 +12,8 @@ export const TabNavigator = createBottomTabNavigator({
 
 
 export const RootStack  = createStackNavigator({
-  Workspace: WorkspaceScreen,
   Project: ProjectScreen,
+  Workspace: WorkspaceScreen,
   TaskDetail: TaskDetailScreen,
 });
 
