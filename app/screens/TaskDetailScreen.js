@@ -109,10 +109,10 @@ export default class TaskDetailScreen extends Component {
         return (
             <ParallaxScrollView
                 renderStickyHeader={() => (
-                    <View style={{height:54, backgroundColor: '#026AA7' }}>
+                    <View style={{height:56, backgroundColor: '#026AA7' }}>
                     </View>
                 )}
-                stickyHeaderHeight={54}
+                stickyHeaderHeight={56}
 
                 backgroundColor="#026AA7"
                 contentBackgroundColor="pink"
