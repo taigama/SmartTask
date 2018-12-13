@@ -8,6 +8,7 @@ import Carousel from 'react-native-snap-carousel';
 import CardGroup from '../components/CardGroup';
 import { IData } from '../components/IData';
 import { Window } from '../components/Utils';
+import realm from '../realm/Realm'
 
 export default class WorkspaceScreen extends Component<IData> {
   static navigationOptions = ({ navigation }) => {
@@ -43,98 +44,32 @@ export default class WorkspaceScreen extends Component<IData> {
 
   constructor(props) {
     super(props);
+  
+    this.board = this.props.navigation.state.params.board;
+    if (this.board === undefined) {
+      this.props.navigation.goBack();
+    }
+
     this.state = {
-      board: [
-        {
-          label: 'Group 1',
-          group: [
-            {
-              label: 'Card 1',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 2',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 3',
-              content: 'This is content',
-            }
-          ]
-        },
-        {
-          label: 'Group 2',
-          group: [
-            {
-              label: 'Card 1',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 2',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 3',
-              content: 'This is content',
-            }
-          ]
-        },
-        {
-          label: 'Group 3',
-          group: [
-            {
-              label: 'Card 1',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 2',
-              content: 'This is content',
-            },
-            {
-              label: 'Card 3',
-              content: 'This is content',
-            }
-          ]
-        }
-      ],
+      cardGroups: this.board.cardGroups
     }
   }
 
-  keyExtractor = item => item.name;
-
   componentDidMount() {
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
-  }
-
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    return null;
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentDidCatch(error, info) {
-    logComponentStackToMyService(info.componentStack);
+    
   }
 
   render() { 
     return (
       <ImageBackground
-        source={require('../resources/night_sky.jpg')}
+        source={require('../resources/moon.jpg')}
         style={{width: '100%', height: '100%'}}>
         <Carousel 
           layout={'default'}
           layoutCardOffset={Window.width}
           ref={(c) => { this._carousel = c; }}
-          data={this.state.board}
-          renderItem={(item) => <CardGroup data={item.item}/>}
+          data={Object.values(this.state.cardGroups)}
+          renderItem={(item) => <CardGroup data={item.item} />}
           sliderWidth={Window.width}
           itemWidth={Window.width}
         />

@@ -7,6 +7,7 @@ import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
 import { Button, ButtonGroup } from 'react-native-elements';
+import realm from '../realm/Realm';
 
 export default class CardGroup extends React.Component<IData> {
   constructor(props) {
@@ -24,14 +25,19 @@ export default class CardGroup extends React.Component<IData> {
   }
 
   addCard(title) {
-
+    realm.write(() => {
+      let card = realm.create('Card', { title: title});
+      let group = this.state.data;
+      group.push(card);
+      this.setState({data: group, modalVisible: false});
+    })
   }
   //#endregion
 
   //#region View Methods
   viewAddCard() {
-    const buttons = ['Hello', 'World', 'Buttons'];
-
+    let textInput = '';
+    
     return (
       <Modal 
         isVisible={this.state.modalVisible}
@@ -49,7 +55,7 @@ export default class CardGroup extends React.Component<IData> {
               multiline={true}
               style={styles.modalTextInput}
               placeholder="Enter a title for this card"
-              onChangeText={(text) => input = text}
+              onChangeText={(text) => textInput = text}
             />
             <Button
               title="ADD"
@@ -65,6 +71,7 @@ export default class CardGroup extends React.Component<IData> {
                 borderRadius: 5,
                 margin: 0,
               }}
+              onPress={() => this.addCard(textInput)}
               containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5,}}
             />
           </View>
@@ -92,7 +99,7 @@ export default class CardGroup extends React.Component<IData> {
       <View style={styles.pageContainer}>
         <View style={styles.group}>
           <View style={styles.groupHeader}>
-            <Text style={{padding: 5, fontSize: 20, fontWeight: "bold"}}>{this.state.data.label}</Text>
+            <Text style={{padding: 5, fontSize: 20, fontWeight: "bold"}}>{this.state.data.title} ({this.state.data.cards.length})</Text>
           </View>
           <View style={styles.groupContainer}>
             <View style={{height: 50, justifyContent: "center"}}>
