@@ -36,7 +36,12 @@ const transitionConfig = ({
 });
 
 export const RootStack  = createStackNavigator({
-  Project: ProjectScreen,
+  Project: {
+    screen: ProjectScreen, 
+    navigationOptions: {
+        header: null
+    }
+  },
   Workspace: WorkspaceScreen,
   TaskDetail: TaskDetailScreen,
 }, { transitionConfig: () => transitionConfig});
