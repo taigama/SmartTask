@@ -7,6 +7,7 @@ import SideMenu from 'react-native-side-menu';
 import realm from '../realm/Realm';
 import { DialogComponent, DialogTitle, SlideAnimation, DialogContent, Dialog } from 'react-native-dialog-component';
 import SideBar from './SideBar';
+import { Actions } from 'react-native-router-flux'; 
 
 export default class ProjectScreen extends Component {
   constructor(props) {
@@ -46,7 +47,7 @@ export default class ProjectScreen extends Component {
             renderItem={({item}) => this.renderBoard01(item)} 
           />
           <ActionButton buttonColor="rgba(231,76,60,1)">
-            <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.addBoard()}>
+            <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.addBoard()} >
               <Icon name='add' color='white'/>
             </ActionButton.Item>
             <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
@@ -89,7 +90,7 @@ export default class ProjectScreen extends Component {
 
   renderBoard01(item) {
     return(
-      <ListItem style={{ marginLeft: 0}} onPress={() => this.openBoard(item)}>
+      <ListItem style={{ marginLeft: 0}} onPress={() => Actions.workspace({board: item})}>
         <Left>
           <Thumbnail square style={{marginLeft: 10}} source={require('../resources/chocobo.png')} />
           <Body>
