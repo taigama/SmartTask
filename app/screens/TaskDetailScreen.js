@@ -17,16 +17,11 @@ import {
     FlatList
 } from 'react-native';
 
-import Carousel from "react-native-snap-carousel";
-import {Window} from "../components/Utils";
-import CardGroup from "../components/CardGroup";
-
 
 
 import { List, ListItem, Header, Icon  } from 'react-native-elements';
 
 
-import Card from '../components/Card';
 import { IData } from '../components/IData';
 
 
@@ -34,6 +29,7 @@ import { IData } from '../components/IData';
 
 
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import CardLabel from "../components/details/CardLabel";
 
 
 
@@ -58,7 +54,7 @@ export default class TaskDetailScreen extends Component {
             headerLeft: (
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{marginLeft: 20}}>
                     <Icon
-                        name='keyboard-arrow-left'
+                        name='arrow-back'
                         color='white'
                         size={30}
                     />
@@ -87,6 +83,7 @@ export default class TaskDetailScreen extends Component {
             txtTitle: 'this is title yeah'
         };
         this.onChangeTitle = this.onChangeTitle.bind(this);
+        this.onChangedDescription = this.onChangedDescription.bind(this);
     }
 
     componentDidMount() {
@@ -112,10 +109,6 @@ export default class TaskDetailScreen extends Component {
         logComponentStackToMyService(info.componentStack);
     }
 
-    onChangeTitle(txt)
-    {
-        this.setState({txtTitle: txt});
-    }
 
     render() {
 
@@ -124,15 +117,15 @@ export default class TaskDetailScreen extends Component {
 
 
         var names = [
-            {name: 'Suck'},
-            {name: 'Jackson'},
-            {name: 'James'},
-            {name: 'Joel'},
-            {name: 'John'},
-            {name: 'Jillian'},
-            {name: 'Jimmy'},
+            {key: 'Suck'},
+            {key: 'Jackson'},
+            {key: 'James'},
+            {key: 'Joel'},
+            {key: 'John'},
+            {key: 'Jillian'},
+            {key: 'Jimmy'},
             {key: 'Julie'},
-            {name: 'NoBiet'},
+            {key: 'NoBiet'},
         ];
 
 
@@ -152,7 +145,7 @@ export default class TaskDetailScreen extends Component {
                         marginLeft: 70
                     }}>
                         <Text style={styles.title}>
-                            {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 26)}
+                            {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 28)}
                         </Text>
                     </View>
                 )}
@@ -163,7 +156,7 @@ export default class TaskDetailScreen extends Component {
                 backgroundColor="#026AA7"
                 contentBackgroundColor="#fff"
 
-                parallaxHeaderHeight={300}
+                parallaxHeaderHeight={230}
                 fadeOutForeground={true}
                 // onChangeHeaderVisibility={alert("changed!")}
 
@@ -171,46 +164,84 @@ export default class TaskDetailScreen extends Component {
 
 
                 renderForeground={() => (
-                    <View>
-                        <Image
-                            source={require('../resources/night_sky.jpg')}
-                            style={{width: '100%', height: 200}}>
-                        </Image>
-                        <View style={styles.titleView}>
-
-                            <TextInput
-                                style={styles.titleBellowImg}
-                                placeholder="'this is title yeah"
-                                placeholderTextColor="#aaa"
-                                numberOfLines={10}
-                                onChangeText={this.onChangeTitle}
-                            />
-
-                            <Text style={{color: '#fff', height: 30}}>
-                                {this.state.txtTitle.split(' ').map((word) => word && '🍕').join(' ')}
-                            </Text>
-                        </View>
-                    </View>
-
-
+                    <Image
+                        source={require('../resources/night_sky.jpg')}
+                        style={{width: '100%', height: 230}}>
+                    </Image>
                 )}
 
 
 
 
             >
+                <View style={styles.titleView}>
 
+                    <TextInput
+                        style={styles.titleBellowImg}
+                        placeholder="Name of this task..."
+                        placeholderTextColor="#aaa"
 
+                        multiline={true}
+
+                        defaultValue={this.state.txtTitle}
+                        onChangeText={this.onChangeTitle}
+                    />
+
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.subTitleBellowImg}>
+                            {'<'}Project{'>'}
+                        </Text>
+
+                        <Text style={styles.subTitleSeparate}>
+                            in list
+                        </Text>
+
+                        <Text style={styles.subTitleBellowImg}>
+                            {this.state.txtTitle.split(' ').map((word) => word && 'c').join(' ')}
+                        </Text>
+                    </View>
+
+                </View>
+
+                <View style={styles.container}>
+                    <TextInput
+                        placeholder="Edit card description..."
+                        placeholderTextColor="#aaa"
+
+                        multiline={false}
+
+                        onSubmitEditing={this.onChangedDescription}
+                    />
+
+                </View>
+                <CardLabel
+
+                  idGroupLabel={12}
+                />
+                <CardLabel
+
+                />
                 <View style={styles.container}>
 
                     <FlatList
                         data={names}
-                        renderItem={({item}) => <Text style={styles.item}>{item.name==undefined? 'undefined':item.name}</Text>}
+                        renderItem={({item}) => <Text style={styles.item}>{item.key==undefined? 'undefined':item.key}</Text>}
                     />
                 </View>
             </ParallaxScrollView>
 
         );
+    }
+
+
+    onChangeTitle(txt)
+    {
+        this.setState({txtTitle: txt});
+    }
+
+    onChangedDescription(e)
+    {
+        alert('description: ' + e.nativeEvent.text);
     }
 }
 
@@ -218,25 +249,30 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         color: '#fff',
-        fontWeight: 'bold'
     },
     titleView: {
-        width: '100%',
-        height: 100,
-        backgroundColor: '#000',
-        alignItems:'center',
+        backgroundColor: '#026AA7',
+        alignItems:'flex-start',
         justifyContent: 'center',
+        padding: 20,
     },
     titleBellowImg: {
-        height: 70,
         width: '100%',
-        textAlignVertical: 'bottom',
-        textAlign: 'center',
+        textAlign: 'left',
         fontSize: 20,
         color: '#fff',
-        textShadowColor: '#000',
-        textShadowRadius: 10,
-        textShadowOffset: {width: 10, height: 10},
+        fontWeight: 'bold',
+        marginLeft: -4,
+        marginRight: -4,
+    },
+    subTitleBellowImg: {
+        color: '#ddd',
+        fontStyle: 'italic'
+    },
+    subTitleSeparate: {
+        color: '#aaa',
+        marginLeft: 5,
+        marginRight: 5
     },
     container: {
         flex: 1
