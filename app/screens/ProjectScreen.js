@@ -8,6 +8,7 @@ import realm from '../realm/Realm';
 import { DialogComponent, DialogTitle, SlideAnimation, DialogContent, Dialog } from 'react-native-dialog-component';
 import SideBar from './SideBar';
 import { Actions } from 'react-native-router-flux'; 
+import uuid from 'react-native-uuid';
 
 export default class ProjectScreen extends Component {
   constructor(props) {
@@ -19,15 +20,15 @@ export default class ProjectScreen extends Component {
   }
 
   componentDidMount() {
-    // realm.write(() => {
-    //   let board = realm.objects('Board')[0];
-    //   let cardGroup = realm.create('CardGroup', { title: 'Hello', cards: []});
-    //   board.cardGroups.push(cardGroup);
-    // });
-
+    
     this.setState({
       boards: realm.objects('Board'),
     });
+
+    // realm.write(() => {
+    //   let cardGroup = realm.create('CardGroup', { title: 'Hello', cards: []});
+    //   this.state.boards[0].cardGroups.push(cardGroup);
+    // });
   }
 
   render() {
@@ -90,7 +91,7 @@ export default class ProjectScreen extends Component {
 
   renderBoard01(item) {
     return(
-      <ListItem style={{ marginLeft: 0}} onPress={() => Actions.workspace({board: item})}>
+      <ListItem style={{ marginLeft: 0}} onPress={() => Actions.workspace({boardId: item.id})}>
         <Left>
           <Thumbnail square style={{marginLeft: 10}} source={require('../resources/chocobo.png')} />
           <Body>
@@ -143,7 +144,7 @@ export default class ProjectScreen extends Component {
   addBoard(boardName) {
     boardName = boardName || 'New board';
     realm.write(() => {
-      realm.create('Board', {title: boardName, cardGroups: []});
+      realm.create('Board', { id: uuid.v4(), title: boardName, cardGroups: []});
       this.setState({
         boards: realm.objects('Board'),
       })

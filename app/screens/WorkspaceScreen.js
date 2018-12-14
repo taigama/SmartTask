@@ -10,29 +10,31 @@ import { IData } from '../components/IData';
 import { Window } from '../components/Utils';
 import realm from '../realm/Realm'
 import { Actions } from 'react-native-router-flux';
+import uuid from 'react-native-uuid';
 
 export default class WorkspaceScreen extends Component<IData> {
   constructor(props) {
     super(props);
-  
-    this.board = this.props.board;
-    if (this.board === undefined) {
-      Actions.pop();
-    }
 
     this.state = {
-      cardGroups: this.board.cardGroups
-    }
+      board: null,
+    };
   }
 
   componentDidMount() {
     realm.write(() => {
-      // let card = realm.create('Card', { title: 'Card X'});
-      // this.board.cardGroups[0].push(card);
+      let board = realm.objectForPrimaryKey('Board', this.props.boardId);
+      this.setState({
+        board: board
+      });
     });
   }
 
-  render() { 
+  render() {
+    if (this.state.board == null) {
+      return null;
+    } 
+
     return (
       <ImageBackground
         source={require('../resources/moon.jpg')}
@@ -42,7 +44,7 @@ export default class WorkspaceScreen extends Component<IData> {
           layout={'default'}
           layoutCardOffset={Window.width}
           ref={(c) => { this._carousel = c; }}
-          data={Object.values(this.state.cardGroups)}
+          data={Object.values(this.state.board.cardGroups)}
           renderItem={(item) => <CardGroup data={item.item} />}
           sliderWidth={Window.width}
           itemWidth={Window.width}
@@ -64,17 +66,29 @@ export default class WorkspaceScreen extends Component<IData> {
           </TouchableOpacity>
         </Left>
         <Body>
-          <Title>{this.props.board.title} {this.board.cardGroups[0].cards.length}</Title>
+          <Title>{this.state.board.title} {this.state.board.cardGroups.length}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={() => null} style={{marginRight: 10}}>
+          <TouchableOpacity onPress={() => this.addGroup()} style={{marginRight: 10}}>
             <Icon 
-              name='menu'
+              name='add'
               style={{fontSize: 25, color: 'white'}}
             /> 
           </TouchableOpacity>
         </Right>
       </Header>
     );
-  }r
+  }
+
+  addGroup(_title) {
+    const title = _title || 'Unnamed group';
+    realm.write(() => {
+      let board = realm.objectForPrimaryKey('Board', this.props.boardId);
+      let group = realm.create('CardGroup', {id: uuid.v4(), title: title, cards: []});
+      board.cardGroups.push(group);
+      this.setState({
+        board: board,
+      })
+    })
+  }
 };
