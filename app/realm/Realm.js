@@ -1,6 +1,15 @@
 const Realm = require('realm');
 
-export const BoardSchema = {
+class Board {
+  cascadeDelete() {
+    for (let i = this.cardGroups.length - 1; i >= 0; i--) {
+      this.cardGroups[i].cascadeDelete();
+    }
+    realm.delete(this);
+  }
+}
+
+Board.schema = {
   name: 'Board',
   primaryKey: 'id',
   properties: {
@@ -10,7 +19,16 @@ export const BoardSchema = {
   }
 };
 
-export const CardGroupSchema = {
+class CardGroup {
+  cascadeDelete() {
+    for (let i = this.cards.length - 1; i >= 0; i--) {
+      this.cards[i].cascadeDelete();
+    }
+    realm.delete(this);
+  }
+}
+
+CardGroup.schema = {
   name: 'CardGroup',
   primaryKey: 'id',
   properties: {
@@ -21,7 +39,14 @@ export const CardGroupSchema = {
   }
 };
 
-export const CardSchema = {
+
+class Card {
+  cascadeDelete() {
+    realm.delete(this);
+  }
+}
+
+Card.schema = {
   name: 'Card',
   primaryKey: 'id',
   properties: {
@@ -31,16 +56,11 @@ export const CardSchema = {
   }
 };
 
+
 export default realm = new Realm({
-  schema: [CardSchema, CardGroupSchema, BoardSchema], 
-  schemaVersion: 4, 
+  schema: [Board, CardGroup, Card], 
+  schemaVersion: 6, 
   migration: (oldRealm, newRealm) => {
     newRealm.deleteAll();
   }
 });
-
-export const getNewId = (collect, primaryKey) => {
-  let maxId = Math.max.apply(null, collection.map((item) => item[primaryKey]));
-  maxId = maxId === undefined ? 1 : (maxId + 1);
-  return maxId;
-}

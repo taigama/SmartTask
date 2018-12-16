@@ -1,34 +1,18 @@
-import React, { Component,  } from 'react';
-import { Platform, Image, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, FlatList } from 'react-native';
-import { Drawer, Container, Content, Icon, Fab, Header, Left, Body, Right, Title, CardItem, Card, List, ListItem, Thumbnail } from 'native-base';
+import React, { Component } from 'react';
+import { Platform, Image, StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
+import { Drawer, Icon, Header, Left, Body, Right, Title, ListItem, Thumbnail } from 'native-base';
 import { Button, Tile, Divider } from 'react-native-elements';
+import { bindActionCreators } from 'redux';
 import ActionButton from 'react-native-action-button';
-import SideMenu from 'react-native-side-menu';
-import realm from '../realm/Realm';
-import { DialogComponent, DialogTitle, SlideAnimation, DialogContent, Dialog } from 'react-native-dialog-component';
+import { connect } from 'react-redux';
+import { Actions } from 'react-native-router-flux';
+
+import { showDialog, addBoard, updateBoards, deleteBoard } from '../reducers/ProjectReducer';
 import SideBar from './SideBar';
-import { Actions } from 'react-native-router-flux'; 
-import uuid from 'react-native-uuid';
 
-export default class ProjectScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      boards: [],
-      fabActive: false
-    }
-  }
-
+class ProjectScreen extends Component {
   componentDidMount() {
-    
-    this.setState({
-      boards: realm.objects('Board'),
-    });
-
-    // realm.write(() => {
-    //   let cardGroup = realm.create('CardGroup', { title: 'Hello', cards: []});
-    //   this.state.boards[0].cardGroups.push(cardGroup);
-    // });
+    this.props.updateBoards();
   }
 
   render() {
@@ -44,17 +28,17 @@ export default class ProjectScreen extends Component {
           <FlatList
             ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 3}}/>}
             keyExtractor={(item, index) => item.title}
-            data={this.state.boards}
-            renderItem={({item}) => this.renderBoard01(item)} 
+            data={this.props.boards}
+            renderItem={({item}) => this.renderBoard(item)} 
           />
           <ActionButton buttonColor="rgba(231,76,60,1)">
-            <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.addBoard()} >
+            <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.props.addBoard()} >
               <Icon name='add' color='white'/>
             </ActionButton.Item>
             <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
               <Icon name='remove' color='white' />
             </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.dialogComponent.show()}}>
+            <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.props.showDialog(true)}}>
               <Icon name='ios-add' color='white' />
             </ActionButton.Item>
           </ActionButton>
@@ -75,7 +59,7 @@ export default class ProjectScreen extends Component {
           </TouchableOpacity>
         </Left>
         <Body>
-          <Title>Boards</Title>
+          <Title>{this.props.title}</Title>
         </Body>
         <Right>
           <TouchableOpacity onPress={() => null} style={{marginRight: 10}}>
@@ -89,7 +73,7 @@ export default class ProjectScreen extends Component {
     );
   }
 
-  renderBoard01(item) {
+  renderBoard(item) {
     return(
       <ListItem style={{ marginLeft: 0}} onPress={() => Actions.workspace({boardId: item.id})}>
         <Left>
@@ -101,54 +85,12 @@ export default class ProjectScreen extends Component {
           </Body>
         </Left>
         <Right>
-          <Icon name="bookmark"></Icon>
+          <TouchableOpacity onPress={() => this.props.deleteBoard(item.id)}>
+            <Icon name="bookmark"></Icon>
+          </TouchableOpacity>
         </Right>
       </ListItem>
     );
-  }
-
-  renderBoard() {
-    <Card style={{backgroundColor: '#F7F7F7'}}>
-      <CardItem>
-        <Left>
-          <Thumbnail source={{backgroundColor: 'blue', uri: 'Image URL'}} />
-          <Body>
-            <Text>{item.title}</Text>
-            <Text note>{item.cardGroups.length}</Text>
-          </Body>
-        </Left>
-      </CardItem>
-      <CardItem cardBody>
-        <Image source={require('../resources/night_sky.jpg')} style={{height: 100, width: null, flex: 1}}/>
-      </CardItem>
-      <CardItem>
-        <Left>
-          <Button transparent>
-            <Icon active name="thumbs-up" />
-            <Text>12 Likes</Text>
-          </Button>
-        </Left>
-        <Body>
-          <Button transparent>
-            <Icon active name="chatbubbles" />
-            <Text>4 Comments</Text>
-          </Button>
-        </Body>
-        <Right>
-          <Text>11h ago</Text>
-        </Right>
-      </CardItem>
-    </Card>
-  }
-
-  addBoard(boardName) {
-    boardName = boardName || 'New board';
-    realm.write(() => {
-      realm.create('Board', { id: uuid.v4(), title: boardName, cardGroups: []});
-      this.setState({
-        boards: realm.objects('Board'),
-      })
-    });
   }
 
   deleteAll() {
@@ -159,8 +101,22 @@ export default class ProjectScreen extends Component {
       })
     });
   }
-
-  openBoard(board) {
-    this.props.navigation.navigate('Workspace', {board});
-  }
 }
+
+function mapStateToProps(state){
+  return{
+    dialogVisible: state.project.dialogVisible,
+    title: state.project.title,
+    boards: state.project.boards,
+  };
+}
+function matchDispatchToProps(dispatch){
+  return bindActionCreators({
+    showDialog: showDialog,
+    updateBoards: updateBoards,
+    addBoard: addBoard,
+    deleteBoard: deleteBoard,
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(ProjectScreen);

@@ -57,7 +57,7 @@ export default class WorkspaceScreen extends Component<IData> {
     return (
       <Header>
         <Left>
-          <TouchableOpacity onPress={() => Actions.pop()} style={{marginLeft: 10}}>
+          <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(()=> Actions.refresh(), 10)}} style={{marginLeft: 10}}>
             <Icon 
               name='keyboard-arrow-left'
               type="MaterialIcons"
