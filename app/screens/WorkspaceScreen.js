@@ -17,10 +17,7 @@ import uuid from 'react-native-uuid';
 import { showAddCardDialog, showAddGroupDialog, updateBoard, addGroup } from '../reducers/WorkspaceReducer';
 
 class WorkspaceScreen extends Component<IData> {
-
-  componentDidMount() {
-    
-  }
+  
 
   render() {
     return (
@@ -39,10 +36,6 @@ class WorkspaceScreen extends Component<IData> {
         />
       </ImageBackground>
     );
-  }
-
-  componentDidUpdate() {
-   
   }
 
   createHeader() {

@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
+import { Button, ButtonGroup } from 'react-native-elements';
+import { FlatList } from 'react-native-gesture-handler';
+import uuid from 'react-native-uuid';
+import Modal from 'react-native-modal';
 import { 
   Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, 
   TextInput, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native';
-import Modal from 'react-native-modal';
+
 import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
-import { Button, ButtonGroup } from 'react-native-elements';
 import realm from '../realm/Realm';
-import { FlatList } from 'react-native-gesture-handler';
-import uuid from 'react-native-uuid';
 
 class CardGroup extends React.Component<IData> {
   constructor(props) {
@@ -17,6 +18,7 @@ class CardGroup extends React.Component<IData> {
     this.state = {
       group: this.props.data,
       addDialogVisible: false,
+      newCardTitle: '',
     }
   }
 
@@ -29,7 +31,7 @@ class CardGroup extends React.Component<IData> {
           </View>
           <View style={styles.groupContainer}>
             <FlatList
-              ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 4}}/>}
+              ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', height: 4}}/>}
               keyExtractor={(item, index) => item.id}
               data={this.state.group.cards}
               renderItem={({item}) => <Card data={item}></Card>} 
@@ -46,16 +48,7 @@ class CardGroup extends React.Component<IData> {
     );
   }
 
-  addCard(title = 'New card') {
-    realm.write(() => {
-      let card = realm.create('Card', { id: uuid.v4(), title: title} );
-      this.state.group.cards.push(card)
-      this.toggleAddCardDialog();
-    })
-  }
-
   viewAddCardDialog() {
-    let textInput = '';
     return (
       <Modal 
         isVisible={this.state.addDialogVisible}
@@ -73,7 +66,7 @@ class CardGroup extends React.Component<IData> {
               multiline={true}
               style={styles.modalTextInput}
               placeholder="Enter a title for this card"
-              onChangeText={(text) => textInput = text}
+              onChangeText={(text) => this.state.newCardTitle = text}
             />
             <Button
               title="ADD"
@@ -89,7 +82,7 @@ class CardGroup extends React.Component<IData> {
                 borderRadius: 5,
                 margin: 0,
               }}
-              onPress={() => this.addCard(textInput)}
+              onPress={() => this.addCard(this.state.newCardTitle)}
               containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5,}}
             />
           </View>
@@ -98,12 +91,18 @@ class CardGroup extends React.Component<IData> {
     );
   }
 
-  refresh() {
-    this.setState({});
+  addCard(title = 'New card') {
+    title = title ? title : 'New card';
+    realm.write(() => {
+      let card = realm.create('Card', { id: uuid.v4(), title: title} );
+      this.state.group.cards.push(card)
+      this.toggleAddCardDialog();
+    })
   }
 
   toggleAddCardDialog() {
     this.setState({
+      ...this.state,
       addDialogVisible: !this.state.addDialogVisible,
     })
   }
@@ -134,6 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   groupContainer: {
+    maxHeight: Window.height - 240,
     width: '100%',
     justifyContent: "center"
   },

@@ -29,6 +29,11 @@ export const App = () => {
         <Scene key="root"
           transitionConfig={transitionConfig}
           >
+           <Scene key="splash"
+            component={SplashScreen}
+            title="Splash"
+            hideNavBar
+          />
           <Scene key="project"
             component={ProjectScreen}
             title="Boards"
