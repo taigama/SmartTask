@@ -3,14 +3,13 @@ import { Button, ButtonGroup } from 'react-native-elements';
 import { FlatList } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import Modal from 'react-native-modal';
-import { 
-  Platform, StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, 
-  TextInput, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native';
-
+import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
 import realm from '../realm/Realm';
+import FormModal from './FormModal';
 
 class CardGroup extends React.Component<IData> {
   constructor(props) {
@@ -34,7 +33,7 @@ class CardGroup extends React.Component<IData> {
               ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', height: 4}}/>}
               keyExtractor={(item, index) => item.id}
               data={this.state.group.cards}
-              renderItem={({item}) => <Card data={item}></Card>} 
+              renderItem={({item}) => <Card data={item}></Card>}
             />
           </View>
           <View style={{height: 50, justifyContent: "center"}}>
@@ -43,51 +42,45 @@ class CardGroup extends React.Component<IData> {
             </TouchableOpacity>
           </View>
         </View>
-        {this.viewAddCardDialog()}
+        {this.renderAddCardDialog()}
       </View>
     );
   }
 
-  viewAddCardDialog() {
+  renderAddCardDialog() {
     return (
-      <Modal 
+      <FormModal 
         isVisible={this.state.addDialogVisible}
         onBackdropPress={() => this.toggleAddCardDialog()}
         onBackButtonPress={() => this.toggleAddCardDialog()}
         onSwipe={() => this.toggleAddCardDialog()}
-        swipeDirection='left'>
-        <View style={styles.modal}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalHeadline}>Add a card..</Text>
-          </View>
-          <View style={styles.modalContainer}>
-            <TextInput
-              autoFocus={true}
-              multiline={true}
-              style={styles.modalTextInput}
-              placeholder="Enter a title for this card"
-              onChangeText={(text) => this.state.newCardTitle = text}
-            />
-            <Button
-              title="ADD"
-              fontWeight='bold'
-              fontSize={20}
-              raised
-              buttonStyle={{
-                backgroundColor: "#00BB27",
-                width: '100%',
-                height: 45,
-                borderColor: "transparent",
-                borderWidth: 0,
-                borderRadius: 5,
-                margin: 0,
-              }}
-              onPress={() => this.addCard(this.state.newCardTitle)}
-              containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5,}}
-            />
-          </View>
-        </View>
-      </Modal>
+        swipeDirection='left'
+        title='Add a card...'>
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this card"
+          onChangeText={(text) => this.state.newCardTitle = text}
+        />
+        <Button
+          title="ADD"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => this.addCard(this.state.newCardTitle)}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
     );
   }
 

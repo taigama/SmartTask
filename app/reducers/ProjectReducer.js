@@ -42,6 +42,7 @@ export function updateBoards() {
 }
 
 export function addBoard(title = 'New board') {
+  title = title ? title : 'New board';
   realm.write(() => {
     let board = realm.create('Board', { id: uuid.v4(), title: title });
   });

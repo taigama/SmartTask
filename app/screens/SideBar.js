@@ -5,7 +5,7 @@ import { Content } from 'native-base';
 export default class SideBar extends Component {
   render() {
     return (
-      <Content style={{backgroundColor: '#545454'}}>
+      <Content style={{backgroundColor: 'white'}}>
         <Text>ABCXYZ</Text>
       </Content>
     )
