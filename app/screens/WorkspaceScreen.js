@@ -15,7 +15,7 @@ import { IData } from '../components/IData';
 import { Window } from '../components/Utils';
 import FormModal from '../components/FormModal';
 import realm from '../realm/Realm'
-import SideBar from './SideBar'
+import WorkspaceSideBar from './WorkspaceSideBar'
 
 import { showAddCardDialog, showAddGroupDialog, addGroup } from '../reducers/WorkspaceReducer';
 
@@ -38,7 +38,7 @@ class WorkspaceScreen extends Component<IData> {
         type='overlay'
         side="right"
         ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar navigator={this.navigator} />}
+        content={<WorkspaceSideBar navigator={this.navigator} />}
         onClose={() => this.drawer._root.close()} >
         {this.renderHeader()}
         <ImageBackground
@@ -48,7 +48,7 @@ class WorkspaceScreen extends Component<IData> {
             layout={'default'}
             layoutCardOffset={Window.width}
             ref={(c) => { this._carousel = c; }}
-            data={Object.values(this.state.board.cardGroups)}
+            data={Object.values(this.state.board.cardGroups.filtered('archived = false'))}
             renderItem={({ item }) => <CardGroup data={item} />}
             sliderWidth={Window.width}
             itemWidth={Window.width}

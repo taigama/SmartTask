@@ -15,6 +15,7 @@ Board.schema = {
   properties: {
     id: 'string',
     title: 'string',
+    archived: {type: 'bool', default: false},
     cardGroups: 'CardGroup[]',
   }
 };
@@ -35,6 +36,7 @@ CardGroup.schema = {
     id: 'string',
     title: 'string?',
     cards: 'Card[]',
+    archived: {type: 'bool', default: false},
     board:  {type: 'linkingObjects', objectType: 'Board', property: 'cardGroups'}
   }
 };
@@ -52,6 +54,7 @@ Card.schema = {
   properties: {
     id: 'string',
     title: 'string?',
+    archived: {type: 'bool', default: false},
     cardGroup: {type: 'linkingObjects', objectType: 'CardGroup', property: 'cards'},
   }
 };
@@ -59,7 +62,7 @@ Card.schema = {
 
 export default realm = new Realm({
   schema: [Board, CardGroup, Card], 
-  schemaVersion: 6, 
+  schemaVersion: 7, 
   migration: (oldRealm, newRealm) => {
     newRealm.deleteAll();
   }

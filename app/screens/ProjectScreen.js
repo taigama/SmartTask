@@ -9,7 +9,7 @@ import ActionButton from 'react-native-action-button';
 
 import { showDialog, addBoard, updateBoards, deleteBoard } from '../reducers/ProjectReducer';
 import { updateBoard } from '../reducers/WorkspaceReducer';
-import SideBar from './SideBar';
+import SideBar from './WorkspaceSideBar';
 import Modal from 'react-native-modal';
 import { Window } from '../components/Utils'
 import FormModal from '../components/FormModal'

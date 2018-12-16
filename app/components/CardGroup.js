@@ -4,7 +4,9 @@ import { FlatList } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import Modal from 'react-native-modal';
 import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import { Left, Right, Body, Icon } from 'native-base';
+
 import { Window } from './Utils';
 import { IData } from './IData';
 import Card from './Card';
@@ -17,31 +19,65 @@ class CardGroup extends React.Component<IData> {
     this.state = {
       group: this.props.data,
       addDialogVisible: false,
-      newCardTitle: '',
-    }
+      newCardTitle: "",
+    };
   }
 
-  render() { 
+  render() {
     return (
       <View style={styles.pageContainer}>
         <View style={styles.group}>
           <View style={styles.groupHeader}>
-            <Text style={{padding: 5, fontSize: 20, fontWeight: "bold"}}>{this.state.group.title}</Text>
+            <Left>
+              <Text style={{ padding: 5, fontSize: 20, fontWeight: "bold" }}>
+                {this.state.group.title}
+              </Text>
+            </Left>
+            <Right>
+              <Menu
+                ref={ref => (this._menu = ref)}
+                button={
+                  <TouchableOpacity
+                    onPress={() => this._menu.show()}
+                    style={{}}
+                  >
+                    <Icon
+                      name="dots-vertical"
+                      type="MaterialCommunityIcons"
+                      style={{ fontSize: 25, color: "black" }}
+                    />
+                  </TouchableOpacity>
+                }
+              >
+                <MenuItem onPress={() => this.archiveGroup()}>Move group</MenuItem>
+                <MenuItem onPress={this.hideMenu}>Copy</MenuItem>
+                <MenuItem onPress={() => this.archiveGroup()}>Archive group</MenuItem>
+                <MenuItem onPress={this.hideMenu}>Move all cards</MenuItem>
+                <MenuItem onPress={this.hideMenu}>Archive all cards</MenuItem>
+              </Menu>
+            </Right>
           </View>
           <View style={styles.groupContainer}>
             <FlatList
-              ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', height: 4}}/>}
+              ItemSeparatorComponent={() => (
+                <View
+                  style={{ justifyContent: "center", width: "100%", height: 4 }}
+                />
+              )}
               keyExtractor={(item, index) => item.id}
-              data={this.state.group.cards}
-              renderItem={({item}) => <Card data={item}></Card>}
+              data={this.state.group.cards.filtered('archived = false')}
+              renderItem={({ item }) => <Card data={item} />}
             />
           </View>
-          <View style={{height: 50, justifyContent: "center"}}>
+          <View style={{ height: 50, justifyContent: "center" }}>
             <TouchableOpacity onPress={() => this.toggleAddCardDialog()}>
-              <Text style={{color: '#95A4AE', fontSize: 16}}>+ Add a card</Text>
+              <Text style={{ color: "#95A4AE", fontSize: 16 }}>
+                + Add a card
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
+
         {this.renderAddCardDialog()}
       </View>
     );
@@ -49,55 +85,69 @@ class CardGroup extends React.Component<IData> {
 
   renderAddCardDialog() {
     return (
-      <FormModal 
+      <FormModal
         isVisible={this.state.addDialogVisible}
         onBackdropPress={() => this.toggleAddCardDialog()}
         onBackButtonPress={() => this.toggleAddCardDialog()}
         onSwipe={() => this.toggleAddCardDialog()}
-        swipeDirection='left'
-        title='Add a card...'>
+        swipeDirection="left"
+        title="Add a card..."
+      >
         <TextInput
           autoFocus={true}
           multiline={true}
           style={styles.modalTextInput}
           placeholder="Enter a title for this card"
-          onChangeText={(text) => this.state.newCardTitle = text}
+          onChangeText={text => (this.state.newCardTitle = text)}
         />
         <Button
           title="ADD"
-          fontWeight='bold'
+          fontWeight="bold"
           fontSize={20}
           raised
           buttonStyle={{
             backgroundColor: "#00BB27",
-            width: '100%',
+            width: "100%",
             height: 45,
             borderColor: "transparent",
             borderWidth: 0,
             borderRadius: 5,
-            margin: 0,
+            margin: 0
           }}
           onPress={() => this.addCard(this.state.newCardTitle)}
-          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+          containerViewStyle={{
+            width: "100%",
+            marginLeft: 0,
+            marginTop: 10,
+            borderRadius: 5
+          }}
         />
       </FormModal>
     );
   }
 
-  addCard(title = 'New card') {
-    title = title ? title : 'New card';
+  addCard(title = "New card") {
+    title = title ? title : "New card";
     realm.write(() => {
-      let card = realm.create('Card', { id: uuid.v4(), title: title} );
-      this.state.group.cards.push(card)
+      let card = realm.create("Card", { id: uuid.v4(), title: title });
+      this.state.group.cards.push(card);
       this.toggleAddCardDialog();
-    })
+    });
+  }
+
+  archiveGroup() {
+    realm.write(() => {
+      this.state.group.archived = true;
+      this._menu.hide();
+      this.setState({});
+    });
   }
 
   toggleAddCardDialog() {
     this.setState({
       ...this.state,
-      addDialogVisible: !this.state.addDialogVisible,
-    })
+      addDialogVisible: !this.state.addDialogVisible
+    });
   }
 }
 
@@ -117,11 +167,12 @@ const styles = StyleSheet.create({
     borderRadius:10,
     borderWidth: 1,
     borderColor: '#000000',
-    paddingLeft: '8.5%',
-    paddingRight: '8.5%',
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   groupHeader: {
     height: 60,
+    flexDirection:'row',
     fontWeight: 'bold',
     justifyContent: "center",
   },
