@@ -7,6 +7,7 @@ import { Actions } from 'react-native-router-flux';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
+import Toast, {DURATION} from 'react-native-easy-toast';
 import uuid from 'react-native-uuid';
 
 import Card from '../components/Card';
@@ -15,7 +16,7 @@ import { IData } from '../components/IData';
 import { Window } from '../components/Utils';
 import FormModal from '../components/FormModal';
 import realm from '../realm/Realm'
-import WorkspaceSideBar from './WorkspaceSideBar'
+import WorkspaceSideBar from './WorkspaceSideBar';
 
 import { showAddCardDialog, showAddGroupDialog, addGroup } from '../reducers/WorkspaceReducer';
 
@@ -23,13 +24,16 @@ import { showAddCardDialog, showAddGroupDialog, addGroup } from '../reducers/Wor
 Drawer.defaultProps.styles.mainOverlay.elevation = 0;
 
 class WorkspaceScreen extends Component<IData> {
+  
+  
   constructor(props) {
     super(props);
     this.state = {
       board: this.props.data,
       addGroupVisible: false,
+      addCardVisible: false,
+      currentGroup: null,
     }
-    this.newGroupTitle = '';
   }
 
   render() {
@@ -45,18 +49,39 @@ class WorkspaceScreen extends Component<IData> {
           source={require('../resources/moon.jpg')}
           style={{ width: '100%', height: '100%' }}>
           <Carousel
+            keyExtractor={(item, index) => item.id}
             layout={'default'}
             layoutCardOffset={Window.width}
             ref={(c) => { this._carousel = c; }}
-            data={Object.values(this.state.board.cardGroups.filtered('archived = false'))}
-            renderItem={({ item }) => <CardGroup data={item} />}
+            data={this.getVisibleGroups()}
+            renderItem={({ item }) => 
+              <CardGroup 
+                refresh={() => this.refresh()} 
+                showToast={(text) => this.refs.toast.show(text)}
+                toggleAddCardDialog={(text) => this.toggleAddCardDialog(text)}
+                archiveAllCards={(group) => this.archiveAllCards(group)}
+                archiveGroup={(group) => this.archiveGroup(group)}
+                renameGroup={(group) => this.renameGroup(group)}
+                copyGroup={(group) => this.copyGroup(group)}
+                moveGroup={(group) => this.moveGroup(group)}
+                moveAllCards={(group) => this.moveAllCards(group)}
+                data={item} 
+            />}
             sliderWidth={Window.width}
             itemWidth={Window.width}
           />
+          <Toast ref="toast"/>
+          {this.renderAddCardDialog()}
           {this.renderAddGroupdDialog()}
         </ImageBackground>
       </Drawer>
     );
+  }
+
+  getVisibleGroups() {
+    let group = Object.values(this.state.board.cardGroups.filtered('archived = false'));
+    this.visibleCount = group.length;
+    return group;
   }
 
   renderHeader() {
@@ -97,13 +122,31 @@ class WorkspaceScreen extends Component<IData> {
     realm.write(() => {
       let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
       this.state.board.cardGroups.push(group);
-      this.setState({});
+      setTimeout(() => this._carousel.snapToItem(this.visibleCount + 1), 100);
+      this.refresh();
+    });
+  }
+
+  addCard(title = 'New card') {
+    title = title ? title : "New card";
+    realm.write(() => {
+      let card = realm.create("Card", { id: uuid.v4(), title: title });
+      this.state.currentGroup.cards.push(card);
+      this.toggleAddCardDialog();
     });
   }
 
   toggleAddGroupDialog() {
     this.setState({
       addGroupVisible: !this.state.addGroupVisible
+    });
+  }
+
+  toggleAddCardDialog(currentGroup = null) {
+    this.setState({
+      ...this.state,
+      addDialogVisible: !this.state.addDialogVisible,
+      currentGroup: currentGroup,
     });
   }
 
@@ -146,7 +189,85 @@ class WorkspaceScreen extends Component<IData> {
         />
       </FormModal>
     );
-  }     
+  }
+  
+  renderAddCardDialog() {
+    return (
+      <FormModal
+        isVisible={this.state.addDialogVisible}
+        onBackdropPress={() => this.toggleAddCardDialog()}
+        onBackButtonPress={() => this.toggleAddCardDialog()}
+        onSwipe={() => this.toggleAddCardDialog()}
+        swipeDirection="left"
+        title="Add a card..."
+      >
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this card"
+          onChangeText={text => (this.newCardTitle = text)}
+        />
+        <Button
+          title="ADD"
+          fontWeight="bold"
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: "100%",
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0
+          }}
+          onPress={() => this.addCard(this.newCardTitle)}
+          containerViewStyle={{
+            width: "100%",
+            marginLeft: 0,
+            marginTop: 10,
+            borderRadius: 5
+          }}
+        />
+      </FormModal>
+    );
+  }
+
+  refresh() {
+    this.setState({});
+  }
+
+  archiveGroup(group) {
+    realm.write(() => {
+      group.archived = true;
+      this.refs.toast.show('Archive group ' + group.title);
+      if (this._carousel.currentIndex !== 0 && this._carousel.currentIndex >= this.visibleCount - 1) {
+        this._carousel.snapToPrev(true);
+      }
+      this.refresh();
+    });
+  }
+
+  archiveAllCards(group) {
+    
+  }
+
+  moveAllCards(group) {
+    
+  }
+
+  copyGroup(group) {
+
+  }
+
+  moveGroup(group) {
+
+  }
+
+  renameGroup(group) {
+
+  }
 };
 
 export default WorkspaceScreen;

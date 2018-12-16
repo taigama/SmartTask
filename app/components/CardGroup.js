@@ -3,9 +3,10 @@ import { Button, ButtonGroup } from 'react-native-elements';
 import { FlatList } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import Modal from 'react-native-modal';
-import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ViewPropTypes } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { Left, Right, Body, Icon } from 'native-base';
+import PropTypes from 'prop-types';
 
 import { Window } from './Utils';
 import { IData } from './IData';
@@ -13,13 +14,23 @@ import Card from './Card';
 import realm from '../realm/Realm';
 import FormModal from './FormModal';
 
-class CardGroup extends React.Component<IData> {
+type CardGroupProps = {
+  refresh?: PropTypes.func,
+  showToast?: PropTypes.func,
+  toggleAddCardDialog?: PropTypes.func,
+  renameGroup?: PropTypes.func,
+  archiveGroup?: PropTypes.func,
+  moveGroup?: PropTypes.func,
+  copyGroup?: PropTypes.func,
+  moveAllCards?: PropTypes.func,
+  archiveAllCards: PropTypes.func,
+}
+
+class CardGroup extends React.Component<CardGroupProps, IData> {
   constructor(props) {
     super(props);
     this.state = {
       group: this.props.data,
-      addDialogVisible: false,
-      newCardTitle: "",
     };
   }
 
@@ -39,7 +50,6 @@ class CardGroup extends React.Component<IData> {
                 button={
                   <TouchableOpacity
                     onPress={() => this._menu.show()}
-                    style={{}}
                   >
                     <Icon
                       name="dots-vertical"
@@ -49,11 +59,12 @@ class CardGroup extends React.Component<IData> {
                   </TouchableOpacity>
                 }
               >
-                <MenuItem onPress={() => this.archiveGroup()}>Move group</MenuItem>
-                <MenuItem onPress={this.hideMenu}>Copy</MenuItem>
-                <MenuItem onPress={() => this.archiveGroup()}>Archive group</MenuItem>
-                <MenuItem onPress={this.hideMenu}>Move all cards</MenuItem>
-                <MenuItem onPress={this.hideMenu}>Archive all cards</MenuItem>
+                <MenuItem onPress={() => {this.props.renameGroup(this.state.group); this._menu.hide()}}>Rename</MenuItem>
+                <MenuItem onPress={() => {this.props.copyGroup(this.state.group); this._menu.hide()}}>Copy</MenuItem>
+                <MenuItem onPress={() => {this.props.moveGroup(this.state.group); this._menu.hide()}}>Move</MenuItem>
+                <MenuItem onPress={() => {this.props.archiveGroup(this.state.group); this._menu.hide()}}>Archive group</MenuItem>
+                <MenuItem onPress={() => {this.props.moveAllCards(this.state.group); this._menu.hide()}}>Move all cards</MenuItem>
+                <MenuItem onPress={() => {this.props.archiveAllCards(this.state.group); this._menu.hide()}}>Archive all cards</MenuItem>
               </Menu>
             </Right>
           </View>
@@ -70,84 +81,15 @@ class CardGroup extends React.Component<IData> {
             />
           </View>
           <View style={{ height: 50, justifyContent: "center" }}>
-            <TouchableOpacity onPress={() => this.toggleAddCardDialog()}>
+            <TouchableOpacity onPress={() => this.props.toggleAddCardDialog(this.state.group)}>
               <Text style={{ color: "#95A4AE", fontSize: 16 }}>
                 + Add a card
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        {this.renderAddCardDialog()}
       </View>
     );
-  }
-
-  renderAddCardDialog() {
-    return (
-      <FormModal
-        isVisible={this.state.addDialogVisible}
-        onBackdropPress={() => this.toggleAddCardDialog()}
-        onBackButtonPress={() => this.toggleAddCardDialog()}
-        onSwipe={() => this.toggleAddCardDialog()}
-        swipeDirection="left"
-        title="Add a card..."
-      >
-        <TextInput
-          autoFocus={true}
-          multiline={true}
-          style={styles.modalTextInput}
-          placeholder="Enter a title for this card"
-          onChangeText={text => (this.state.newCardTitle = text)}
-        />
-        <Button
-          title="ADD"
-          fontWeight="bold"
-          fontSize={20}
-          raised
-          buttonStyle={{
-            backgroundColor: "#00BB27",
-            width: "100%",
-            height: 45,
-            borderColor: "transparent",
-            borderWidth: 0,
-            borderRadius: 5,
-            margin: 0
-          }}
-          onPress={() => this.addCard(this.state.newCardTitle)}
-          containerViewStyle={{
-            width: "100%",
-            marginLeft: 0,
-            marginTop: 10,
-            borderRadius: 5
-          }}
-        />
-      </FormModal>
-    );
-  }
-
-  addCard(title = "New card") {
-    title = title ? title : "New card";
-    realm.write(() => {
-      let card = realm.create("Card", { id: uuid.v4(), title: title });
-      this.state.group.cards.push(card);
-      this.toggleAddCardDialog();
-    });
-  }
-
-  archiveGroup() {
-    realm.write(() => {
-      this.state.group.archived = true;
-      this._menu.hide();
-      this.setState({});
-    });
-  }
-
-  toggleAddCardDialog() {
-    this.setState({
-      ...this.state,
-      addDialogVisible: !this.state.addDialogVisible
-    });
   }
 }
 

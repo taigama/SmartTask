@@ -16,6 +16,7 @@
     "react-native-action-button": "^2.8.5",
     "react-native-dialog-component": "^0.2.17",
     "react-native-draggable": "^1.0.14",
+    "react-native-easy-toast": "^1.1.0",
     "react-native-elements": "^0.19.1",
     "react-native-gesture-handler": "^1.0.10",
     "react-native-material-menu": "^0.4.2",
