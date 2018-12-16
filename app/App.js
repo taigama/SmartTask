@@ -3,6 +3,7 @@ import WorkspaceScreen from './screens/WorkspaceScreen';
 import TaskDetailScreen from './screens/TaskDetailScreen';
 import ProjectScreen from './screens/ProjectScreen';
 import SplashScreen from './screens/SplashScreen';
+import EditLabelScreen from "./screens/EditLabelScreen";
 
 
 export const TabNavigator = createBottomTabNavigator({
@@ -44,6 +45,7 @@ export const RootStack  = createStackNavigator({
   },
   Workspace: WorkspaceScreen,
   TaskDetail: TaskDetailScreen,
+  EditLabel: EditLabelScreen,
 }, { transitionConfig: () => transitionConfig});
 
 export const App = createAppContainer(RootStack);

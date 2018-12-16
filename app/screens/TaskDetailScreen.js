@@ -1,8 +1,7 @@
-
 import Helper from '../components/Helper.js';
 
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     TextInput,
     Animated,
@@ -18,11 +17,12 @@ import {
 } from 'react-native';
 
 
-
-import { List, ListItem, Header, Icon  } from 'react-native-elements';
-
-
-import { IData } from '../components/IData';
+import {
+    List,
+    ListItem,
+    Header,
+    Icon
+} from 'react-native-elements';
 
 
 
@@ -30,12 +30,12 @@ import { IData } from '../components/IData';
 
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import CardLabel from "../components/details/CardLabel";
-
-
+import CardEditLabel from "../components/details/CardEditLabel";
+import DialogEditLabel from "../components/details/DialogEditLabel";
 
 
 export default class TaskDetailScreen extends Component {
-    static navigationOptions = ({ navigation }) => {
+    static navigationOptions = ({navigation}) => {
         const {navigate} = navigation;
         return {
 
@@ -65,7 +65,7 @@ export default class TaskDetailScreen extends Component {
                     onPress={() => alert('This will be a menu')}
                     style={{marginRight: 20}}>
                     <Icon
-                        name='dehaze'
+                        name='more-vert'
                         color='white'
                         size={30}
                     />
@@ -79,11 +79,16 @@ export default class TaskDetailScreen extends Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
-            txtTitle: 'this is title yeah'
+
+            txtTitle: 'this is title yeah',
+            labelGroupId: 23
+
         };
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangedDescription = this.onChangedDescription.bind(this);
+        this.onClickLabel = this.onClickLabel.bind(this);
     }
 
     componentDidMount() {
@@ -113,9 +118,6 @@ export default class TaskDetailScreen extends Component {
     render() {
 
 
-
-
-
         var names = [
             {key: 'Suck'},
             {key: 'Jackson'},
@@ -129,120 +131,124 @@ export default class TaskDetailScreen extends Component {
         ];
 
 
-
-
-
-
-
         return (
-            <ParallaxScrollView
-                renderStickyHeader={() => (
-                    <View style={{
-                        height:56,
-                        backgroundColor: '#026AA7',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        marginLeft: 70
-                    }}>
-                        <Text style={styles.title}>
-                            {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 28)}
-                        </Text>
+
+            <View style={{flex: 1}}>
+
+                <ParallaxScrollView
+                    renderStickyHeader={() => (
+                        <View style={{
+                            height: 56,
+                            backgroundColor: '#026AA7',
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            marginLeft: 70
+                        }}>
+                            <Text style={styles.title}>
+                                {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 30)}
+                            </Text>
+                        </View>
+                    )}
+                    stickyHeaderHeight={56}
+
+                    fadeOutForeground={false}
+
+                    backgroundColor="#026AA7"
+                    contentBackgroundColor="#fff"
+
+                    parallaxHeaderHeight={230}
+                    fadeOutForeground={true}
+                    // onChangeHeaderVisibility={alert("changed!")}
+
+
+                    renderForeground={() => (
+                        <Image
+                            source={require('../resources/night_sky.jpg')}
+                            style={{width: '100%', height: 230}}>
+                        </Image>
+                    )}
+
+
+                >
+                    <View style={styles.titleView}>
+
+                        <TextInput
+                            style={styles.titleBellowImg}
+                            placeholder="Name of this task..."
+                            placeholderTextColor="#aaa"
+
+                            multiline={true}
+
+                            defaultValue={this.state.txtTitle}
+                            onChangeText={this.onChangeTitle}
+                        />
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text style={styles.subTitleBellowImg}>
+                                {'<'}Project{'>'}
+                            </Text>
+
+                            <Text style={styles.subTitleSeparate}>
+                                in list
+                            </Text>
+
+                            <Text style={styles.subTitleBellowImg}>
+                                {this.state.txtTitle.split(' ').map((word) => word && 'c').join(' ')}
+                            </Text>
+                        </View>
+
                     </View>
-                )}
-                stickyHeaderHeight={56}
 
-                fadeOutForeground={false}
+                    <View style={styles.container}>
+                        <TextInput
+                            placeholder="Edit card description..."
+                            placeholderTextColor="#aaa"
 
-                backgroundColor="#026AA7"
-                contentBackgroundColor="#fff"
+                            multiline={false}
 
-                parallaxHeaderHeight={230}
-                fadeOutForeground={true}
-                // onChangeHeaderVisibility={alert("changed!")}
+                            onSubmitEditing={this.onChangedDescription}
+                        />
 
-
-
-
-                renderForeground={() => (
-                    <Image
-                        source={require('../resources/night_sky.jpg')}
-                        style={{width: '100%', height: 230}}>
-                    </Image>
-                )}
-
-
-
-
-            >
-                <View style={styles.titleView}>
-
-                    <TextInput
-                        style={styles.titleBellowImg}
-                        placeholder="Name of this task..."
-                        placeholderTextColor="#aaa"
-
-                        multiline={true}
-
-                        defaultValue={this.state.txtTitle}
-                        onChangeText={this.onChangeTitle}
-                    />
-
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.subTitleBellowImg}>
-                            {'<'}Project{'>'}
-                        </Text>
-
-                        <Text style={styles.subTitleSeparate}>
-                            in list
-                        </Text>
-
-                        <Text style={styles.subTitleBellowImg}>
-                            {this.state.txtTitle.split(' ').map((word) => word && 'c').join(' ')}
-                        </Text>
                     </View>
-
-                </View>
-
-                <View style={styles.container}>
-                    <TextInput
-                        placeholder="Edit card description..."
-                        placeholderTextColor="#aaa"
-
-                        multiline={false}
-
-                        onSubmitEditing={this.onChangedDescription}
+                    <CardLabel
+                        clickLabelCallback={this.onClickLabel}
+                        idGroupLabel={this.state.labelGroupId}
                     />
+                    <View style={styles.container}>
 
-                </View>
-                <CardLabel
+                        <FlatList
+                            data={names}
+                            renderItem={({item}) => <Text
+                                style={styles.item}>{item.key == undefined ? 'undefined' : item.key}</Text>}
+                        />
+                    </View>
+                </ParallaxScrollView>
 
-                  idGroupLabel={12}
+
+                <DialogEditLabel
+                    idGroupLabel={this.state.labelGroupId}
+                    ref={(dialogLabel) => {
+                        this.dialogLabel = dialogLabel;
+                    }}
                 />
-                <CardLabel
-
-                />
-                <View style={styles.container}>
-
-                    <FlatList
-                        data={names}
-                        renderItem={({item}) => <Text style={styles.item}>{item.key==undefined? 'undefined':item.key}</Text>}
-                    />
-                </View>
-            </ParallaxScrollView>
+            </View>
 
         );
     }
 
 
-    onChangeTitle(txt)
-    {
+    onChangeTitle(txt) {
         this.setState({txtTitle: txt});
     }
 
-    onChangedDescription(e)
-    {
+    onChangedDescription(e) {
         alert('description: ' + e.nativeEvent.text);
     }
+
+    onClickLabel() {
+        this.props.navigation.navigate('EditLabel', {idGroupLabel: 23});
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -252,7 +258,7 @@ const styles = StyleSheet.create({
     },
     titleView: {
         backgroundColor: '#026AA7',
-        alignItems:'flex-start',
+        alignItems: 'flex-start',
         justifyContent: 'center',
         padding: 20,
     },

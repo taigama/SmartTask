@@ -4,26 +4,24 @@ import React, {Component} from "react";
 import {
     View,
     StyleSheet,
-    Text, TouchableOpacity
+    Text,
+    TouchableOpacity
 } from "react-native";
 
-import CardWrapper from './CardWrapper';
-import Label from './Label';
 
-export default class CardLabel extends Component {
+import CardWrapper from './CardWrapper';
+import LabelEditable from './LabelEditable';
+
+export default class CardEditLabel extends React.PureComponent {
 
     static propTypes = {
-        idGroupLabel: PropTypes.number,
-        clickLabelCallback: PropTypes.func,
+        idGroupLabel: PropTypes.number
     };
 
     constructor(props) {
         super(props);
         const {idGroupLabel, clickLabelCallback} = this.props;
 
-        this.state = {
-            idGroupLabel: idGroupLabel,
-        };
 
         if (idGroupLabel) {
             this.labels = null;// TODO: labels list from idGroupLabel
@@ -41,7 +39,7 @@ export default class CardLabel extends Component {
                 {key: 16, data: 3},
             ];
             this.viewSub = () => (
-                this.labels.map((label) => <Label clickCallback={this.onClickLabel} idLabel={label.data}/>)
+                this.labels.map((label) => <LabelEditable  idLabel={label.data}/>)
             );
         }
         else {
@@ -58,6 +56,12 @@ export default class CardLabel extends Component {
             );
         }
         this.onClickLabel = clickLabelCallback;
+
+        this.state = {
+            idGroupLabel: idGroupLabel,
+            height: this.labels.length * 34 + 36,
+        };
+
     }
 
     render() {
@@ -66,7 +70,8 @@ export default class CardLabel extends Component {
                 iconName='dns'
                 iconColor='#555'
                 iconSize={24}
-                minHeight={40}
+                flexStyle={{}}
+                minHeight={this.state.height}
             >
                 {this.viewSub()}
             </CardWrapper>
@@ -85,9 +90,5 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         color: '#555'
-    },
-    dialogContent: {
-        flex: 1,
-        backgroundColor: '#0ff',
     }
 });
