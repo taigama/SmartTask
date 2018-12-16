@@ -1,6 +1,6 @@
 const Realm = require('realm');
 
-class Board {
+export class Board {
   cascadeDelete() {
     for (let i = this.cardGroups.length - 1; i >= 0; i--) {
       this.cardGroups[i].cascadeDelete();
@@ -19,7 +19,7 @@ Board.schema = {
   }
 };
 
-class CardGroup {
+export class CardGroup {
   cascadeDelete() {
     for (let i = this.cards.length - 1; i >= 0; i--) {
       this.cards[i].cascadeDelete();
@@ -40,7 +40,7 @@ CardGroup.schema = {
 };
 
 
-class Card {
+export class Card {
   cascadeDelete() {
     realm.delete(this);
   }

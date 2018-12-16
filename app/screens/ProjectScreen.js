@@ -3,11 +3,13 @@ import { Platform, Image, StyleSheet, Text, View, TouchableOpacity, FlatList } f
 import { Drawer, Icon, Header, Left, Body, Right, Title, ListItem, Thumbnail } from 'native-base';
 import { Button, Tile, Divider } from 'react-native-elements';
 import { bindActionCreators } from 'redux';
-import ActionButton from 'react-native-action-button';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
+import ActionButton from 'react-native-action-button';
 
 import { showDialog, addBoard, updateBoards, deleteBoard } from '../reducers/ProjectReducer';
+import { updateBoard } from '../reducers/WorkspaceReducer';
+
 import SideBar from './SideBar';
 
 class ProjectScreen extends Component {
@@ -27,7 +29,7 @@ class ProjectScreen extends Component {
         <View style={{flex:1, backgroundColor: 'white'}}>
           <FlatList
             ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 3}}/>}
-            keyExtractor={(item, index) => item.title}
+            keyExtractor={(item, index) => item.id}
             data={this.props.boards}
             renderItem={({item}) => this.renderBoard(item)} 
           />
@@ -75,7 +77,7 @@ class ProjectScreen extends Component {
 
   renderBoard(item) {
     return(
-      <ListItem style={{ marginLeft: 0}} onPress={() => Actions.workspace({boardId: item.id})}>
+      <ListItem style={{ marginLeft: 0}} onPress={() => { this.props.updateBoard(item.id); Actions.workspace(); }}>
         <Left>
           <Thumbnail square style={{marginLeft: 10}} source={require('../resources/chocobo.png')} />
           <Body>
@@ -85,8 +87,11 @@ class ProjectScreen extends Component {
           </Body>
         </Left>
         <Right>
+          <TouchableOpacity onPress={() => alert(item.id)}>
+            <Icon name="info-outline" type={"MaterialIcons"}></Icon>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => this.props.deleteBoard(item.id)}>
-            <Icon name="bookmark"></Icon>
+            <Icon name="trash"></Icon>
           </TouchableOpacity>
         </Right>
       </ListItem>
@@ -116,6 +121,7 @@ function matchDispatchToProps(dispatch){
     updateBoards: updateBoards,
     addBoard: addBoard,
     deleteBoard: deleteBoard,
+    updateBoard: updateBoard,
   }, dispatch)
 }
 

@@ -1,8 +1,8 @@
 import realm from '../realm/Realm';
 import uuid from 'react-native-uuid';
 
-const SHOW_DIALOG = 'SHOW_DIALOG';
-const UPDATE_BOARDS = 'UPDATE_BOARDS';
+const SHOW_DIALOG = 'PROJECT_SHOW_DIALOG';
+const UPDATE_BOARDS = 'PROJECT_UPDATE_BOARDS';
 
 const initializedState = {
   title: 'Boards',
