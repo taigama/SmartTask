@@ -35,23 +35,22 @@ export default function(state = initializedState, action: any) {
   }
 }
 
-export function updateBoard(id) {
+export function updateBoard(board) {
   return {
     type: UPDATE_BOARD,
-    board: realm.objectForPrimaryKey('Board', id),
+    board: { ...board },
   }
 }
 
-export function addGroup(boardId, title = 'Default group') {
+export function addGroup(board, title = 'Default group') {
   realm.write(() => {
     let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
-    let board = realm.objectForPrimaryKey('Board', boardId);
     board.cardGroups.push(group);
   });
 
   return {
     type: UPDATE_BOARD,
-    board: realm.objectForPrimaryKey('Board', boardId)
+    board: { ...board },
   }
 }
 

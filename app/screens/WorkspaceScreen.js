@@ -18,9 +18,9 @@ import { showAddCardDialog, showAddGroupDialog, updateBoard, addGroup } from '..
 
 class WorkspaceScreen extends Component<IData> {
 
-  constructor(props) {
-    super(props);
-  } 
+  componentDidMount() {
+    
+  }
 
   render() {
     return (
@@ -41,6 +41,10 @@ class WorkspaceScreen extends Component<IData> {
     );
   }
 
+  componentDidUpdate() {
+   
+  }
+
   createHeader() {
     return (
       <Header>
@@ -57,7 +61,7 @@ class WorkspaceScreen extends Component<IData> {
           <Title>{this.props.board.title}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={() => this.props.addGroup(this.props.board.id)} style={{marginRight: 10}}>
+          <TouchableOpacity onPress={() => this.props.addGroup(this.props.board)} style={{marginRight: 10}}>
             <Icon 
               name='add'
               style={{fontSize: 25, color: 'white'}}

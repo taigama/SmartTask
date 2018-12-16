@@ -8,42 +8,60 @@ import { IData } from './IData';
 import Card from './Card';
 import { Button, ButtonGroup } from 'react-native-elements';
 import realm from '../realm/Realm';
+import { FlatList } from 'react-native-gesture-handler';
+import uuid from 'react-native-uuid';
 
-export default class CardGroup extends React.Component<IData> {
+class CardGroup extends React.Component<IData> {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.data,
-      modalVisible: false,
-      newCardTitle: '',
+      group: this.props.data,
+      addDialogVisible: false,
     }
   }
 
-  //#region Methods
-  showAddCardModal(visible) {
-    this.setState({ modalVisible: visible });
+  render() { 
+    return (
+      <View style={styles.pageContainer}>
+        <View style={styles.group}>
+          <View style={styles.groupHeader}>
+            <Text style={{padding: 5, fontSize: 20, fontWeight: "bold"}}>{this.state.group.title}</Text>
+          </View>
+          <View style={styles.groupContainer}>
+            <FlatList
+              ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 4}}/>}
+              keyExtractor={(item, index) => item.id}
+              data={this.state.group.cards}
+              renderItem={({item}) => <Card data={item}></Card>} 
+            />
+          </View>
+          <View style={{height: 50, justifyContent: "center"}}>
+            <TouchableOpacity onPress={() => this.toggleAddCardDialog()}>
+              <Text style={{color: '#95A4AE', fontSize: 16}}>+ Add a card</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {this.viewAddCardDialog()}
+      </View>
+    );
   }
 
-  addCard(title) {
+  addCard(title = 'New card') {
     realm.write(() => {
-      let card = realm.create('Card', { title: title});
-      let group = this.state.data;
-      group.push(card);
-      this.setState({data: group, modalVisible: false});
+      let card = realm.create('Card', { id: uuid.v4(), title: title} );
+      this.state.group.cards.push(card)
+      this.toggleAddCardDialog();
     })
   }
-  //#endregion
 
-  //#region View Methods
-  viewAddCard() {
+  viewAddCardDialog() {
     let textInput = '';
-    
     return (
       <Modal 
-        isVisible={this.state.modalVisible}
-        onBackdropPress={() => this.showAddCardModal(false)}
-        onBackButtonPress={() => this.showAddCardModal(false)}
-        onSwipe={() => this.showAddCardModal(false)}
+        isVisible={this.state.addDialogVisible}
+        onBackdropPress={() => this.toggleAddCardDialog()}
+        onBackButtonPress={() => this.toggleAddCardDialog()}
+        onSwipe={() => this.toggleAddCardDialog()}
         swipeDirection='left'>
         <View style={styles.modal}>
           <View style={styles.modalHeader}>
@@ -80,40 +98,18 @@ export default class CardGroup extends React.Component<IData> {
     );
   }
 
-  //#endregion
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-   
+  refresh() {
+    this.setState({});
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  render() { 
-    return (
-      <View style={styles.pageContainer}>
-        <View style={styles.group}>
-          <View style={styles.groupHeader}>
-            <Text style={{padding: 5, fontSize: 20, fontWeight: "bold"}}>{this.state.data.title} ({this.state.data.cards.length})</Text>
-          </View>
-          <View style={styles.groupContainer}>
-            <View style={{height: 50, justifyContent: "center"}}>
-              <TouchableOpacity onPress={() => this.setState({modalVisible: true})}>
-                <Text style={{color: '#95A4AE', fontSize: 16}}>+ Add a card</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-        {this.viewAddCard()}
-      </View>
-    );
+  toggleAddCardDialog() {
+    this.setState({
+      addDialogVisible: !this.state.addDialogVisible,
+    })
   }
 }
+
+export default CardGroup;
 
 const styles = StyleSheet.create({
   pageContainer: {

@@ -77,7 +77,7 @@ class ProjectScreen extends Component {
 
   renderBoard(item) {
     return(
-      <ListItem style={{ marginLeft: 0}} onPress={() => { this.props.updateBoard(item.id); Actions.workspace(); }}>
+      <ListItem style={{ marginLeft: 0}} onPress={() => { this.props.updateBoard(item); Actions.workspace(); }}>
         <Left>
           <Thumbnail square style={{marginLeft: 10}} source={require('../resources/chocobo.png')} />
           <Body>
