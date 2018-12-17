@@ -34,9 +34,12 @@ class WorkspaceScreen extends Component<IData> {
       currentGroup: null,
       dialogVisbie: {
         addCard: false,
-        addGroup: false,
         moveCard: false,
+        addGroup: false,
         moveGroup: false,
+        renameGroup: false,
+        moveGroup: false,
+        copyGroup: false,
       },
     }
 
@@ -74,20 +77,25 @@ class WorkspaceScreen extends Component<IData> {
           {this.renderAddCardDialog()}
           {this.renderAddGroupdDialog()}
           {this.renderMoveCardDialog()}
+          {this.renderMoveGroupdDialog()}
+          {this.renderRenameGroupdDialog()}
+          {this.renderCopyGroupdDialog()}
         </ImageBackground>
       </Drawer>
     );
   }
 
   toggleDialog(dialogType?: string, currentGroup?: any) {
-    let dialogVisbie = this.state.dialogVisbie;
+    let dialogVisbie = this.state.dialogVisbie ;
 
     dialogType = dialogType || DialogType.NOTHING;
     switch (dialogType) {
-      case DialogType.ADD_CARD    : dialogVisbie.addCard = !dialogVisbie.addCard; break;
-      case DialogType.ADD_GROUP   : dialogVisbie.addGroup = !dialogVisbie.addGroup; break;
-      case DialogType.MOVE_CARD   : dialogVisbie.moveCard = !dialogVisbie.moveCard; break;
-      case DialogType.MOVE_GROUP  : dialogVisbie.moveGroup = !dialogVisbie.moveGroup; break;
+      case DialogType.ADD_CARD      : dialogVisbie.addCard = !dialogVisbie.addCard; break;
+      case DialogType.ADD_GROUP     : dialogVisbie.addGroup = !dialogVisbie.addGroup; break;
+      case DialogType.MOVE_CARD     : dialogVisbie.moveCard = !dialogVisbie.moveCard; break;
+      case DialogType.MOVE_GROUP    : dialogVisbie.moveGroup = !dialogVisbie.moveGroup; break;
+      case DialogType.RENAME_GROUP  : dialogVisbie.renameGroup = !dialogVisbie.renameGroup; break;
+      case DialogType.COPY_GROUP    : dialogVisbie.copyGroup = !dialogVisbie.copyGroup; break;
       default: break;
     }
     this.setState({
@@ -100,13 +108,18 @@ class WorkspaceScreen extends Component<IData> {
     actionType = actionType || ActionType.NOTHING;
     switch (actionType) {
       case ActionType.ARCHIVE_GROUP     : this.archiveGroup(data); break;
-      case ActionType.COPY_GROUP        : this.copyGroup(data); break;
-      case ActionType.MOVE_GROUP        : this.moveGroup(data); break;
-      case ActionType.RENAME_GROUP      : this.renameGroup(data); break;
       case ActionType.ARCHIVE_ALL_CARDS : this.archiveAllCards(data); break;
-      case ActionType.MOVE_ALL_CARDS    : this.moveAllCards(data); break;
+      case ActionType.COPY_GROUP        : this.toggleDialog(DialogType.COPY_GROUP, data); break;
+      case ActionType.MOVE_GROUP        : this.toggleDialog(DialogType.MOVE_GROUP, data); break;
+      case ActionType.RENAME_GROUP      : this.toggleDialog(DialogType.RENAME_GROUP, data); break;
+      case ActionType.MOVE_ALL_CARDS    : this.toggleDialog(DialogType.MOVE_CARD, data); break;
+      case ActionType.ADD_CARD          : this.toggleDialog(DialogType.ADD_CARD, data); break;
       default: break;
     }
+  }
+
+  refresh() {
+    this.setState({});
   }
 
   getVisibleGroups() {
@@ -148,25 +161,6 @@ class WorkspaceScreen extends Component<IData> {
     );
   }
 
-  addGroup(title = 'New group') {
-    title = title ? title : 'New group';
-    realm.write(() => {
-      let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
-      this.state.board.cardGroups.push(group);
-      setTimeout(() => this._carousel.snapToItem(this.visibleCount + 1), 100);
-      this.refresh();
-    });
-  }
-
-  addCard(title = 'New card') {
-    title = title ? title : "New card";
-    realm.write(() => {
-      let card = realm.create("Card", { id: uuid.v4(), title: title });
-      this.state.currentGroup.cards.push(card);
-      this.toggleAddCardDialog();
-    });
-  }
-
   renderAddGroupdDialog() {
     const visible = this.state.dialogVisbie.addGroup;
     const toggleDialog = () => this.toggleDialog(DialogType.ADD_GROUP);
@@ -201,6 +195,135 @@ class WorkspaceScreen extends Component<IData> {
           }}
           onPress={() => {
             this.addGroup(this.newGroupTitle);
+            toggleDialog()
+            this.newGroupTitle = '';
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
+  renderCopyGroupdDialog() {
+    const visible = this.state.dialogVisbie.copyGroup;
+    const toggleDialog = () => this.toggleDialog(DialogType.COPY_GROUP);
+    return (
+      <FormModal 
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => () => toggleDialog()}
+        onSwipe={() => toggleDialog()}
+        swipeDirection='left'
+        title='Copy as...'>
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this group"
+          onChangeText={(text) => this.newGroupTitle = text}
+        />
+        <Button
+          title="ADD"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.copyGroup(this.newGroupTitle);
+            toggleDialog()
+            this.newGroupTitle = '';
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
+  renderMoveGroupdDialog() {
+    const visible = this.state.dialogVisbie.moveGroup;
+    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_GROUP);
+    return (
+      <FormModal 
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => () => toggleDialog()}
+        onSwipe={() => toggleDialog()}
+        swipeDirection='left'
+        title='Move a group...'>
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this group"
+          onChangeText={(text) => this.newGroupTitle = text}
+        />
+        <Button
+          title="ADD"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.addGroup(this.newGroupTitle);
+            toggleDialog()
+            this.newGroupTitle = '';
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
+  renderRenameGroupdDialog() {
+    const visible = this.state.dialogVisbie.renameGroup;
+    const toggleDialog = () => this.toggleDialog(DialogType.RENAME_GROUP);
+    return (
+      <FormModal 
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => () => toggleDialog()}
+        onSwipe={() => toggleDialog()}
+        swipeDirection='left'
+        title='Rename group...'>
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this group"
+          onChangeText={(text) => this.newGroupTitle = text}
+        />
+        <Button
+          title="ADD"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.renameGroup(this.newGroupTitle);
             toggleDialog()
             this.newGroupTitle = '';
           }}
@@ -269,22 +392,38 @@ class WorkspaceScreen extends Component<IData> {
         onBackButtonPress={() => toggleDialog()}
         onSwipe={() => toggleDialog()}
         swipeDirection='left'
-        title='Move a group...'>
+        title='Move all cards...'>
         <Picker
           mode="dialog"
-          selectedValue={this.state.language}
+          // selectedValue={}
           style={{ height: 50, width: 100 }}
           onValueChange={(itemValue, itemIndex) => alert(itemValue)}>
-          {this.state.board.cardGroups.map((group) => {
-            <Picker.Item label={group.title} value={group} />
+          {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
+            return (
+              <Picker.Item key={group.id} label={group.title} value={i} />
+            );
           })}
         </Picker>
       </FormModal>
     );
   }
 
-  refresh() {
-    this.setState({});
+  addGroup(title?: string) {
+    title = title ||  'New group';
+    realm.write(() => {
+      let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
+      this.state.board.cardGroups.push(group);
+      setTimeout(() => this._carousel.snapToItem(this.visibleCount + 1), 100);
+      this.refresh();
+    });
+  }
+
+  addCard(title?: string) {
+    title = title || "New card";
+    realm.write(() => {
+      let card = realm.create("Card", { id: uuid.v4(), title: title });
+      this.state.currentGroup.cards.push(card);
+    });
   }
 
   archiveGroup(group) {
@@ -366,9 +505,6 @@ const styles = StyleSheet.create({
     height: 60,
     fontWeight: 'bold',
     justifyContent: "center",
-    // backgroundColor: 'steelblue',
-    // borderTopLeftRadius: 10,
-    // borderTopRightRadius: 10,
   },
   modalHeadline: {
     textAlign: 'center', // <-- the magic

@@ -82,7 +82,7 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
             />
           </View>
           <View style={{ height: 50, justifyContent: "center" }}>
-            <TouchableOpacity onPress={() => this.props.toggleAddCardDialog(this.state.group)}>
+            <TouchableOpacity onPress={() => this.requestMenuAction(ActionType.ADD_CARD)}>
               <Text style={{ color: "#95A4AE", fontSize: 16 }}>
                 + Add a card
               </Text>

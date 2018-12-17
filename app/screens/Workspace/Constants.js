@@ -12,8 +12,10 @@ export const ActionType = {
 
 export const DialogType = {
   ADD_CARD: "ADD_CARD",
-  ADD_GROUP: "ADD_GROUP",
   MOVE_CARD: "MOVE_CARD",
+  ADD_GROUP: "ADD_GROUP",
   MOVE_GROUP: "MOVE_GROUP",
+  RENAME_GROUP: "RENAME_GROUP",
+  COPY_GROUP: "COPY_GROUP",
   NOTHING: "NOTHING",
 }
