@@ -31,7 +31,7 @@ export default class WorkspaceScreen extends Component<IData> {
         </TouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity onPress={() => navigation.navigate('TaskDetail')} style={{marginRight: 20}}>
+        <TouchableOpacity onPress={() => navigation.navigate('TaskDetail', {idGroupLabel: 1})} style={{marginRight: 20}}>
           <Icon 
             name='dehaze'
             color='white'

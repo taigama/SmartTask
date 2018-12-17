@@ -10,7 +10,7 @@ import {
 } from "react-native-elements";
 
 
-export default class CardWrapper extends React.PureComponent {
+export default class CardWrapper extends React.Component {
 
     static propTypes = {
 
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     wrapContent: {
         flex: 1,
         marginTop: 20,
-        marginRight: 20
+        marginRight: 20,
+        marginBottom: 20,
     }
 });

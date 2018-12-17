@@ -25,6 +25,7 @@ import {
 
 
 import LabelEditable from "../components/details/LabelEditable";
+import realm from '../realm/Realm';
 
 
 export default class EditLabelScreen extends Component {
@@ -45,25 +46,17 @@ export default class EditLabelScreen extends Component {
                 fontWeight: 'bold',
             },
             headerLeft: (
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{marginLeft: 20}}>
+                <TouchableOpacity onPress={() => {
+                    navigation.getParam('onBack')();
+                    navigation.goBack();
+                }} style={{marginLeft: 20}}>
                     <Icon
                         name='arrow-back'
                         color='white'
                         size={30}
                     />
                 </TouchableOpacity>
-            ),
-            headerRight: (
-                <TouchableOpacity
-                    onPress={() => alert('This will be a menu')}
-                    style={{marginRight: 20}}>
-                    <Icon
-                        name='check'
-                        color='white'
-                        size={30}
-                    />
-                </TouchableOpacity>
-            ),
+            )
         };
     };
 
@@ -73,11 +66,8 @@ export default class EditLabelScreen extends Component {
 
 
         this.state = {
-            idGroupLabel: this.props.navigation.state.params.idGroupLabel,
-            group: {
-                links: []
-            },
-            labels: null
+            group: this.props.navigation.state.params.groupLabel,
+            labels: realm.objects('Label')
         };
 
         // this.renderChildren = this.renderChildren.bind(this);
@@ -107,96 +97,78 @@ export default class EditLabelScreen extends Component {
      */
     queryData(callback) {
         // Query
-        let group = realm.objectForPrimaryKey('LabelGroup', this.state.idGroupLabel);
-        if (group == null) {
+        let group = this.state.group;
+
+        if (this.state.labels == null || this.state.labels.length == 0) {
             realm.write(() => {
 
                 // added preset labels
-                let labels = {};
+                let labels = [
+                    realm.create('Label', {
+                        key: 1,
+                        color: 'red',
+                        content: ''
+                    }, true),
+                    realm.create('Label', {
+                        key: 2,
+                        color: 'green',
+                        content: ''
+                    }, true),
+                    realm.create('Label', {
+                        key: 3,
+                        color: 'cyan',
+                        content: ''
+                    }, true),
+                    realm.create('Label', {
+                        key: 4,
+                        color: 'gray',
+                        content: ''
+                    }, true),
+                    realm.create('Label', {
+                        key: 5,
+                        color: 'blue',
+                        content: ''
+                    }, true)
+                ];
 
-                labels[1] = realm.create('Label', {
-                    idLabel: 1,
-                    color: 'red',
-                    content: ''
-                }, true);
-                labels[2] = realm.create('Label', {
-                    idLabel: 2,
-                    color: 'green',
-                    content: ''
-                }, true);
-                labels[3] = realm.create('Label', {
-                    idLabel: 3,
-                    color: 'cyan',
-                    content: ''
-                }, true);
-                labels[4] = realm.create('Label', {
-                    idLabel: 4,
-                    color: 'gray',
-                    content: ''
-                }, true);
-                labels[5] = realm.create('Label', {
-                    idLabel: 5,
-                    color: 'blue',
-                    content: ''
-                }, true);
-
-                // create group
-                group = realm.create('LabelGroup', {
-                    idGroup: this.state.idGroupLabel,
-                    links: [],
-                }, true);
 
                 // added preset
                 group.links.push({
+                    key: 1,
                     idLabel: 1,
                     isCheck: false,
                     labelGroup: group
                 });
                 group.links.push({
+                    key: 2,
                     idLabel: 2,
                     isCheck: false,
                     labelGroup: group
                 });
                 group.links.push({
+                    key: 3,
                     idLabel: 3,
                     isCheck: false,
                     labelGroup: group
                 });
                 group.links.push({
+                    key: 4,
                     idLabel: 4,
                     isCheck: false,
                     labelGroup: group
                 });
                 group.links.push({
+                    key: 5,
                     idLabel: 5,
                     isCheck: false,
                     labelGroup: group
                 });
 
-                // callback
-                this.onQueryCompleted(group, labels, callback);
+                this.state.labels = labels;
             });
         }
-        else {
-            let labels = realm.objects('Label');
-            this.onQueryCompleted(group, labels, callback);
-        }
     }
 
-    /**
-     *
-     * @param group: this group
-     * @param labels: the label in database
-     * @param {function}callback
-     */
-    onQueryCompleted(group, labels, callback) {
-        this.state.group = group;
-        this.state.labels= labels;
-
-
-        if (callback != null)
-            callback();
-    }
 
     componentDidMount() {
     }
@@ -249,5 +221,7 @@ export default class EditLabelScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-
+    contentContainer: {
+        margin: 20
+    }
 });

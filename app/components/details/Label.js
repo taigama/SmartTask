@@ -12,11 +12,11 @@ const LABEL_BORDER_RADIUS = 5;
 const LABEL_MARGIN = 4;
 
 
-export default class Label extends React.PureComponent {
+export default class Label extends React.Component {
 
 
     static propTypes = {
-        idLabel: PropTypes.number,
+        data: PropTypes.object.isRequired,
         clickCallback: PropTypes.func
     };
 
@@ -24,21 +24,11 @@ export default class Label extends React.PureComponent {
         super(props);
 
 
-        const {idLabel, clickCallback} = this.props;
-        // TODO: ListLabel.get(idLabel) => label string & label color
-        var labelString, labelColor;
-        if (!idLabel) {
-            labelString = 'example looooooooooong llllllllllllllllllllong lllllllllllll';
-            labelColor = '#e00';
-        }
-        else {
-            labelString = idLabel.toString();
-            labelColor = '#0d0';
-        }
+        const {data, clickCallback} = this.props;
 
         this.state = {
-            backgroundColor: labelColor,
-            labelString: labelString,
+            backgroundColor: data.color,
+            labelString: data.content,
         };
 
         if (clickCallback) {
@@ -52,15 +42,7 @@ export default class Label extends React.PureComponent {
         return (
             <TouchableOpacity
                 onPress={this.state.callback}
-                style={{
-                    backgroundColor: this.state.backgroundColor,
-                    borderRadius: LABEL_BORDER_RADIUS,
-                    height: 30,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: LABEL_MARGIN,
-                    marginTop: LABEL_MARGIN
-                }}
+                style={[styles.labelBackground, {backgroundColor: this.state.backgroundColor}]}
             >
                 <Text
                     numberOfLines={1}
@@ -76,6 +58,15 @@ export default class Label extends React.PureComponent {
 }
 
 const styles = StyleSheet.create({
+    labelBackground: {
+        borderRadius: LABEL_BORDER_RADIUS,
+        height: 30,
+        minWidth: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: LABEL_MARGIN,
+        marginTop: LABEL_MARGIN
+    },
     labelText: {
         color: 'white',
         margin: 5,

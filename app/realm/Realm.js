@@ -27,9 +27,9 @@ export const CardSchema = {
 
 export const LabelSchema = {
   name: 'Label',
-  primaryKey: 'idLabel',
+  primaryKey: 'key',
   properties: {
-    idLabel: {type: 'int', default: 0},
+    key: {type: 'int', default: 0},
     color: {type: 'string', default: '#ff0000'},
     content: {type: 'string', default: ''}
   },
@@ -37,7 +37,9 @@ export const LabelSchema = {
 
 export const LabelLinkSchema = {
     name: 'LabelLink',
+    primaryKey: 'key',
     properties: {
+        key: {type: 'int', default: 0},
         idLabel: 'int',
         isCheck: {type: 'bool', default: false},
         labelGroup: {type: 'linkingObjects', objectType: 'LabelGroup', property: 'links'},
@@ -46,9 +48,9 @@ export const LabelLinkSchema = {
 
 export const LabelGroupSchema = {
     name: 'LabelGroup',
-    primaryKey: 'idGroup',
+    primaryKey: 'key',
     properties: {
-        idGroup: {type: 'int', default: 0},
+        key: {type: 'int', default: 0},
         links: 'LabelLink[]',
     },
 };
@@ -60,8 +62,14 @@ export default realm = new Realm({schema: [
         LabelSchema, LabelLinkSchema, LabelGroupSchema
     ], schemaVersion: 3});
 
-export const getNewId = (collect, primaryKey) => {
+/**
+ *
+ * @param {[]}collection
+ * @param {string}primaryKeyName
+ * @return {number} unique new id
+ */
+export const getNewId = (collection, primaryKey) => {
   let maxId = Math.max.apply(null, collection.map((item) => item[primaryKey]));
   maxId = maxId === undefined ? 1 : (maxId + 1);
   return maxId;
-}
+};

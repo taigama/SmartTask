@@ -10,38 +10,41 @@ import {
 import CardWrapper from './CardWrapper';
 import Label from './Label';
 
+import realm from '../../realm/Realm';
+
+
+
 export default class CardLabel extends Component {
 
     static propTypes = {
-        idGroupLabel: PropTypes.number,
+        groupLabel: PropTypes.object.isRequired,
         clickLabelCallback: PropTypes.func,
     };
 
     constructor(props) {
         super(props);
-        const {idGroupLabel, clickLabelCallback} = this.props;
+        const {groupLabel, clickLabelCallback} = this.props;
 
         this.state = {
-            idGroupLabel: idGroupLabel,
+            groupLabel: groupLabel,
+            id: groupLabel.key
         };
 
-        if (idGroupLabel) {
-            this.labels = null;// TODO: labels list from idGroupLabel
-            this.labels = [
-                {key: 1, data: 3},
-                {key: 2, data: 3},
-                {key: 3, data: null},
-                {key: 4, data: 3},
-                {key: 5, data: 3},
-                {key: 9, data: 3333},
-                {key: 19, data: 3},
-                {key: 12, data: 3},
-                {key: 11, data: null},
-                {key: 15, data: 3},
-                {key: 16, data: 3},
-            ];
+        if (groupLabel.links.length !== 0) {
+
+            this.state.labels = [];
+            var links = groupLabel.links,
+                length = groupLabel.links.length,
+                link;
+            for(let i = 0; i < length; ++i)
+            {
+                if((link = links[i]).isCheck)
+                {
+                    this.state.labels.push(realm.objectForPrimaryKey('Label', link.idLabel));
+                }
+            }
             this.viewSub = () => (
-                this.labels.map((label) => <Label clickCallback={this.onClickLabel} idLabel={label.data}/>)
+                this.state.labels.map((label) => <Label clickCallback={this.onClickLabel} data={label}/>)
             );
         }
         else {
@@ -60,15 +63,70 @@ export default class CardLabel extends Component {
         this.onClickLabel = clickLabelCallback;
     }
 
+    refresh()
+    {
+        let groupLabel = realm.objectForPrimaryKey('LabelGroup', this.state.id);
+        let labels = [];
+
+
+        if (groupLabel.links.length !== 0) {
+
+            var links = groupLabel.links,
+                length = groupLabel.links.length,
+                link;
+            for(let i = 0; i < length; ++i)
+            {
+                if((link = links[i]).isCheck)
+                {
+                    labels.push(realm.objectForPrimaryKey('Label', link.idLabel));
+                }
+            }
+
+            // this.state.groupLabel = groupLabel;
+            // this.state.labels = labels;
+
+        }
+
+        this.setState({
+            groupLabel: groupLabel,
+            labels: []
+        });
+
+
+        setTimeout(() => {
+            this.setState({
+                labels: labels
+            });
+        }, 16);
+    }
+
+    renderChild() {
+        if(this.state.labels.length !== 0)
+        {
+            return this.state.labels.map((label) => <Label clickCallback={this.onClickLabel} data={label}/>);
+        }
+        else
+        {
+            return <TouchableOpacity
+                onPress={this.onClickLabel}
+                style={styles.backgroundText}
+            >
+                <Text style={styles.emptyText}>
+                    Labels...
+                </Text>
+            </TouchableOpacity>;
+        }
+    }
+
     render() {
         return (
             <CardWrapper
                 iconName='dns'
                 iconColor='#555'
                 iconSize={24}
-                minHeight={40}
+                minHeight={0}
             >
-                {this.viewSub()}
+                {this.renderChild()}
             </CardWrapper>
         )
     }

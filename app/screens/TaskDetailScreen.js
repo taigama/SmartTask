@@ -33,6 +33,8 @@ import CardLabel from "../components/details/CardLabel";
 import CardEditLabel from "../components/details/CardEditLabel";
 import DialogEditLabel from "../components/details/DialogEditLabel";
 
+import realm from '../realm/Realm';
+
 
 export default class TaskDetailScreen extends Component {
     static navigationOptions = ({navigation}) => {
@@ -83,13 +85,38 @@ export default class TaskDetailScreen extends Component {
         this.state = {
 
             txtTitle: 'this is title yeah',
-            labelGroupId: 23
+            idGroupLabel: this.props.navigation.state.params.idGroupLabel || 1
 
         };
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangedDescription = this.onChangedDescription.bind(this);
         this.onClickLabel = this.onClickLabel.bind(this);
+
+
+
+
+        this.initData();
     }
+
+    initData()
+    {
+        // Label
+        let group = realm.objectForPrimaryKey('LabelGroup', this.state.idGroupLabel);
+        if (group == null) {
+            realm.write(() => {
+
+                // create group
+                group = realm.create('LabelGroup', {
+                    key: this.state.idGroupLabel,
+                    links: [],
+                }, true);
+
+            });
+        }
+        this.state.groupLabel = group;
+    }
+
+
 
     componentDidMount() {
     }
@@ -124,10 +151,7 @@ export default class TaskDetailScreen extends Component {
             {key: 'James'},
             {key: 'Joel'},
             {key: 'John'},
-            {key: 'Jillian'},
-            {key: 'Jimmy'},
-            {key: 'Julie'},
-            {key: 'NoBiet'},
+            {key: 'Jillian'}
         ];
 
 
@@ -211,8 +235,11 @@ export default class TaskDetailScreen extends Component {
 
                     </View>
                     <CardLabel
+                        ref={(cardLabel) => {
+                            this.cardLabel = cardLabel;
+                        }}
                         clickLabelCallback={this.onClickLabel}
-                        idGroupLabel={this.state.labelGroupId}
+                        groupLabel={this.state.groupLabel}
                     />
                     <View style={styles.container}>
 
@@ -224,13 +251,6 @@ export default class TaskDetailScreen extends Component {
                     </View>
                 </ParallaxScrollView>
 
-
-                <DialogEditLabel
-                    idGroupLabel={this.state.labelGroupId}
-                    ref={(dialogLabel) => {
-                        this.dialogLabel = dialogLabel;
-                    }}
-                />
             </View>
 
         );
@@ -246,7 +266,14 @@ export default class TaskDetailScreen extends Component {
     }
 
     onClickLabel() {
-        this.props.navigation.navigate('EditLabel', {idGroupLabel: 23});
+        this.props.navigation.navigate('EditLabel',
+            {
+                groupLabel: this.state.groupLabel,
+                onBack: () => {
+                    this.cardLabel.refresh();
+                    this.forceUpdate();
+                }
+            });
     }
 
 }

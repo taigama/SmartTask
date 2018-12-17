@@ -29,8 +29,6 @@ export default class LabelEditable extends React.Component {
 
         const {data, checkCallback, editCallback} = this.props;
 
-        console.warn('data: ' + data);
-
         let label = realm.objectForPrimaryKey('Label', data.idLabel);
 
         this.state = {
