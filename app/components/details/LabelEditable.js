@@ -32,9 +32,8 @@ export default class LabelEditable extends React.Component {
         let label = realm.objectForPrimaryKey('Label', data.idLabel);
 
         this.state = {
-            backgroundColor: label.color,
+            label: label,
             isChecked: !!data.isCheck,
-            content: label.content,
         };
 
         this.checkCallback = checkCallback;
@@ -52,13 +51,13 @@ export default class LabelEditable extends React.Component {
 
                 <TouchableOpacity
                     onPress={this.onCheck}
-                    style={[styles.checkBox, {backgroundColor: this.state.backgroundColor}]}
+                    style={[styles.checkBox, {backgroundColor: this.state.label.color}]}
                 >
                     <Text
                         numberOfLines={1}
                         style={styles.labelText}
                     >
-                        {this.state.content}
+                        {this.state.label.content}
                     </Text>
                     <Icon
                         opacity={this.state.isChecked ? 1 : 0}
@@ -95,7 +94,7 @@ export default class LabelEditable extends React.Component {
 
     onClickEdit() {
         if (this.editCallback) {
-            this.editCallback();
+            this.editCallback(this, this.state.label);
         }
     }
 

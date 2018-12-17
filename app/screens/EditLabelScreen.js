@@ -17,6 +17,12 @@ import {
     ScrollView
 } from 'react-native';
 
+import {
+    DialogComponent,
+    SlideAnimation,
+    DialogTitle,
+    DialogContent
+} from 'react-native-dialog-component';
 
 import {
 
@@ -67,9 +73,12 @@ export default class EditLabelScreen extends Component {
 
         this.state = {
             group: this.props.navigation.state.params.groupLabel,
-            labels: realm.objects('Label')
+            labels: realm.objects('Label'),
+            currentLabel: null
         };
 
+        this.onEditCallback = this.onEditCallback.bind(this);
+        this.onEndEditLabel = this.onEndEditLabel.bind(this);
         // this.renderChildren = this.renderChildren.bind(this);
         // this.renderChild = this.renderChild.bind(this);
 
@@ -193,6 +202,27 @@ export default class EditLabelScreen extends Component {
         logComponentStackToMyService(info.componentStack);
     }
 
+    renderDialog() {
+        if (this.state.currentLabel == null)
+            return <Text>Hello World!</Text>;
+
+        return <View>
+            <TextInput
+                style={styles.editLabelContent}
+                placeholder="Label name..."
+                placeholderTextColor="#aaa"
+
+                multiline={false}
+
+                onEndEditing={this.onEndEditLabel}
+                defaultValue={this.state.currentLabel.data.content}
+            />
+
+        </View>
+
+
+    }
+
 
     render() {
 
@@ -208,20 +238,66 @@ export default class EditLabelScreen extends Component {
                         this.state.group.links.map((link) =>
                             <LabelEditable
                                 data={link}
+                                editCallback={this.onEditCallback}
                             />
                         )
                     }
                 </ScrollView>
+
+                <DialogComponent
+                    title={<DialogTitle title="Edit label"/>}
+                    ref={(dialog) => {
+                        this.dialog = dialog;
+                    }}
+                    dialogAnimation={new SlideAnimation({slideFrom: 'top'})}
+
+                    height={0.5}
+                >
+
+                    <DialogContent>
+                        {this.renderDialog()}
+                    </DialogContent>
+
+                </DialogComponent>
             </View>
 
         );
     }
 
+    onEditCallback(labelComponent, labelData) {
+        this.setState({
+            currentLabel: {
+                component: labelComponent,
+                data: labelData
+            }
+        });
+
+        setTimeout(() => {
+            this.dialog.show();
+        }, 16);
+    }
+
+    onEndEditLabel(e)
+    {
+        let text = e.nativeEvent.text;
+        realm.write(() => {
+            this.state.currentLabel.data.content = text;
+        });
+
+        this.state.currentLabel.component.setState({
+            label: this.state.currentLabel.data
+        });
+
+        this.dialog.dismiss();
+    }
 
 }
 
 const styles = StyleSheet.create({
     contentContainer: {
         margin: 20
+    },
+    editLabelContent: {
+        width: '100%'
     }
 });
