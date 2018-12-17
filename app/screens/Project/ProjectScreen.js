@@ -6,13 +6,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
 import ActionButton from 'react-native-action-button';
-
-import { showDialog, addBoard, updateBoards, deleteBoard } from '../reducers/ProjectReducer';
-import { updateBoard } from '../reducers/WorkspaceReducer';
-import SideBar from './WorkspaceSideBar';
 import Modal from 'react-native-modal';
-import { Window } from '../components/Utils'
-import FormModal from '../components/FormModal'
+
+import { showDialog, addBoard, updateBoards, deleteBoard } from './ProjectReducer';
+import SideBar from '../Workspace/WorkspaceSideBar';
+import { Window } from '../../_Commons/Utils';
+import FormModal from '../../_Commons/FormModal';
+
+const defaultIcon = require('../../_Resources/chocobo.png');
 
 class ProjectScreen extends Component {
   componentDidMount() {
@@ -113,7 +114,7 @@ class ProjectScreen extends Component {
     return(
       <ListItem style={{ marginLeft: 0}} onPress={() => { Actions.workspace(item); }}>
         <Left>
-          <Thumbnail square style={{marginLeft: 10}} source={require('../resources/chocobo.png')} />
+          <Thumbnail square style={{marginLeft: 10}} source={defaultIcon} />
           <Body>
             <Text>{item.title}</Text>
             <Text>{item.cardGroups.length}</Text>
@@ -168,7 +169,6 @@ function matchDispatchToProps(dispatch){
     updateBoards: updateBoards,
     addBoard: addBoard,
     deleteBoard: deleteBoard,
-    updateBoard: updateBoard,
   }, dispatch)
 }
 

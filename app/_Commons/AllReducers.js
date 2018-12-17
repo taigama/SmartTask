@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import ProjectReducer from "./ProjectReducer";
-import WorkspaceReducer from "./WorkspaceReducer";
+import ProjectReducer from '../Screens/Project/ProjectReducer';
+import WorkspaceReducer from "../Screens/Workspace/WorkspaceReducer";
 
 const allReducers = combineReducers({
   project: ProjectReducer,

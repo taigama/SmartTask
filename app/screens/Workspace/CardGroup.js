@@ -8,22 +8,16 @@ import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { Left, Right, Body, Icon } from 'native-base';
 import PropTypes from 'prop-types';
 
-import { Window } from './Utils';
-import { IData } from './IData';
+import realm from '../../Realm/Realm'
+import { IData } from '../../_Commons/IData';
+import { Window } from '../../_Commons/Utils';
+import FormModal from '../../_Commons/FormModal';
+
 import Card from './Card';
-import realm from '../realm/Realm';
-import FormModal from './FormModal';
+import { ActionType } from './Constants';
 
 type CardGroupProps = {
-  refresh?: PropTypes.func,
-  showToast?: PropTypes.func,
-  toggleAddCardDialog?: PropTypes.func,
-  renameGroup?: PropTypes.func,
-  archiveGroup?: PropTypes.func,
-  moveGroup?: PropTypes.func,
-  copyGroup?: PropTypes.func,
-  moveAllCards?: PropTypes.func,
-  archiveAllCards: PropTypes.func,
+  handleAction?: PropTypes.func,
 }
 
 class CardGroup extends React.Component<CardGroupProps, IData> {
@@ -32,6 +26,13 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
     this.state = {
       group: this.props.data,
     };
+
+    this.requestMenuAction = this.requestMenuAction.bind(this);
+  }
+
+  requestMenuAction(actionType?: string) {
+    this._menu.hide();
+    this.props.handleAction(actionType, this.state.group);
   }
 
   render() {
@@ -59,12 +60,12 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
                   </TouchableOpacity>
                 }
               >
-                <MenuItem onPress={() => {this.props.renameGroup(this.state.group); this._menu.hide()}}>Rename</MenuItem>
-                <MenuItem onPress={() => {this.props.copyGroup(this.state.group); this._menu.hide()}}>Copy</MenuItem>
-                <MenuItem onPress={() => {this.props.moveGroup(this.state.group); this._menu.hide()}}>Move</MenuItem>
-                <MenuItem onPress={() => {this.props.archiveGroup(this.state.group); this._menu.hide()}}>Archive group</MenuItem>
-                <MenuItem onPress={() => {this.props.moveAllCards(this.state.group); this._menu.hide()}}>Move all cards</MenuItem>
-                <MenuItem onPress={() => {this.props.archiveAllCards(this.state.group); this._menu.hide()}}>Archive all cards</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.RENAME_GROUP)}>Rename</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.COPY_GROUP)}>Copy</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_GROUP)}>Move</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_GROUP)}>Archive group</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_ALL_CARDS)}>Move all cards</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_ALL_CARDS)}>Archive all cards</MenuItem>
               </Menu>
             </Right>
           </View>

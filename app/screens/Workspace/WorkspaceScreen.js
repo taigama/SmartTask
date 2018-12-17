@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Dimensions, ImageBackground, TouchableOpacity, Image, TextInput } from 'react-native';
+import { Platform, StyleSheet, Text, View, Dimensions, ImageBackground, TouchableOpacity, Image, TextInput, Picker } from 'react-native';
 import { Drawer, Header, Left, Body, Right, Title, Icon } from 'native-base';
 import { Button } from 'react-native-elements';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -10,30 +10,38 @@ import Carousel from 'react-native-snap-carousel';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import uuid from 'react-native-uuid';
 
-import Card from '../components/Card';
-import CardGroup from '../components/CardGroup';
-import { IData } from '../components/IData';
-import { Window } from '../components/Utils';
-import FormModal from '../components/FormModal';
-import realm from '../realm/Realm'
-import WorkspaceSideBar from './WorkspaceSideBar';
+import realm from '../../Realm/Realm'
+import { IData } from '../../_Commons/IData';
+import { Window } from '../../_Commons/Utils';
+import FormModal from '../../_Commons/FormModal';
 
-import { showAddCardDialog, showAddGroupDialog, addGroup } from '../reducers/WorkspaceReducer';
+import Card from './Card';
+import CardGroup from './CardGroup';
+import WorkspaceSideBar from './WorkspaceSideBar';
+import { showAddCardDialog, showAddGroupDialog, addGroup } from './WorkspaceReducer';
+import { ActionType, DialogType } from './Constants';
 
 // Fix drawer overlay black darken android
 Drawer.defaultProps.styles.mainOverlay.elevation = 0;
 
+const defaultBackground = require('../../_Resources/moon.jpg');
+
 class WorkspaceScreen extends Component<IData> {
-  
-  
   constructor(props) {
     super(props);
     this.state = {
       board: this.props.data,
-      addGroupVisible: false,
-      addCardVisible: false,
       currentGroup: null,
+      dialogVisbie: {
+        addCard: false,
+        addGroup: false,
+        moveCard: false,
+        moveGroup: false,
+      },
     }
+
+    this.toggleDialog = this.toggleDialog.bind(this);
+    this.handleAction = this.handleAction.bind(this);
   }
 
   render() {
@@ -46,7 +54,7 @@ class WorkspaceScreen extends Component<IData> {
         onClose={() => this.drawer._root.close()} >
         {this.renderHeader()}
         <ImageBackground
-          source={require('../resources/moon.jpg')}
+          source={defaultBackground}
           style={{ width: '100%', height: '100%' }}>
           <Carousel
             keyExtractor={(item, index) => item.id}
@@ -56,15 +64,7 @@ class WorkspaceScreen extends Component<IData> {
             data={this.getVisibleGroups()}
             renderItem={({ item }) => 
               <CardGroup 
-                refresh={() => this.refresh()} 
-                showToast={(text) => this.refs.toast.show(text)}
-                toggleAddCardDialog={(text) => this.toggleAddCardDialog(text)}
-                archiveAllCards={(group) => this.archiveAllCards(group)}
-                archiveGroup={(group) => this.archiveGroup(group)}
-                renameGroup={(group) => this.renameGroup(group)}
-                copyGroup={(group) => this.copyGroup(group)}
-                moveGroup={(group) => this.moveGroup(group)}
-                moveAllCards={(group) => this.moveAllCards(group)}
+                handleAction={this.handleAction}
                 data={item} 
             />}
             sliderWidth={Window.width}
@@ -73,9 +73,40 @@ class WorkspaceScreen extends Component<IData> {
           <Toast ref="toast"/>
           {this.renderAddCardDialog()}
           {this.renderAddGroupdDialog()}
+          {this.renderMoveCardDialog()}
         </ImageBackground>
       </Drawer>
     );
+  }
+
+  toggleDialog(dialogType?: string, currentGroup?: any) {
+    let dialogVisbie = this.state.dialogVisbie;
+
+    dialogType = dialogType || DialogType.NOTHING;
+    switch (dialogType) {
+      case DialogType.ADD_CARD    : dialogVisbie.addCard = !dialogVisbie.addCard; break;
+      case DialogType.ADD_GROUP   : dialogVisbie.addGroup = !dialogVisbie.addGroup; break;
+      case DialogType.MOVE_CARD   : dialogVisbie.moveCard = !dialogVisbie.moveCard; break;
+      case DialogType.MOVE_GROUP  : dialogVisbie.moveGroup = !dialogVisbie.moveGroup; break;
+      default: break;
+    }
+    this.setState({
+      dialogVisbie: dialogVisbie,
+      currentGroup: currentGroup,
+    })
+  }
+
+  handleAction(actionType?: string, data?: any) {
+    actionType = actionType || ActionType.NOTHING;
+    switch (actionType) {
+      case ActionType.ARCHIVE_GROUP     : this.archiveGroup(data); break;
+      case ActionType.COPY_GROUP        : this.copyGroup(data); break;
+      case ActionType.MOVE_GROUP        : this.moveGroup(data); break;
+      case ActionType.RENAME_GROUP      : this.renameGroup(data); break;
+      case ActionType.ARCHIVE_ALL_CARDS : this.archiveAllCards(data); break;
+      case ActionType.MOVE_ALL_CARDS    : this.moveAllCards(data); break;
+      default: break;
+    }
   }
 
   getVisibleGroups() {
@@ -100,7 +131,7 @@ class WorkspaceScreen extends Component<IData> {
           <Title>{this.state.board.title}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={() => this.toggleAddGroupDialog()} style={{marginRight: 20}}>
+          <TouchableOpacity onPress={() => this.toggleDialog(DialogType.ADD_GROUP)} style={{marginRight: 20}}>
             <Icon 
               name='add'
               style={{fontSize: 25, color: 'white'}}
@@ -136,27 +167,15 @@ class WorkspaceScreen extends Component<IData> {
     });
   }
 
-  toggleAddGroupDialog() {
-    this.setState({
-      addGroupVisible: !this.state.addGroupVisible
-    });
-  }
-
-  toggleAddCardDialog(currentGroup = null) {
-    this.setState({
-      ...this.state,
-      addDialogVisible: !this.state.addDialogVisible,
-      currentGroup: currentGroup,
-    });
-  }
-
   renderAddGroupdDialog() {
+    const visible = this.state.dialogVisbie.addGroup;
+    const toggleDialog = () => this.toggleDialog(DialogType.ADD_GROUP);
     return (
       <FormModal 
-        isVisible={this.state.addGroupVisible}
-        onBackdropPress={() => this.toggleAddGroupDialog()}
-        onBackButtonPress={() => this.toggleAddGroupDialog()}
-        onSwipe={() => this.toggleAddGroupDialog()}
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => () => toggleDialog()}
+        onSwipe={() => toggleDialog()}
         swipeDirection='left'
         title='Add a group...'>
         <TextInput
@@ -182,7 +201,7 @@ class WorkspaceScreen extends Component<IData> {
           }}
           onPress={() => {
             this.addGroup(this.newGroupTitle);
-            this.toggleAddGroupDialog();
+            toggleDialog()
             this.newGroupTitle = '';
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
@@ -192,12 +211,14 @@ class WorkspaceScreen extends Component<IData> {
   }
   
   renderAddCardDialog() {
+    const visible = this.state.dialogVisbie.addCard;
+    const toggleDialog = () => this.toggleDialog(DialogType.ADD_CARD);
     return (
       <FormModal
-        isVisible={this.state.addDialogVisible}
-        onBackdropPress={() => this.toggleAddCardDialog()}
-        onBackButtonPress={() => this.toggleAddCardDialog()}
-        onSwipe={() => this.toggleAddCardDialog()}
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => toggleDialog()}
+        onSwipe={() => toggleDialog()}
         swipeDirection="left"
         title="Add a card..."
       >
@@ -222,14 +243,42 @@ class WorkspaceScreen extends Component<IData> {
             borderRadius: 5,
             margin: 0
           }}
-          onPress={() => this.addCard(this.newCardTitle)}
           containerViewStyle={{
             width: "100%",
             marginLeft: 0,
             marginTop: 10,
             borderRadius: 5
           }}
+          onPress={() => {
+            this.addCard(this.newCardTitle);
+            toggleDialog()
+            this.newCardTitle = '';
+          }}
         />
+      </FormModal>
+    );
+  }
+
+  renderMoveCardDialog() {
+    const visible = this.state.dialogVisbie.moveCard;
+    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_CARD);
+    return (
+      <FormModal
+        isVisible={visible}
+        onBackdropPress={() => toggleDialog()}
+        onBackButtonPress={() => toggleDialog()}
+        onSwipe={() => toggleDialog()}
+        swipeDirection='left'
+        title='Move a group...'>
+        <Picker
+          mode="dialog"
+          selectedValue={this.state.language}
+          style={{ height: 50, width: 100 }}
+          onValueChange={(itemValue, itemIndex) => alert(itemValue)}>
+          {this.state.board.cardGroups.map((group) => {
+            <Picker.Item label={group.title} value={group} />
+          })}
+        </Picker>
       </FormModal>
     );
   }
@@ -250,7 +299,12 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   archiveAllCards(group) {
-    
+    realm.write(() => {
+      group.cards.map((card) => {
+        card.archived = true;
+      })
+      this.refresh();
+    });
   }
 
   moveAllCards(group) {

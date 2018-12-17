@@ -1,5 +1,5 @@
-import realm from '../realm/Realm';
 import uuid from 'react-native-uuid';
+import realm from '../../Realm/Realm';
 
 const SHOW_DIALOG = 'PROJECT_SHOW_DIALOG';
 const UPDATE_BOARDS = 'PROJECT_UPDATE_BOARDS';

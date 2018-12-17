@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
-import { Window } from './Utils';
-import { IData } from './IData';
+
+import { Window } from '../../_Commons/Utils';
+import { IData } from '../../_Commons/IData';
 
 export default class Card extends Component<IData> {
   

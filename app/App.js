@@ -5,16 +5,12 @@ import { StackViewStyleInterpolator } from 'react-navigation-stack';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import WorkspaceScreen from './screens/WorkspaceScreen';
-import TaskDetailScreen from './screens/TaskDetailScreen';
-import ProjectScreen from './screens/ProjectScreen';
-import SplashScreen from './screens/SplashScreen';
-import AllReducers from './reducers/AllReducers';
-
-export const TabNavigator = createBottomTabNavigator({
-  Workspace: WorkspaceScreen,
-  Project: ProjectScreen
-});
+import DevelopeScreen from './Screens/Develope/DevelopeScreen';
+import WorkspaceScreen from './Screens/Workspace/WorkspaceScreen';
+import TaskDetailScreen from './Screens/CardDetail/TaskDetailScreen';
+import ProjectScreen from './Screens/Project/ProjectScreen';
+import SplashScreen from './Screens/Splash/SplashScreen';
+import AllReducers from './_Commons/AllReducers';
 
 const transitionConfig = () => ({
   screenInterpolator: StackViewStyleInterpolator.forHorizontal
@@ -29,6 +25,11 @@ export const App = () => {
         <Scene key="root"
           transitionConfig={transitionConfig}
           >
+           <Scene key="develope"
+            component={DevelopeScreen}
+            title="Splash"
+            hideNavBar
+          />
            <Scene key="splash"
             component={SplashScreen}
             title="Splash"
