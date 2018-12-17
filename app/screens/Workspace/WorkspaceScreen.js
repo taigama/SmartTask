@@ -163,7 +163,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderAddGroupdDialog() {
     const visible = this.state.dialogVisbie.addGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.ADD_GROUP);
+    const toggleDialog = () => this.toggleDialog(DialogType.ADD_GROUP, this.currentGroup);
     return (
       <FormModal 
         isVisible={visible}
@@ -206,7 +206,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderCopyGroupdDialog() {
     const visible = this.state.dialogVisbie.copyGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.COPY_GROUP);
+    const toggleDialog = () => this.toggleDialog(DialogType.COPY_GROUP, this.currentGroup);
     return (
       <FormModal 
         isVisible={visible}
@@ -249,7 +249,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderMoveGroupdDialog() {
     const visible = this.state.dialogVisbie.moveGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_GROUP);
+    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_GROUP, this.currentGroup);
     return (
       <FormModal 
         isVisible={visible}
@@ -292,7 +292,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderRenameGroupdDialog() {
     const visible = this.state.dialogVisbie.renameGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.RENAME_GROUP);
+    const toggleDialog = () => this.toggleDialog(DialogType.RENAME_GROUP, this.currentGroup);
     return (
       <FormModal 
         isVisible={visible}
@@ -335,7 +335,7 @@ class WorkspaceScreen extends Component<IData> {
   
   renderAddCardDialog() {
     const visible = this.state.dialogVisbie.addCard;
-    const toggleDialog = () => this.toggleDialog(DialogType.ADD_CARD);
+    const toggleDialog = () => this.toggleDialog(DialogType.ADD_CARD, this.currentGroup);
     return (
       <FormModal
         isVisible={visible}
@@ -384,7 +384,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderMoveCardDialog() {
     const visible = this.state.dialogVisbie.moveCard;
-    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_CARD);
+    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_CARD, this.currentGroup);
     return (
       <FormModal
         isVisible={visible}
@@ -409,7 +409,7 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   addGroup(title?: string) {
-    title = title ||  'New group';
+    title = title || 'New group';
     realm.write(() => {
       let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
       this.state.board.cardGroups.push(group);
@@ -425,6 +425,26 @@ class WorkspaceScreen extends Component<IData> {
       this.state.currentGroup.cards.push(card);
     });
   }
+
+  renameGroup(title?: string) {
+    title = title || 'New group';
+    realm.write(() => {
+      this.state.currentGroup.title = title;
+      this.refresh();
+    });
+  }
+
+  copyGroup(title?: string) {
+    title = title || 'New group';
+    realm.write(() => {
+      let clone = this.state.currentGroup.deepClone();
+      clone.title = title;
+      this.state.board.cardGroups.push(clone);
+      setTimeout(() => this._carousel.snapToItem(this.visibleCount + 1), 100);
+      this.refresh();
+    });
+  }
+
 
   archiveGroup(group) {
     realm.write(() => {
@@ -449,16 +469,8 @@ class WorkspaceScreen extends Component<IData> {
   moveAllCards(group) {
     
   }
-
-  copyGroup(group) {
-
-  }
-
+  
   moveGroup(group) {
-
-  }
-
-  renameGroup(group) {
 
   }
 };
