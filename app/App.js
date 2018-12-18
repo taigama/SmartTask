@@ -11,6 +11,7 @@ import TaskDetailScreen from './Screens/CardDetail/TaskDetailScreen';
 import ProjectScreen from './Screens/Project/ProjectScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
 import AllReducers from './_Commons/AllReducers';
+import SearchScreen from './Screens/Search/SearchScreen';
 
 const transitionConfig = () => ({
   screenInterpolator: StackViewStyleInterpolator.forHorizontal
@@ -30,6 +31,12 @@ export const App = () => {
             title="Splash"
             hideNavBar
           />
+           <Scene key="search"
+            component={SearchScreen}
+            title="Splash"
+            hideNavBar
+            initial
+          />
            <Scene key="splash"
             component={SplashScreen}
             title="Splash"
@@ -38,7 +45,7 @@ export const App = () => {
           <Scene key="project"
             component={ProjectScreen}
             title="Boards"
-            initial
+            
             hideNavBar
           />
           <Scene 

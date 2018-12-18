@@ -9,15 +9,30 @@ import ActionButton from 'react-native-action-button';
 import Modal from 'react-native-modal';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
-import { showDialog, addBoard, updateBoards, deleteBoard } from './ProjectReducer';
+import { showDialog, addBoard, updateBoards, deleteBoard, bookmarkBoard, archiveBoard, removeBoard, renameBoard } from './ProjectReducer';
 import SideBar from '../Workspace/WorkspaceSideBar';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
 import projectStyles from './ProjectStyle';
-
-const defaultIcon = require('../../_Resources/chocobo.png');
+import BoardItem from './BoardItem';
+import { ActionType, DialogType } from './Constants';
+import { Board } from '../../Realm/Realm';
 
 class ProjectScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentBoard: null,
+      dialogVisbie: {
+        ADD_BOARD: false,
+        RENAME_BOARD: false,
+      }
+    }
+
+    this.handleAction = this.handleAction.bind(this);
+    this.toggleDialog = this.toggleDialog.bind(this);
+  }
+
   componentDidMount() {
     this.props.updateBoards();
   }
@@ -36,13 +51,40 @@ class ProjectScreen extends Component {
             ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 3}}/>}
             keyExtractor={(item, index) => item.id}
             data={this.props.boards}
-            renderItem={({item}) => this.renderBoardItem(item)} 
+            renderItem={({item}) => <BoardItem data={item} handleAction={this.handleAction} onPress={() => Actions.workspace(item)}/>} 
           />
          {this.renderAddBoardDialog()}
          {this.renderFAB()}
         </View>
       </Drawer>
     );
+  }
+
+  toggleDialog(dialogType?: string, currentBoard?: any) {
+    let dialogVisbie = this.state.dialogVisbie;
+
+    dialogType = dialogType || DialogType.NOTHING;
+    switch (dialogType) {
+      case DialogType.ADD_BOARD     : dialogVisbie.ADD_BOARD = !dialogVisbie.ADD_BOARD; break;
+      case DialogType.RENAME_BOARD  : dialogVisbie.RENAME_BOARD = !dialogVisbie.RENAME_BOARD; break;
+      default: break;
+    }
+    this.setState({
+      dialogVisbie: dialogVisbie,
+      currentBoard: currentBoard,
+    })
+  }
+
+  handleAction(actionType?: string, data?: any) {
+    actionType = actionType || ActionType.NOTHING;
+    switch (actionType) {
+      case ActionType.ADD_BOARD             : this.toggleDialog(DialogType.ADD_BOARD, data); break;
+      case ActionType.RENAME_BOARD          : this.toggleDialog(DialogType.RENAME_BOARD, data); break;
+      case ActionType.REMOVE_BOARD          : this.props.removeBoard(data); break;
+      case ActionType.ARCHIVE_BOARD         : this.props.archiveBoard(data); break;
+      case ActionType.TOGGLE_BOOKMARK_BOARD : this.props.bookmarkBoard(data); break;
+      default: break;
+    }
   }
 
   renderHeader() {
@@ -69,6 +111,22 @@ class ProjectScreen extends Component {
         </Right>
       </Header>
     );
+  }
+
+  renderFAB() {
+    return (
+      <ActionButton buttonColor="rgba(231,76,60,1)" onPress={() => this.props.showDialog(true)}>
+        {/* <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.props.addBoard()} >
+              <Icon name='add' color='white'/>
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
+              <Icon name='remove' color='white' />
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.props.showDialog(true)}}>
+              <Icon name='ios-add' color='white' />
+            </ActionButton.Item> */}
+      </ActionButton>
+    )
   }
 
   renderAddBoardDialog() {
@@ -113,52 +171,20 @@ class ProjectScreen extends Component {
     );
   }
 
-  renderBoardItem(item) {
-    return(
-      <ListItem style={{ marginLeft: 0}} onPress={() => { Actions.workspace(item); }}>
-        <Left>
-          <Thumbnail square style={{marginLeft: 10}} source={defaultIcon} />
-          <Body>
-            <Text>{item.title}</Text>
-            <Text>{item.cardGroups.length}</Text>
-            <Text>{realm.objects('CardGroup').length}</Text>
-          </Body>
-        </Left>
-        <Right>
-          <Menu
-            ref={ref => (this._menu = ref)}
-            button={
-              <TouchableOpacity onPress={() => this._menu.show()} >
-                <Icon
-                  name="dots-vertical"
-                  type="MaterialCommunityIcons"
-                  style={{ fontSize: 25, color: "black" }}
-                />
-              </TouchableOpacity>
-            }>
-            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Rename board</MenuItem><MenuDivider />
-            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Remove board</MenuItem><MenuDivider />
-            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Star board</MenuItem><MenuDivider />
-          </Menu>
-        </Right>
-      </ListItem>
-    );
+  addBoard(boardName?: string) {
+
   }
 
-  renderFAB() {
-    return (
-      <ActionButton buttonColor="rgba(231,76,60,1)" onPress={() => this.props.showDialog(true)}>
-        {/* <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.props.addBoard()} >
-              <Icon name='add' color='white'/>
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
-              <Icon name='remove' color='white' />
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.props.showDialog(true)}}>
-              <Icon name='ios-add' color='white' />
-            </ActionButton.Item> */}
-      </ActionButton>
-    )
+  renameBoard(board?: Board, boardName?: string) {
+
+  }
+
+  removeBoard(board?: Board) {
+    realm.write()
+  }
+
+  bookmarkBoard(board?: Board) {
+    
   }
 
   deleteAll() {
@@ -174,14 +200,19 @@ function mapStateToProps(state){
     dialogVisible: state.project.dialogVisible,
     title: state.project.title,
     boards: state.project.boards,
+    refresh: state.project.refresh,
   };
 }
+
 function matchDispatchToProps(dispatch){
   return bindActionCreators({
     showDialog: showDialog,
     updateBoards: updateBoards,
     addBoard: addBoard,
-    deleteBoard: deleteBoard,
+    removeBoard: removeBoard,
+    bookmarkBoard: bookmarkBoard,
+    renameBoard: renameBoard,
+    archiveBoard: archiveBoard,
   }, dispatch)
 }
 

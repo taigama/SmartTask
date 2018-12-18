@@ -5,169 +5,69 @@ import uuid from 'react-native-uuid';
 import Modal from 'react-native-modal';
 import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ViewPropTypes } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
-import { Left, Right, Body, Icon } from 'native-base';
+import { Icon, Header, Left, Body, Right, Title, ListItem, Thumbnail } from 'native-base';
 import PropTypes from 'prop-types';
 
-import realm from '../../Realm/Realm'
+import realm, { Board } from '../../Realm/Realm'
 import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
-
-import Card from './Card';
 import { ActionType } from './Constants';
 
-type CardGroupProps = {
+const defaultIcon = require('../../_Resources/chocobo.png');
+
+type BoardItemProps = {
+  data?: any,
+  containerStyle?: ViewPropTypes,
   handleAction?: PropTypes.func,
+  onPress?: PropTypes.func,
 }
 
-class CardGroup extends React.Component<CardGroupProps, IData> {
+class BoardItem extends React.Component<BoardItemProps> {
   constructor(props) {
     super(props);
-    this.state = {
-      group: this.props.data,
-    };
-
-    this.requestMenuAction = this.requestMenuAction.bind(this);
+    this.requestAction = this.requestAction.bind(this);
   }
 
-  requestMenuAction(actionType?: string) {
+  requestAction(actionType?: string) {
     this._menu.hide();
-    this.props.handleAction(actionType, this.state.group);
+    this.props.handleAction(actionType, this.props.data);
   }
 
   render() {
+    const menuTitleBookmark = !this.props.data.bookmarked ? 'Bookmark' : 'Unbookmark';
+
     return (
-      <View style={styles.pageContainer}>
-        <View style={styles.group}>
-          <View style={styles.groupHeader}>
-            <Left>
-              <Text style={{ padding: 5, fontSize: 20, fontWeight: "bold" }}>
-                {this.state.group.title} ({this.state.group.cards.length} / {realm.objects('Card').length}) 
-              </Text>
-            </Left>
-            <Right>
-              <Menu
-                ref={ref => (this._menu = ref)}
-                button={
-                  <TouchableOpacity
-                    onPress={() => this._menu.show()}
-                  >
-                    <Icon
-                      name="dots-vertical"
-                      type="MaterialCommunityIcons"
-                      style={{ fontSize: 25, color: "black" }}
-                    />
-                  </TouchableOpacity>
-                }
-              >
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.RENAME_GROUP)}>Rename group</MenuItem><MenuDivider />
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.COPY_GROUP)}>Copy group</MenuItem><MenuDivider />
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_GROUP)}>Move group</MenuItem><MenuDivider />
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_GROUP)}>Archive group</MenuItem><MenuDivider />
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_ALL_CARDS)}>Move all cards</MenuItem><MenuDivider />
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_ALL_CARDS)}>Archive all cards</MenuItem>
-              </Menu>
-            </Right>
-          </View>
-          <View style={styles.groupContainer}>
-            <FlatList
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{ justifyContent: "center", width: "100%", height: 4 }}
+      <ListItem style={{ marginLeft: 0, ...this.props.containerStyle}} onPress={() => this.props.onPress()}>
+        <Left>
+          <Thumbnail square style={{marginLeft: 10}} source={defaultIcon} />
+          <Body>
+            <Text>{this.props.data.title}</Text>
+            <Text>{this.props.data.cardGroups.length}</Text>
+            <Text>{realm.objects('CardGroup').length}</Text>
+          </Body>
+        </Left>
+        <Right>
+          <Menu
+            ref={ref => (this._menu = ref)}
+            button={
+              <TouchableOpacity onPress={() => this._menu.show()} >
+                <Icon
+                  name="dots-vertical"
+                  type="MaterialCommunityIcons"
+                  style={{ fontSize: 25, color: "black" }}
                 />
-              )}
-              keyExtractor={(item, index) => item.id}
-              data={this.state.group.cards.filtered('archived = false')}
-              renderItem={({ item }) => <Card data={item} />}
-            />
-          </View>
-          <View style={{ height: 50, justifyContent: "center" }}>
-            <TouchableOpacity onPress={() => this.requestMenuAction(ActionType.ADD_CARD)}>
-              <Text style={{ color: "#95A4AE", fontSize: 16 }}>
-                + Add a card
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
+              </TouchableOpacity>
+            }>
+            <MenuItem onPress={() => this.requestAction(ActionType.RENAME_BOARD)}>Rename board</MenuItem><MenuDivider />
+            <MenuItem onPress={() => this.requestAction(ActionType.REMOVE_BOARD)}>Remove board</MenuItem><MenuDivider />
+            <MenuItem onPress={() => this.requestAction(ActionType.TOGGLE_BOOKMARK_BOARD)}>{menuTitleBookmark}</MenuItem>
+            <MenuItem onPress={() => this.requestAction(ActionType.REMOVE_BOARD)}>Archive board</MenuItem><MenuDivider />
+          </Menu>
+        </Right>
+      </ListItem>
+    )
   }
 }
 
-export default CardGroup;
-
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    paddingTop: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    // justifyContent:"center",
-  },
-  group: {
-    backgroundColor:'#DFE3E6',
-    borderRadius:10,
-    borderWidth: 1,
-    borderColor: '#000000',
-    paddingLeft: 15,
-    paddingRight: 15,
-  },
-  groupHeader: {
-    height: 60,
-    flexDirection:'row',
-    fontWeight: 'bold',
-    justifyContent: "center",
-  },
-  groupContainer: {
-    maxHeight: Window.height - 240,
-    width: '100%',
-    justifyContent: "center"
-  },
-  modal: {
-    backgroundColor:'#DFE3E6',
-    borderRadius:10,
-    borderWidth: 1,
-    borderColor: '#000000',
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-  },
-  modalHeader: {
-    height: 60,
-    fontWeight: 'bold',
-    justifyContent: "center",
-    // backgroundColor: 'steelblue',
-    // borderTopLeftRadius: 10,
-    // borderTopRightRadius: 10,
-  },
-  modalHeadline: {
-    textAlign: 'center', // <-- the magic
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginTop: 0,
-  },
-  modalContainer: {
-    width: '100%',
-    justifyContent: "center"
-  },
-  modalButtonGroup: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  modalTextInput: {
-    textAlignVertical: 'top', 
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    height: 150, 
-    backgroundColor: 'white', 
-    padding: 10, 
-    fontSize: 18
-  },
-  modalButton: {
-    backgroundColor: 'green',
-    width: '50%',
-    height: 40
-  }
-});
+export default BoardItem;

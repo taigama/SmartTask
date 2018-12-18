@@ -34,6 +34,7 @@ Board.schema = {
     id: 'string',
     title: 'string',
     archived: {type: 'bool', default: false},
+    bookmarked: {type: 'bool', default: false},
     cardGroups: 'CardGroup[]',
   }
 };
@@ -110,7 +111,7 @@ Card.schema = {
 
 export default realm = new Realm({
   schema: [Board, CardGroup, Card], 
-  schemaVersion: 7, 
+  schemaVersion: 8, 
   migration: (oldRealm, newRealm) => {
     newRealm.deleteAll();
   }
