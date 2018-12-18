@@ -20,7 +20,7 @@ type CardGroupProps = {
   handleAction?: PropTypes.func,
 }
 
-class CardGroup extends React.Component<CardGroupProps, IData> {
+class CardGroupItem extends React.Component<CardGroupProps, IData> {
   constructor(props) {
     super(props);
     this.state = {
@@ -94,7 +94,7 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
   }
 }
 
-export default CardGroup;
+export default CardGroupItem;
 
 const styles = StyleSheet.create({
   pageContainer: {

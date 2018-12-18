@@ -1,5 +1,5 @@
 import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
-import { App, Dev } from './app/App';
+import { Dev, App } from './app/App';
 
-AppRegistry.registerComponent(appName, () => App);
+export default SmarTask = AppRegistry.registerComponent(appName, () => App);

@@ -17,7 +17,7 @@ import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
 
 import CardItem from './CardItem';
-import CardGroup from './CardGroup';
+import CardGroupItem from './CardGroupItem';
 import WorkspaceSideBar from './WorkspaceSideBar';
 import { showAddCardDialog, showAddGroupDialog, addGroup } from './WorkspaceReducer';
 import { ActionType, DialogType } from './Constants';
@@ -67,7 +67,7 @@ class WorkspaceScreen extends Component<IData> {
             ref={(c) => { this._carousel = c; }}
             data={this.getVisibleGroups()}
             renderItem={({ item }) => 
-              <CardGroup 
+              <CardGroupItem 
                 handleAction={this.handleAction}
                 data={item} 
             />}

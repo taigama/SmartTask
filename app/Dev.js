@@ -1,10 +1,5 @@
 import React from 'react'
-import { createStackNavigator, createAppContainer, createTabNavigator, createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation';
-import { Router, Scene, ActionConst, Stack } from 'react-native-router-flux';
 import { StackViewStyleInterpolator } from 'react-navigation-stack';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-
 import DevelopeScreen from './Screens/Develope/DevelopeScreen';
 
 const transitionConfig = () => ({
