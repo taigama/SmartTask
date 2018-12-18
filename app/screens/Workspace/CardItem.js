@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 import { Window } from '../../_Commons/Utils';
 import { IData } from '../../_Commons/IData';
 
-export default class Card extends Component<IData> {
+export default class CardItem extends Component<IData> {
   
   constructor(props) {
     super(props);

@@ -13,7 +13,7 @@ import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
 
-import CardItem from './CardItem';
+import Card from './Card';
 import { ActionType } from './Constants';
 
 type CardGroupProps = {
@@ -78,7 +78,7 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
               )}
               keyExtractor={(item, index) => item.id}
               data={this.state.group.cards.filtered('archived = false')}
-              renderItem={({ item }) => <CardItem data={item} />}
+              renderItem={({ item }) => <Card data={item} />}
             />
           </View>
           <View style={{ height: 50, justifyContent: "center" }}>

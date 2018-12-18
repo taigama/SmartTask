@@ -7,18 +7,19 @@ import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
 import ActionButton from 'react-native-action-button';
 import Modal from 'react-native-modal';
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 import { showDialog, addBoard, updateBoards, deleteBoard } from './ProjectReducer';
 import SideBar from '../Workspace/WorkspaceSideBar';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
+import projectStyles from './ProjectStyle';
 
 const defaultIcon = require('../../_Resources/chocobo.png');
 
 class ProjectScreen extends Component {
   componentDidMount() {
     this.props.updateBoards();
-    this.newBoardTitle = '';
   }
 
   render() {
@@ -71,6 +72,8 @@ class ProjectScreen extends Component {
   }
 
   renderAddBoardDialog() {
+    this.newBoardTitle = this.props.dialogVisible ? this.newBoardTitle : '';
+
     return (
       <FormModal
         isVisible={this.props.dialogVisible}
@@ -122,9 +125,21 @@ class ProjectScreen extends Component {
           </Body>
         </Left>
         <Right>
-          <TouchableOpacity onPress={() => this.props.deleteBoard(item.id)}>
-            <Icon name="trash" style={{fontSize: 30}}></Icon>
-          </TouchableOpacity>
+          <Menu
+            ref={ref => (this._menu = ref)}
+            button={
+              <TouchableOpacity onPress={() => this._menu.show()} >
+                <Icon
+                  name="dots-vertical"
+                  type="MaterialCommunityIcons"
+                  style={{ fontSize: 25, color: "black" }}
+                />
+              </TouchableOpacity>
+            }>
+            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Rename board</MenuItem><MenuDivider />
+            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Remove board</MenuItem><MenuDivider />
+            <MenuItem onPress={() => this.props.deleteBoard(item.id)}>Star board</MenuItem><MenuDivider />
+          </Menu>
         </Right>
       </ListItem>
     );
@@ -149,9 +164,7 @@ class ProjectScreen extends Component {
   deleteAll() {
     realm.write(() => {
       realm.deleteAll();
-      this.setState({
-        boards: realm.objects('Board'),
-      })
+      this.setState({ boards: realm.objects("Board") });
     });
   }
 }

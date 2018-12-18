@@ -16,7 +16,7 @@ import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
 
-import Card from './Card';
+import CardItem from './CardItem';
 import CardGroup from './CardGroup';
 import WorkspaceSideBar from './WorkspaceSideBar';
 import { showAddCardDialog, showAddGroupDialog, addGroup } from './WorkspaceReducer';
