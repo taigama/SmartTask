@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
 import Toast, {DURATION} from 'react-native-easy-toast';
+import ActionButton from 'react-native-action-button';
 import uuid from 'react-native-uuid';
 
 import realm from '../../Realm/Realm'
@@ -73,14 +74,15 @@ class WorkspaceScreen extends Component<IData> {
             sliderWidth={Window.width}
             itemWidth={Window.width}
           />
-          <Toast ref="toast"/>
-          {this.renderAddCardDialog()}
-          {this.renderAddGroupdDialog()}
-          {this.renderMoveCardDialog()}
-          {this.renderMoveGroupdDialog()}
-          {this.renderRenameGroupdDialog()}
-          {this.renderCopyGroupdDialog()}
         </ImageBackground>
+        <Toast ref="toast"/>
+        {this.renderAddCardDialog()}
+        {this.renderAddGroupdDialog()}
+        {this.renderMoveCardDialog()}
+        {this.renderMoveGroupdDialog()}
+        {this.renderRenameGroupdDialog()}
+        {this.renderCopyGroupdDialog()}
+        {this.renderFAB()}
       </Drawer>
     );
   }
@@ -118,6 +120,10 @@ class WorkspaceScreen extends Component<IData> {
     }
   }
 
+  showToaster(message?: string) {
+    this.refs.toast.show(message);
+  }
+
   refresh() {
     this.setState({});
   }
@@ -144,6 +150,13 @@ class WorkspaceScreen extends Component<IData> {
           <Title>{this.state.board.title}</Title>
         </Body>
         <Right>
+          <TouchableOpacity onPress={this.testFunction.bind(this)} style={{marginRight: 20}}>
+            <Icon 
+              name='alert-box'
+              type='MaterialCommunityIcons'
+              style={{fontSize: 25, color: 'white'}}
+            /> 
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => this.toggleDialog(DialogType.ADD_GROUP)} style={{marginRight: 20}}>
             <Icon 
               name='add'
@@ -160,6 +173,42 @@ class WorkspaceScreen extends Component<IData> {
       </Header>
     );
   }
+
+  renderFAB() {
+    return (
+      <ActionButton buttonColor="rgba(231,76,60,1)">
+        <ActionButton.Item buttonColor='#3498db' title="Show info" onPress={() => 
+            {
+              realm.write(() => {
+                let cards = realm.objects('Card');
+                let message = '';
+                for (let i = cards.length - 1; i >= 0; i--) {
+                  message += cards[i].title + " : " + cards[i].cardGroup + "\n";
+                }
+                alert(message);
+                this.refresh();
+              });
+            }
+          }>
+          <Icon name='remove' color='white' />
+        </ActionButton.Item>
+        <ActionButton.Item buttonColor='#3498db' title="Delete all cards" onPress={() => 
+            {
+              realm.write(() => {
+                let cards = realm.objects('Card');
+                for (let i = cards.length - 1; i >= 0; i--) {
+                  realm.delete(cards[i]);
+                }
+                this.refresh();
+              });
+            }
+          }>
+          <Icon name='remove' color='white' />
+        </ActionButton.Item>
+      </ActionButton>
+    )
+  }
+
 
   renderAddGroupdDialog() {
     const visible = this.state.dialogVisbie.addGroup;
@@ -250,28 +299,35 @@ class WorkspaceScreen extends Component<IData> {
   renderMoveGroupdDialog() {
     const visible = this.state.dialogVisbie.moveGroup;
     const toggleDialog = () => this.toggleDialog(DialogType.MOVE_GROUP, this.currentGroup);
+    
     return (
-      <FormModal 
+      <FormModal
         isVisible={visible}
+        titleStyle={{color: '#32383B'}}
         onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => () => toggleDialog()}
+        onBackButtonPress={() => toggleDialog()}
         onSwipe={() => toggleDialog()}
         swipeDirection='left'
-        title='Move a group...'>
-        <TextInput
-          autoFocus={true}
-          multiline={true}
-          style={styles.modalTextInput}
-          placeholder="Enter a title for this group"
-          onChangeText={(text) => this.newGroupTitle = text}
-        />
+        title='Move all cards...'>
+        <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
+          <Picker
+            mode="dialog"
+            selectedValue={this.state.selectedBoardValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({selectedBoardValue: itemValue})}>
+            {realm.objects('Board').filtered('archived = false').map((board, i) => {
+              return (
+                <Picker.Item key={board.id} label={board.title} value={board.id} />
+              );
+            })}
+          </Picker>
+        </View>
         <Button
-          title="ADD"
+          title="MOVE"
           fontWeight='bold'
           fontSize={20}
           raised
           buttonStyle={{
-            backgroundColor: "#00BB27",
+            backgroundColor: "#6E60F9",
             width: '100%',
             height: 45,
             borderColor: "transparent",
@@ -280,9 +336,9 @@ class WorkspaceScreen extends Component<IData> {
             margin: 0,
           }}
           onPress={() => {
-            this.addGroup(this.newGroupTitle);
+            this.moveGroup(this.state.selectedBoardValue);
             toggleDialog()
-            this.newGroupTitle = '';
+            this.refresh();
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
         />
@@ -385,25 +441,49 @@ class WorkspaceScreen extends Component<IData> {
   renderMoveCardDialog() {
     const visible = this.state.dialogVisbie.moveCard;
     const toggleDialog = () => this.toggleDialog(DialogType.MOVE_CARD, this.currentGroup);
+    
     return (
       <FormModal
         isVisible={visible}
+        titleStyle={{color: '#32383B'}}
         onBackdropPress={() => toggleDialog()}
         onBackButtonPress={() => toggleDialog()}
         onSwipe={() => toggleDialog()}
         swipeDirection='left'
         title='Move all cards...'>
-        <Picker
-          mode="dialog"
-          // selectedValue={}
-          style={{ height: 50, width: 100 }}
-          onValueChange={(itemValue, itemIndex) => alert(itemValue)}>
-          {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
-            return (
-              <Picker.Item key={group.id} label={group.title} value={i} />
-            );
-          })}
-        </Picker>
+        <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
+          <Picker
+            mode="dialog"
+            selectedValue={this.state.selectedValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({selectedValue: itemValue})}>
+            {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
+              return (
+                <Picker.Item key={group.id} label={group.title} value={group.id} />
+              );
+            })}
+          </Picker>
+        </View>
+        <Button
+          title="MOVE"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#6E60F9",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.moveAllCards(this.state.selectedValue);
+            toggleDialog()
+            this.refresh();
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
       </FormModal>
     );
   }
@@ -445,7 +525,6 @@ class WorkspaceScreen extends Component<IData> {
     });
   }
 
-
   archiveGroup(group) {
     realm.write(() => {
       group.archived = true;
@@ -459,19 +538,54 @@ class WorkspaceScreen extends Component<IData> {
 
   archiveAllCards(group) {
     realm.write(() => {
-      group.cards.map((card) => {
+      group.cards.map(card => {
         card.archived = true;
-      })
+      });
       this.refresh();
     });
   }
 
-  moveAllCards(group) {
-    
+  moveAllCards(desGroupId?: string) {
+    let srcGroup = this.state.currentGroup;
+    if (desGroupId && desGroupId !== srcGroup.id) {
+      realm.write(() => {
+        let desGroup = realm.objectForPrimaryKey('CardGroup', desGroupId);
+        let movedCards = [];
+        let length = srcGroup.cards.length;
+        for (let i = 0; i < length; i++) {
+          movedCards.unshift(srcGroup.cards.pop());
+        }
+        for (let i = 0; i < movedCards.length; i++) {
+          desGroup.cards.push(movedCards[i]);
+        }
+        this.showToaster('Move all cards from [' + srcGroup.title + '] to [' + desGroup + ']')
+      })
+    } else {
+      this.showToaster('Actions is not valid');
+    };
   }
   
-  moveGroup(group) {
+  moveGroup(desBoardId?: string) {
+    let srcBoard = this.state.board;
+    if (desBoardId && desBoardId !== srcBoard) {
+      realm.write(() => {
+        let desBoard = realm.objectForPrimaryKey('Board', desBoardId);
+        let movedGroup = this.state.currentGroup;
+        let index = srcBoard.cardGroups.indexOf(movedGroup);
 
+        srcBoard.cardGroups.splice(index, 1);
+        desBoard.cardGroups.push(movedGroup);
+
+        if (this._carousel.currentIndex !== 0 && this._carousel.currentIndex >= this.visibleCount - 1) {
+          this._carousel.snapToPrev(true);
+        }
+      });
+    } else {
+      this.showToaster('Actions is not valid');
+    }
+  }
+
+  testFunction() {
   }
 };
 

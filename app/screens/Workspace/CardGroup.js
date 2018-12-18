@@ -42,7 +42,7 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
           <View style={styles.groupHeader}>
             <Left>
               <Text style={{ padding: 5, fontSize: 20, fontWeight: "bold" }}>
-                {this.state.group.title}
+                {this.state.group.title} ({this.state.group.cards.length} / {realm.objects('Card').length}) 
               </Text>
             </Left>
             <Right>
@@ -60,9 +60,9 @@ class CardGroup extends React.Component<CardGroupProps, IData> {
                   </TouchableOpacity>
                 }
               >
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.RENAME_GROUP)}>Rename</MenuItem>
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.COPY_GROUP)}>Copy</MenuItem>
-                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_GROUP)}>Move</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.RENAME_GROUP)}>Rename group</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.COPY_GROUP)}>Copy group</MenuItem>
+                <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_GROUP)}>Move group</MenuItem>
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_GROUP)}>Archive group</MenuItem>
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_ALL_CARDS)}>Move all cards</MenuItem>
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_ALL_CARDS)}>Archive all cards</MenuItem>
