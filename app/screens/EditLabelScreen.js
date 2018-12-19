@@ -25,13 +25,26 @@ import {
 } from 'react-native-dialog-component';
 
 import {
+    SlidersColorPicker,
+    HueGradient,
+    SaturationGradient,
+    LightnessGradient,
+    HueSlider,
+    SaturationSlider,
+    LightnessSlider
+} from 'react-native-color';
+
+import tinycolor from 'tinycolor2';
+
+import {
 
     Icon
 } from 'react-native-elements';
 
 
 import LabelEditable from "../components/details/LabelEditable";
-import realm from '../realm/Realm';
+import realm, {getNewId} from '../realm/Realm';
+import CardEditLabel from "../components/details/CardEditLabel";
 
 
 export default class EditLabelScreen extends Component {
@@ -74,13 +87,11 @@ export default class EditLabelScreen extends Component {
         this.state = {
             group: this.props.navigation.state.params.groupLabel,
             labels: realm.objects('Label'),
-            currentLabel: null
         };
 
         this.onEditCallback = this.onEditCallback.bind(this);
         this.onEndEditLabel = this.onEndEditLabel.bind(this);
-        // this.renderChildren = this.renderChildren.bind(this);
-        // this.renderChild = this.renderChild.bind(this);
+        this.onDismissDialog = this.onDismissDialog.bind(this);
 
         this.queryData();
 
@@ -202,28 +213,6 @@ export default class EditLabelScreen extends Component {
         logComponentStackToMyService(info.componentStack);
     }
 
-    renderDialog() {
-        if (this.state.currentLabel == null)
-            return <Text>Hello World!</Text>;
-
-        return <View>
-            <TextInput
-                style={styles.editLabelContent}
-                placeholder="Label name..."
-                placeholderTextColor="#aaa"
-
-                multiline={false}
-
-                onEndEditing={this.onEndEditLabel}
-                defaultValue={this.state.currentLabel.data.content}
-            />
-
-        </View>
-
-
-    }
-
-
     render() {
 
 
@@ -245,19 +234,25 @@ export default class EditLabelScreen extends Component {
                 </ScrollView>
 
                 <DialogComponent
-                    title={<DialogTitle title="Edit label"/>}
-                    ref={(dialog) => {
-                        this.dialog = dialog;
+                    ref={(dialogComponent) => {
+                        this.dialog = dialogComponent;
                     }}
-                    dialogAnimation={new SlideAnimation({slideFrom: 'top'})}
-
-                    height={0.5}
+                    dialogAnimation={new SlideAnimation({slideFrom: 'bottom'})}
+                    width={1}
+                    height={1}
                 >
-
+                    <DialogTitle
+                        title="Edit label..."
+                    />
                     <DialogContent>
-                        {this.renderDialog()}
-                    </DialogContent>
+                        <CardEditLabel
+                            editComplete={this.onEndEditLabel}
 
+                            ref={(cardEdit) => {
+                                this.cardEdit = cardEdit;
+                            }}
+                        />
+                    </DialogContent>
                 </DialogComponent>
             </View>
 
@@ -265,30 +260,43 @@ export default class EditLabelScreen extends Component {
     }
 
     onEditCallback(labelComponent, labelData) {
-        this.setState({
-            currentLabel: {
-                component: labelComponent,
-                data: labelData
-            }
-        });
+
+        this.currentLabel = {
+            component: labelComponent,
+            data: labelData
+        };
+
+        this.dialog.show();
 
         setTimeout(() => {
-            this.dialog.show();
-        }, 16);
+                this.cardEdit.preEdit(labelData.content, labelData.color);
+            }, 16
+        );
     }
 
-    onEndEditLabel(e)
-    {
-        let text = e.nativeEvent.text;
-        realm.write(() => {
-            this.state.currentLabel.data.content = text;
-        });
+    onDismissDialog() {
+        this.currentLabel = null;
+    }
 
-        this.state.currentLabel.component.setState({
-            label: this.state.currentLabel.data
-        });
-
+    /**
+     *
+     * @param color
+     * @param text
+     */
+    onEndEditLabel(text, color) {
         this.dialog.dismiss();
+
+        if (color === undefined)
+            return;
+
+        realm.write(() => {
+            this.currentLabel.data.content = (text || "");
+            this.currentLabel.data.color = color;
+        });
+
+        this.currentLabel.component.setState({
+            label: this.currentLabel.data
+        });
     }
 
 }
@@ -299,5 +307,10 @@ const styles = StyleSheet.create({
     },
     editLabelContent: {
         width: '100%'
+    },
+    sliderRow: {
+        alignSelf: 'stretch',
+        marginLeft: 12,
+        marginTop: 12
     }
 });
