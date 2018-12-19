@@ -64,7 +64,7 @@ export default realm = new Realm({schema: [
 
 /**
  *
- * @param {[]}collection
+ * @param {Realm.Collection}collection
  * @param {string}primaryKeyName
  * @return {number} unique new id
  */

@@ -178,6 +178,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 5,
         marginBottom: 14,
+        color: '#fff',
+        fontWeight: 'bold'
     },
     sliderRow: {
         alignSelf: 'stretch',

@@ -89,33 +89,20 @@ export default class EditLabelScreen extends Component {
             labels: realm.objects('Label'),
         };
 
-        this.onEditCallback = this.onEditCallback.bind(this);
+        this.onClickEditLabel = this.onClickEditLabel.bind(this);
+        this.onClickAddLabel = this.onClickAddLabel.bind(this);
         this.onEndEditLabel = this.onEndEditLabel.bind(this);
-        this.onDismissDialog = this.onDismissDialog.bind(this);
 
-        this.queryData();
-
+        this.presetData();
+        this.isEdit = false;
     }
 
 
-    // renderChildren()
-    // {
-    //     this.state.group.links.map(this.renderChild);
-    // }
-    //
-    // renderChild(link)
-    // {
-    //     return <LabelEditable
-    //         data={this.state.labels[link.idLabel]}
-    //         isChecked={link.isCheck}
-    //     />;
-    // }
 
     /**
      *
-     * @param {function}callback
      */
-    queryData(callback) {
+    presetData() {
         // Query
         let group = this.state.group;
 
@@ -227,11 +214,23 @@ export default class EditLabelScreen extends Component {
                         this.state.group.links.map((link) =>
                             <LabelEditable
                                 data={link}
-                                editCallback={this.onEditCallback}
+                                editCallback={this.onClickEditLabel}
                             />
                         )
                     }
                 </ScrollView>
+
+                <View style={styles.floatingView}>
+                    <TouchableOpacity
+                        onPress={this.onClickAddLabel}
+                    >
+                        <Icon
+                            name='add-circle'
+                            color='#f5f'
+                            size={50}
+                        />
+                    </TouchableOpacity>
+                </View>
 
                 <DialogComponent
                     ref={(dialogComponent) => {
@@ -259,7 +258,9 @@ export default class EditLabelScreen extends Component {
         );
     }
 
-    onEditCallback(labelComponent, labelData) {
+    onClickEditLabel(labelComponent, labelData) {
+
+        this.isEdit = true;
 
         this.currentLabel = {
             component: labelComponent,
@@ -274,36 +275,103 @@ export default class EditLabelScreen extends Component {
         );
     }
 
-    onDismissDialog() {
+    onClickAddLabel()
+    {
+        this.isEdit = false;
         this.currentLabel = null;
+
+        this.dialog.show();
+
+        setTimeout(() => {
+                this.cardEdit.preEdit("", "#f00");
+            }, 16
+        );
     }
 
     /**
      *
-     * @param color
-     * @param text
+     * @param {string|boolean}textOrDelete
+     * @param {string}color
      */
-    onEndEditLabel(text, color) {
+    onEndEditLabel(textOrDelete, color) {
         this.dialog.dismiss();
+        this.currentLabel = null;
 
-        if (color === undefined)
+        if (textOrDelete === undefined)
             return;
 
-        realm.write(() => {
-            this.currentLabel.data.content = (text || "");
-            this.currentLabel.data.color = color;
-        });
+        if(typeof(textOrDelete) === "string")
+        {
+            var text = textOrDelete;
 
-        this.currentLabel.component.setState({
-            label: this.currentLabel.data
-        });
+            if(this.isEdit) {
+                realm.write(() => {
+                    this.currentLabel.data.content = (text || "");
+                    this.currentLabel.data.color = color;
+                });
+
+                this.currentLabel.component.setState({
+                    label: this.currentLabel.data
+                });
+            }
+            else
+            {
+                var labels = realm.objects("Label");
+                if(labels == null)
+                {
+                    this.presetData();
+                    this.forceUpdate();
+                }
+                else
+                {
+                    let groups = realm.objects("LabelGroup");
+                    let links = realm.objects("LabelLink");
+
+                    var newLabelId = getNewId(labels, 'key');
+
+
+                    realm.write(() => {
+
+                        // added preset labels
+                        let label = realm.create('Label', {
+                            key: newLabelId,
+                            color: color,
+                            content: text
+                        }, false);
+
+                        groups.forEach((group) => {
+                            var newLinkId = getNewId(links, 'key');
+                            group.links.push({
+                                key: newLinkId,
+                                idLabel: newLabelId,
+                                isCheck: false,
+                                labelGroup: group
+                            });
+                        });
+                    });
+                    this.setState({
+                        labels : realm.objects("Label")
+                    });
+                }
+            }
+        }
+        else//typeof(textOrDelete) === "boolean"
+        {
+            var isDelete = textOrDelete;
+            if(isDelete === false)
+                return;
+
+
+        }
+
     }
 
 }
 
 const styles = StyleSheet.create({
     contentContainer: {
-        margin: 20
+        padding: 20
+
     },
     editLabelContent: {
         width: '100%'
@@ -312,5 +380,10 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         marginLeft: 12,
         marginTop: 12
+    },
+    floatingView: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20
     }
 });
