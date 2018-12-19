@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup } from 'react-native-elements';
+import { Button, ButtonGroup, Avatar } from 'react-native-elements';
 import { FlatList } from 'react-native-gesture-handler';
 import uuid from 'react-native-uuid';
 import Modal from 'react-native-modal';
@@ -26,26 +26,38 @@ type BoardItemProps = {
 class BoardItem extends React.Component<BoardItemProps> {
   constructor(props) {
     super(props);
+    this.alreadyClicked = false;
     this.requestAction = this.requestAction.bind(this);
+    this.onPresss = this.onPresss.bind(this);
   }
 
   requestAction(actionType?: string) {
     this._menu.hide();
     this.props.handleAction(actionType, this.props.data);
+   
+  }
+
+  onPresss() {
+    if (!this.alreadyClicked) {
+      this.alreadyClicked = true;
+      this.props.onPress();
+    }
+  }
+
+  componentDidUpdate() {
+    this.alreadyClicked = false;
   }
 
   render() {
     const menuTitleBookmark = !this.props.data.bookmarked ? 'Bookmark' : 'Unbookmark';
 
     return (
-      <ListItem style={{ marginLeft: 0, ...this.props.containerStyle}} onPress={() => this.props.onPress()}>
+      <ListItem noIndent onPress={this.onPresss}>
+        <View style={{ width: 50, justifyContent: "center", marginLeft: 0, ...this.props.containerStyle }}>
+          <Avatar width={40} height={40} square source={defaultIcon} style={{ textAlign: "center" }} />
+        </View>
+        <Text style={{ fontSize: 13 }}>{this.props.data.title}</Text>
         <Left>
-          <Thumbnail square style={{marginLeft: 10}} source={defaultIcon} />
-          <Body>
-            <Text>{this.props.data.title}</Text>
-            <Text>{this.props.data.cardGroups.length}</Text>
-            <Text>{realm.objects('CardGroup').length}</Text>
-          </Body>
         </Left>
         <Right>
           <Menu
@@ -55,7 +67,7 @@ class BoardItem extends React.Component<BoardItemProps> {
                 <Icon
                   name="dots-vertical"
                   type="MaterialCommunityIcons"
-                  style={{ fontSize: 25, color: "black" }}
+                  style={{ fontSize: 25, color: "grey" }}
                 />
               </TouchableOpacity>
             }>

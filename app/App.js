@@ -35,7 +35,7 @@ export const App = () => {
             component={SearchScreen}
             title="Splash"
             hideNavBar
-            initial
+            
           />
            <Scene key="splash"
             component={SplashScreen}
@@ -45,7 +45,7 @@ export const App = () => {
           <Scene key="project"
             component={ProjectScreen}
             title="Boards"
-            
+            initial
             hideNavBar
           />
           <Scene 

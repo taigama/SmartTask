@@ -21,6 +21,10 @@ type FormModalProps = {
 export default class FormModal extends Component<FormModalProps> {
   constructor(props) {
     super(props);
+    this.state = {
+      visible: this.props.isVisible || false,
+    }
+
 
     this.titleStyle = {...styles.modalHeadline, ...this.props.titleStyle};
     this.contentStyle = {...styles.modalContainer, ...this.props.contentStyle};
@@ -30,7 +34,7 @@ export default class FormModal extends Component<FormModalProps> {
   render() {
     return (
       <Modal
-        isVisible={this.props.isVisible}
+        isVisible={this.state.isVisible}
         onBackdropPress={this.props.onBackdropPress}
         onBackButtonPress={this.props.onBackButtonPress}
         onSwipe={this.props.onSwipe}
@@ -55,6 +59,14 @@ export default class FormModal extends Component<FormModalProps> {
         <Text style={this.titleStyle}>{this.props.title}</Text>
       </View>
     );
+  }
+
+  show() {
+    this.setState({isVisible: true});
+  }
+
+  hide() {
+    this.setState({isVisible: false});
   }
 }
 
