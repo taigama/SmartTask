@@ -7,7 +7,8 @@ import {
     Text,
     TouchableOpacity,
     TextInput,
-    Keyboard
+    Keyboard,
+    Alert
 } from "react-native";
 
 
@@ -37,6 +38,8 @@ export default class CardEditLabel extends React.PureComponent {
             haveLabel: false
         };
 
+        this.isEdit = false;
+
         this.updateHue = this.updateHue.bind(this);
         this.updateSaturation = this.updateSaturation.bind(this);
         this.updateLightness = this.updateLightness.bind(this);
@@ -44,10 +47,23 @@ export default class CardEditLabel extends React.PureComponent {
 
         this.onClickOK = this.onClickOK.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
+        this.onClickDelete = this.onClickDelete.bind(this);
+        this.onConfirmDelete = this.onConfirmDelete.bind(this);
     }
 
-    preEdit(text, color)
-    {
+    preEdit(text, color) {
+
+        if(text === undefined)
+        {
+            this.isEdit = false;
+            text = "";
+            color = "#f00";
+        }
+        else
+        {
+            this.isEdit = true;
+        }
+
         this.setState({
             text: text,
             color: tinycolor(color).toHsl(),
@@ -60,7 +76,24 @@ export default class CardEditLabel extends React.PureComponent {
     }
 
 
-
+    renderDelete() {
+        if (this.isEdit === true) {
+            return <View
+                style={[styles.rowButton]}
+            >
+                <View style={{width: '27.5%'}}/>
+                <TouchableOpacity
+                    style={[styles.button, {borderColor: '#e00'}]}
+                    onPress={this.onClickDelete}
+                >
+                    <Text style={styles.buttonText}>
+                        Delete
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        }
+        return null;
+    }
 
     render() {
         if (this.state.haveLabel === false)
@@ -69,7 +102,7 @@ export default class CardEditLabel extends React.PureComponent {
             ><Text>Hello World!</Text></View>;
 
         return <View
-                style={styles.main}
+            style={styles.main}
         >
             <TextInput
 
@@ -114,7 +147,7 @@ export default class CardEditLabel extends React.PureComponent {
                 style={styles.rowButton}
             >
                 <TouchableOpacity
-                    style={styles.button}
+                    style={[styles.button, {borderColor: '#0d0'}]}
                     onPress={this.onClickCancel}
                 >
                     <Text style={styles.buttonText}>
@@ -123,7 +156,7 @@ export default class CardEditLabel extends React.PureComponent {
                 </TouchableOpacity>
                 <View style={styles.span}/>
                 <TouchableOpacity
-                    style={styles.button}
+                    style={[styles.button, {borderColor: '#00f'}]}
                     onPress={this.onClickOK}
                 >
                     <Text style={styles.buttonText}>
@@ -131,36 +164,47 @@ export default class CardEditLabel extends React.PureComponent {
                     </Text>
                 </TouchableOpacity>
             </View>
+            {this.renderDelete()}
         </View>
     }
 
-    updateHue(h)
-    {
-        this.setState({ color: { ...this.state.color, h } });
-    }
-    updateSaturation(s)
-    {
-        this.setState({ color: { ...this.state.color, s } });
-    }
-    updateLightness(l)
-    {
-        this.setState({ color: { ...this.state.color, l } });
+    updateHue(h) {
+        this.setState({color: {...this.state.color, h}});
     }
 
-    onEditText(text)
-    {
+    updateSaturation(s) {
+        this.setState({color: {...this.state.color, s}});
+    }
+
+    updateLightness(l) {
+        this.setState({color: {...this.state.color, l}});
+    }
+
+    onEditText(text) {
         this.setState({text: text});
     }
 
-    onClickOK()
-    {
+    onClickOK() {
         this.props.editComplete(this.state.text, tinycolor(this.state.color).toHexString());
         Keyboard.dismiss();
     }
-
-    onClickCancel()
-    {
+    onClickCancel() {
         this.props.editComplete();
+        Keyboard.dismiss();
+    }
+    onClickDelete() {
+        Alert.alert(
+            'Deleting label',
+            'Do you really want to delete this label?',
+            [
+                {text: 'Cancel'},
+                {text: 'OK', onPress: this.onConfirmDelete},
+            ]
+        )
+    }
+
+    onConfirmDelete() {
+        this.props.editComplete(true);
         Keyboard.dismiss();
     }
 
@@ -192,7 +236,6 @@ const styles = StyleSheet.create({
     button: {
         width: '45%',
         borderRadius: 5,
-        borderColor: '#f00',
         borderWidth: 2,
         alignItems: 'center',
         justifyContent: 'center'

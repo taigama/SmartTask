@@ -98,7 +98,6 @@ export default class EditLabelScreen extends Component {
     }
 
 
-
     /**
      *
      */
@@ -276,15 +275,14 @@ export default class EditLabelScreen extends Component {
         );
     }
 
-    onClickAddLabel()
-    {
+    onClickAddLabel() {
         this.isEdit = false;
         this.currentLabel = null;
 
         this.dialog.show();
 
         setTimeout(() => {
-                this.cardEdit.preEdit("", "#f00");
+                this.cardEdit.preEdit();
             }, 16
         );
     }
@@ -302,71 +300,89 @@ export default class EditLabelScreen extends Component {
             return;
         }
 
-        if(typeof(textOrDelete) === "string")
-        {
-            var text = textOrDelete;
+        if (typeof(textOrDelete) === "string") {
 
-            if(this.isEdit) {
-                realm.write(() => {
-                    this.currentLabel.data.content = (text || "");
-                    this.currentLabel.data.color = color;
-                });
-
-                this.currentLabel.component.setState({
-                    label: this.currentLabel.data
-                });
+            if (this.isEdit) {
+                this.editLabel(textOrDelete, color);
             }
-            else
-            {
-                var labels = realm.objects("Label");
-                if(labels == null)
-                {
-                    this.presetData();
-                    this.forceUpdate();
-                }
-                else
-                {
-                    let groups = realm.objects("LabelGroup");
-                    let links = realm.objects("LabelLink");
-
-                    var newLabelId = getNewId(labels, 'key');
-
-
-                    realm.write(() => {
-
-                        // added preset labels
-                        let label = realm.create('Label', {
-                            key: newLabelId,
-                            color: color,
-                            content: text
-                        }, false);
-
-                        groups.forEach((group) => {
-                            var newLinkId = getNewId(links, 'key');
-                            group.links.push({
-                                key: newLinkId,
-                                idLabel: newLabelId,
-                                isCheck: false,
-                                labelGroup: group
-                            });
-                        });
-                    });
-                    this.setState({
-                        labels : realm.objects("Label")
-                    });
-                }
+            else {
+                this.createLabel(textOrDelete, color);
             }
         }
         else//typeof(textOrDelete) === "boolean"
         {
             var isDelete = textOrDelete;
-            if(isDelete === false)
+            if (isDelete === false)
                 return;
 
-
+            this.deleteLabel();
         }
         this.currentLabel = null;
     }
+
+    editLabel(text, color) {
+        realm.write(() => {
+            this.currentLabel.data.content = (text || "");
+            this.currentLabel.data.color = color;
+        });
+
+        this.currentLabel.component.setState({
+            label: this.currentLabel.data
+        });
+    }
+
+    createLabel(text, color) {
+        var labels = realm.objects("Label");
+        if (labels == null) {
+            this.presetData();
+            this.forceUpdate();
+        }
+        else {
+            let groups = realm.objects("LabelGroup");
+            let links = realm.objects("LabelLink");
+
+            var newLabelId = getNewId(labels, 'key');
+
+
+            realm.write(() => {
+
+                // added preset labels
+                let label = realm.create('Label', {
+                    key: newLabelId,
+                    color: color,
+                    content: text
+                }, false);
+
+                groups.forEach((group) => {
+                    var newLinkId = getNewId(links, 'key');
+                    group.links.push({
+                        key: newLinkId,
+                        idLabel: newLabelId,
+                        isCheck: false,
+                        labelGroup: group
+                    });
+                });
+            });
+            this.setState({
+                labels: realm.objects("Label")
+            });
+        }
+    }
+
+    deleteLabel() {
+        var id = this.currentLabel.data.key;
+
+        realm.write(() => {
+            var links = realm.objects("LabelLink").filtered("idLabel == " + id.toString());
+            realm.delete(this.currentLabel.data);
+            realm.delete(links);
+        });
+
+        this.setState({
+            labels: realm.objects("Label")
+        });
+    }
+
 
 }
 
