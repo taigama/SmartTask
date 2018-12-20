@@ -103,7 +103,7 @@ export default class CardLabel extends Component {
     renderChild() {
         if(this.state.labels.length !== 0)
         {
-            return this.state.labels.map((label) => <Label clickCallback={this.onClickLabel} data={label}/>);
+            return this.state.labels.map((label) => <Label key={label.key} clickCallback={this.onClickLabel} data={label}/>);
         }
         else
         {

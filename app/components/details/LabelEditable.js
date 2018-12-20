@@ -59,12 +59,15 @@ export default class LabelEditable extends React.Component {
                     >
                         {this.state.label.content}
                     </Text>
-                    <Icon
-                        opacity={this.state.isChecked ? 1 : 0}
-                        name='check'
-                        color='black'
-                        size={24}
-                    />
+                    <View style={styles.iconBackground}>
+                        <Icon
+                            opacity={this.state.isChecked ? 1 : 0}
+                            name='check'
+                            color='black'
+                            size={24}
+                        />
+                    </View>
+
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={this.onClickEdit}
@@ -115,6 +118,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
+    },
+    iconBackground: {
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        width: 24,
+        height: 24,
+        marginRight: 3,
     },
     labelText: {
         color: 'white',

@@ -31,7 +31,6 @@ import {
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import CardLabel from "../components/details/CardLabel";
 import CardEditLabel from "../components/details/CardEditLabel";
-import DialogEditLabel from "../components/details/DialogEditLabel";
 
 import realm from '../realm/Realm';
 
@@ -201,7 +200,7 @@ export default class TaskDetailScreen extends Component {
                             placeholder="Name of this task..."
                             placeholderTextColor="#aaa"
 
-                            multiline={true}
+                            multiline={false}
 
                             defaultValue={this.state.txtTitle}
                             onChangeText={this.onChangeTitle}
@@ -217,7 +216,7 @@ export default class TaskDetailScreen extends Component {
                             </Text>
 
                             <Text style={styles.subTitleBellowImg}>
-                                {this.state.txtTitle.split(' ').map((word) => word && 'c').join(' ')}
+                                {this.state.txtTitle.split(' ').map((word) => word && 'c').join('-')}
                             </Text>
                         </View>
 

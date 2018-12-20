@@ -49,6 +49,7 @@ export default class DialogEditLabel extends React.Component {
     renderChild(link)
     {
         return <LabelEditable
+            key={link.idLabel}
             data={this.state.labels[link.idLabel]}
             isChecked={link.isCheck}
         />;

@@ -213,6 +213,7 @@ export default class EditLabelScreen extends Component {
                     {
                         this.state.group.links.map((link) =>
                             <LabelEditable
+                                key={link.idLabel}
                                 data={link}
                                 editCallback={this.onClickEditLabel}
                             />
@@ -295,10 +296,11 @@ export default class EditLabelScreen extends Component {
      */
     onEndEditLabel(textOrDelete, color) {
         this.dialog.dismiss();
-        this.currentLabel = null;
 
-        if (textOrDelete === undefined)
+        if (textOrDelete === undefined) {
+            this.currentLabel = null;
             return;
+        }
 
         if(typeof(textOrDelete) === "string")
         {
@@ -363,15 +365,15 @@ export default class EditLabelScreen extends Component {
 
 
         }
-
+        this.currentLabel = null;
     }
 
 }
 
 const styles = StyleSheet.create({
     contentContainer: {
-        padding: 20
-
+        padding: 20,
+        paddingBottom: 80,
     },
     editLabelContent: {
         width: '100%'
