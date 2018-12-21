@@ -73,7 +73,7 @@ class CardGroupItem extends React.Component<CardGroupProps, IData> {
             <FlatList
               ItemSeparatorComponent={() => (
                 <View
-                  style={{ justifyContent: "center", width: "100%", height: 4 }}
+                  style={{ justifyContent: "center", width: "100%", height: 8 }}
                 />
               )}
               keyExtractor={(item, index) => item.id}

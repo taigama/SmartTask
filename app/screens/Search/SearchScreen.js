@@ -1,62 +1,69 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ViewPropTypes } from 'react-native';
-import { Icon, Header, Left, Body, Right, Title, ListItem, Thumbnail } from 'native-base';
-import { SearchBar } from 'react-native-elements'
+import { Platform, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ViewPropTypes, FlatList } from 'react-native';
+import { Icon, Header, Left, Body, Right, Title, ListItem, Thumbnail, Item, Input, Content, List } from 'native-base';
+import { SearchBar } from 'react-native-elements';
+import { Actions } from 'react-native-router-flux';
 
 import realm, { Board } from '../../Realm/Realm'
 import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
+import CardItem from '../Workspace/CardItem';
 
 export default class SearchScreen extends Component<IData> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filteredCards: [],
+    }
+
+    this.onChangeText = this.onChangeText.bind(this);
+  }
+
 
   render() {
     return (
-      <View style={{backgroundColor: 'white'}}>
+      <ScrollView style={{backgroundColor: '9E9E9E'}}>
         {this.renderHeader()}
-        
-        <View style={{ backgroundColor: '#9E9E9E', width: '100%', height: '100%' }}></View>
-      </View>
+        <List 
+          contentContainerStyle={{padding: 20}}
+          dataArray={this.state.filteredCards}
+          renderRow={(item) => <CardItem data={item} />}
+        />
+      </ScrollView>
     );
   }
 
   renderHeader() {
     return (
-      <Header style={{backgroundColor: 'white'}}>
-        <View style={{flex: 1, flexDirection: "row"}}>
-        <TouchableOpacity onPress={() => this.drawer._root.open()} style={{width: 50, justifyContent: 'center'}}>
-            <Icon 
-              round
-              name='arrow-back'
-              type="MaterialIcons"
-              style={{fontSize: 25, color: 'grey', textAlign: 'center'}}
-            /> 
-          </TouchableOpacity>
-        <SearchBar
-          lightTheme
-          round
-          // onChangeText={someMethod}
-          // onClearText={someMethod}
-          containerStyle={{width: (Window.width - 65)}}
-          // icon={{ type: 'font-awesome', name: 'search' }}
-          placeholder=' Search title...'
-          inlineImageLeft='' />
-          {/* <Text>ABCDEF</Text> */}
-        </View>
-        {/* <Left style={{width: 50}}>
-          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginLeft: 10}}>
-            <Icon 
-              name='menu'
-              style={{fontSize: 25, color: 'green'}}
-            /> 
-          </TouchableOpacity>
-        </Left> */}
-        {/* <Body>
-        
-        </Body> */}
-       
-        
+      <Header searchBar rounded>
+        <TouchableOpacity style={{width: 50, height: "100%", justifyContent: "center"}}>
+          <Icon name="arrow-back" type="MaterialIcons" style={{ color: 'white' }} />
+        </TouchableOpacity>
+        <Item>
+          <Icon name="ios-search" />
+          <Input onChangeText={this.onChangeText} placeholder="Search" />
+        </Item>
       </Header>
     );
   }
+
+  onChangeText(text) {
+    if (text) {
+      let filteredCards = realm.objects("Card").filtered('title CONTAINS[c] "' + text + '"');
+      this.setState({filteredCards: filteredCards});  
+    } else {
+      this.setState({filteredCards: []});  
+    }
+  }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "white",
+    flexDirection: "row",
+  },
+  searchBarContainer: {
+    backgroundColor: "grey",
+  }
+});

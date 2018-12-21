@@ -101,7 +101,7 @@ class ProjectScreen extends Component {
           <Title>{this.screenTitle}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={() => this.refs[DialogType.ADD_BOARD].show()} style={{marginRight: 10}}>
+          <TouchableOpacity onPress={() => Actions.search()} style={{marginRight: 10}}>
             <Icon 
               name='search'
               style={{fontSize: 25, color: 'white'}}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { createStackNavigator, createAppContainer, createTabNavigator, createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation';
-import { Router, Scene, ActionConst, Stack } from 'react-native-router-flux';
+import { Router, Scene, ActionConst, Stack, Lightbox, Overlay } from 'react-native-router-flux';
 import { StackViewStyleInterpolator } from 'react-navigation-stack';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -12,49 +12,45 @@ import ProjectScreen from './Screens/Project/ProjectScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
 import AllReducers from './_Commons/AllReducers';
 import SearchScreen from './Screens/Search/SearchScreen';
+import Modal from 'react-native-modal';
+
+const store = createStore(AllReducers);
 
 const transitionConfig = () => ({
   screenInterpolator: StackViewStyleInterpolator.forHorizontal
 });
 
-const store = createStore(AllReducers);
+const transitionConfigV2 = () => ({
+  screenInterpolator: (props) => {
+      switch (props.scene.route.params.direction) {
+          case 'vertical':
+              return StackViewStyleInterpolator.forVertical(props);
+          case 'fade':
+              return StackViewStyleInterpolator.forFade(props);
+          case 'none':
+              return StackViewStyleInterpolator.forInitial
+          case 'horizontal':
+          default:
+              return StackViewStyleInterpolator.forHorizontal(props)
+      }
+  }
+});
 
 export const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <Scene key="root"
-          transitionConfig={transitionConfig}
-          >
-           <Scene key="develope"
-            component={DevelopeScreen}
-            title="Splash"
-            hideNavBar
-          />
-           <Scene key="search"
-            component={SearchScreen}
-            title="Splash"
-            hideNavBar
-            
-          />
-           <Scene key="splash"
-            component={SplashScreen}
-            title="Splash"
-            hideNavBar
-          />
-          <Scene key="project"
-            component={ProjectScreen}
-            title="Boards"
-            initial
-            hideNavBar
-          />
-          <Scene 
-            key="workspace"
-            component={WorkspaceScreen}
-            title="Boards' name"
-            hideNavBar
-          />
-        </Scene>
+        <Overlay>
+          <Modal key="modal" hideNavBar>
+            <Stack key="root" transitionConfig={transitionConfigV2}>
+              <Scene key="develope" component={DevelopeScreen} title="Splash" hideNavBar />
+              <Scene key="search" direction="fade" component={SearchScreen} title="Splash" hideNavBar />
+              <Scene key="splash" component={SplashScreen} title="Splash" hideNavBar />
+              <Scene key="project" component={ProjectScreen} title="Boards" hideNavBar initial/>
+              <Scene key="workspace" direction="horizontal" component={WorkspaceScreen} title="Workspace" hideNavBar />
+            </Stack >
+          </Modal>
+        </Overlay>
       </Router>
     </Provider>
   );

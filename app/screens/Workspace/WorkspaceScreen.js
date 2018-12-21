@@ -33,18 +33,8 @@ class WorkspaceScreen extends Component<IData> {
     this.state = {
       board: this.props.data,
       currentGroup: null,
-      dialogVisbie: {
-        addCard: false,
-        moveCard: false,
-        addGroup: false,
-        moveGroup: false,
-        renameGroup: false,
-        moveGroup: false,
-        copyGroup: false,
-      },
     }
 
-    this.toggleDialog = this.toggleDialog.bind(this);
     this.handleAction = this.handleAction.bind(this);
   }
 
@@ -87,35 +77,19 @@ class WorkspaceScreen extends Component<IData> {
     );
   }
 
-  toggleDialog(dialogType?: string, currentGroup?: any) {
-    let dialogVisbie = this.state.dialogVisbie ;
-
-    dialogType = dialogType || DialogType.NOTHING;
-    switch (dialogType) {
-      case DialogType.ADD_CARD      : dialogVisbie.addCard = !dialogVisbie.addCard; break;
-      case DialogType.ADD_GROUP     : dialogVisbie.addGroup = !dialogVisbie.addGroup; break;
-      case DialogType.MOVE_CARD     : dialogVisbie.moveCard = !dialogVisbie.moveCard; break;
-      case DialogType.MOVE_GROUP    : dialogVisbie.moveGroup = !dialogVisbie.moveGroup; break;
-      case DialogType.RENAME_GROUP  : dialogVisbie.renameGroup = !dialogVisbie.renameGroup; break;
-      case DialogType.COPY_GROUP    : dialogVisbie.copyGroup = !dialogVisbie.copyGroup; break;
-      default: break;
-    }
-    this.setState({
-      dialogVisbie: dialogVisbie,
-      currentGroup: currentGroup,
-    })
-  }
-
   handleAction(actionType?: string, data?: any) {
+    this.state.currentGroup = data;
+
     actionType = actionType || ActionType.NOTHING;
     switch (actionType) {
       case ActionType.ARCHIVE_GROUP     : this.archiveGroup(data); break;
       case ActionType.ARCHIVE_ALL_CARDS : this.archiveAllCards(data); break;
-      case ActionType.COPY_GROUP        : this.toggleDialog(DialogType.COPY_GROUP, data); break;
-      case ActionType.MOVE_GROUP        : this.toggleDialog(DialogType.MOVE_GROUP, data); break;
-      case ActionType.RENAME_GROUP      : this.toggleDialog(DialogType.RENAME_GROUP, data); break;
-      case ActionType.MOVE_ALL_CARDS    : this.toggleDialog(DialogType.MOVE_CARD, data); break;
-      case ActionType.ADD_CARD          : this.toggleDialog(DialogType.ADD_CARD, data); break;
+      case ActionType.COPY_GROUP        : this.refs[DialogType.COPY_GROUP].show(); break;
+      case ActionType.MOVE_GROUP        : this.refs[DialogType.MOVE_GROUP].show(); break;
+      case ActionType.RENAME_GROUP      : this.refs[DialogType.RENAME_GROUP].show(); break;
+      case ActionType.MOVE_ALL_CARDS    : this.refs[DialogType.MOVE_CARD].show(); break;
+      case ActionType.ADD_CARD          : this.refs[DialogType.ADD_CARD].show(); break;
+      case ActionType.ADD_GROUP         : this.refs[DialogType.ADD_GROUP].show(); break;
       default: break;
     }
   }
@@ -157,7 +131,7 @@ class WorkspaceScreen extends Component<IData> {
               style={{fontSize: 25, color: 'white'}}
             /> 
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.toggleDialog(DialogType.ADD_GROUP)} style={{marginRight: 20}}>
+          <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{marginRight: 20}}>
             <Icon 
               name='add'
               style={{fontSize: 25, color: 'white'}}
@@ -209,16 +183,14 @@ class WorkspaceScreen extends Component<IData> {
     )
   }
 
-
   renderAddGroupdDialog() {
-    const visible = this.state.dialogVisbie.addGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.ADD_GROUP, this.currentGroup);
     return (
       <FormModal 
-        isVisible={visible}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => () => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        ref={DialogType.ADD_GROUP}
+        isVisible={false}
+        onBackdropPress={() => this.refs[DialogType.ADD_GROUP].hide()}
+        onBackButtonPress={() => () => this.refs[DialogType.ADD_GROUP].hide()}
+        onSwipe={() => this.refs[DialogType.ADD_GROUP].hide()}
         swipeDirection='left'
         title='Add a group...'>
         <TextInput
@@ -226,7 +198,7 @@ class WorkspaceScreen extends Component<IData> {
           multiline={true}
           style={styles.modalTextInput}
           placeholder="Enter a title for this group"
-          onChangeText={(text) => this.newGroupTitle = text}
+          onChangeText={(text) => this.inputText = text}
         />
         <Button
           title="ADD"
@@ -243,9 +215,9 @@ class WorkspaceScreen extends Component<IData> {
             margin: 0,
           }}
           onPress={() => {
-            this.addGroup(this.newGroupTitle);
-            toggleDialog()
-            this.newGroupTitle = '';
+            this.addGroup(this.inputText);
+            this.refs[DialogType.ADD_GROUP].hide();
+            this.inputText = '';
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
         />
@@ -254,14 +226,13 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   renderCopyGroupdDialog() {
-    const visible = this.state.dialogVisbie.copyGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.COPY_GROUP, this.currentGroup);
     return (
       <FormModal 
-        isVisible={visible}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => () => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        ref={DialogType.COPY_GROUP}
+        isVisible={false}
+        onBackdropPress={() => this.refs[DialogType.COPY_GROUP].hide()}
+        onBackButtonPress={() => () => this.refs[DialogType.COPY_GROUP].hide()}
+        onSwipe={() => this.refs[DialogType.COPY_GROUP].hide()}
         swipeDirection='left'
         title='Copy as...'>
         <TextInput
@@ -269,7 +240,7 @@ class WorkspaceScreen extends Component<IData> {
           multiline={true}
           style={styles.modalTextInput}
           placeholder="Enter a title for this group"
-          onChangeText={(text) => this.newGroupTitle = text}
+          onChangeText={(text) => this.inputText = text}
         />
         <Button
           title="ADD"
@@ -286,9 +257,9 @@ class WorkspaceScreen extends Component<IData> {
             margin: 0,
           }}
           onPress={() => {
-            this.copyGroup(this.newGroupTitle);
-            toggleDialog()
-            this.newGroupTitle = '';
+            this.copyGroup(this.inputText);
+            this.refs[DialogType.COPY_GROUP].hide();
+            this.inputText = '';
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
         />
@@ -297,18 +268,16 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   renderMoveGroupdDialog() {
-    const visible = this.state.dialogVisbie.moveGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_GROUP, this.currentGroup);
-    
     return (
       <FormModal
-        isVisible={visible}
+        ref={DialogType.MOVE_GROUP}
+        isVisible={false}
         titleStyle={{color: '#32383B'}}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        onBackdropPress={() => this.refs[DialogType.MOVE_GROUP].hide()}
+        onBackButtonPress={() => this.refs[DialogType.MOVE_GROUP].hide()}
+        onSwipe={() => this.refs[DialogType.MOVE_GROUP].hide()}
         swipeDirection='left'
-        title='Move all cards...'>
+        title='Move group...'>
         <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
           <Picker
             mode="dialog"
@@ -337,7 +306,7 @@ class WorkspaceScreen extends Component<IData> {
           }}
           onPress={() => {
             this.moveGroup(this.state.selectedBoardValue);
-            toggleDialog()
+            this.refs[DialogType.MOVE_GROUP].hide();
             this.refresh();
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
@@ -347,14 +316,13 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   renderRenameGroupdDialog() {
-    const visible = this.state.dialogVisbie.renameGroup;
-    const toggleDialog = () => this.toggleDialog(DialogType.RENAME_GROUP, this.currentGroup);
     return (
       <FormModal 
-        isVisible={visible}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => () => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        ref={DialogType.RENAME_GROUP}
+        isVisible={false}
+        onBackdropPress={() => this.refs[DialogType.RENAME_GROUP].hide()}
+        onBackButtonPress={() => this.refs[DialogType.RENAME_GROUP].hide()}
+        onSwipe={() => this.refs[DialogType.RENAME_GROUP].hide()}
         swipeDirection='left'
         title='Rename group...'>
         <TextInput
@@ -362,7 +330,7 @@ class WorkspaceScreen extends Component<IData> {
           multiline={true}
           style={styles.modalTextInput}
           placeholder="Enter a title for this group"
-          onChangeText={(text) => this.newGroupTitle = text}
+          onChangeText={(text) => this.inputText = text}
         />
         <Button
           title="ADD"
@@ -379,9 +347,9 @@ class WorkspaceScreen extends Component<IData> {
             margin: 0,
           }}
           onPress={() => {
-            this.renameGroup(this.newGroupTitle);
-            toggleDialog()
-            this.newGroupTitle = '';
+            this.renameGroup(this.inputText);
+            this.refs[DialogType.RENAME_GROUP].hide();
+            this.inputText = '';
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
         />
@@ -390,14 +358,13 @@ class WorkspaceScreen extends Component<IData> {
   }
   
   renderAddCardDialog() {
-    const visible = this.state.dialogVisbie.addCard;
-    const toggleDialog = () => this.toggleDialog(DialogType.ADD_CARD, this.currentGroup);
     return (
       <FormModal
-        isVisible={visible}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        ref={DialogType.ADD_CARD}
+        isVisible={false}
+        onBackdropPress={() => this.refs[DialogType.ADD_CARD].hide()}
+        onBackButtonPress={() => this.refs[DialogType.ADD_CARD].hide()}
+        onSwipe={() => this.refs[DialogType.ADD_CARD].hide()}
         swipeDirection="left"
         title="Add a card..."
       >
@@ -406,7 +373,7 @@ class WorkspaceScreen extends Component<IData> {
           multiline={true}
           style={styles.modalTextInput}
           placeholder="Enter a title for this card"
-          onChangeText={text => (this.newCardTitle = text)}
+          onChangeText={text => (this.inputText = text)}
         />
         <Button
           title="ADD"
@@ -429,9 +396,9 @@ class WorkspaceScreen extends Component<IData> {
             borderRadius: 5
           }}
           onPress={() => {
-            this.addCard(this.newCardTitle);
-            toggleDialog()
-            this.newCardTitle = '';
+            this.addCard(this.inputText);
+            this.refs[DialogType.ADD_CARD].hide();
+            this.inputText = '';
           }}
         />
       </FormModal>
@@ -439,16 +406,14 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   renderMoveCardDialog() {
-    const visible = this.state.dialogVisbie.moveCard;
-    const toggleDialog = () => this.toggleDialog(DialogType.MOVE_CARD, this.currentGroup);
-    
     return (
       <FormModal
-        isVisible={visible}
+        ref={DialogType.MOVE_CARD}
+        isVisible={false}
         titleStyle={{color: '#32383B'}}
-        onBackdropPress={() => toggleDialog()}
-        onBackButtonPress={() => toggleDialog()}
-        onSwipe={() => toggleDialog()}
+        onBackdropPress={() => this.refs[DialogType.MOVE_CARD].hide()}
+        onBackButtonPress={() => this.refs[DialogType.MOVE_CARD].hide()}
+        onSwipe={() => this.refs[DialogType.MOVE_CARD].hide()}
         swipeDirection='left'
         title='Move all cards...'>
         <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
@@ -479,7 +444,7 @@ class WorkspaceScreen extends Component<IData> {
           }}
           onPress={() => {
             this.moveAllCards(this.state.selectedValue);
-            toggleDialog()
+            this.refs[DialogType.MOVE_CARD].hide();
             this.refresh();
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
