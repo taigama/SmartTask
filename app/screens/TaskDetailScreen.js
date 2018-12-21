@@ -13,7 +13,10 @@ import {
     Text,
     View,
     StatusBar,
-    FlatList
+    FlatList,
+    Button,
+    ScrollView,
+    Dimensions
 } from 'react-native';
 
 
@@ -25,12 +28,22 @@ import {
 } from 'react-native-elements';
 
 
+import ImagePicker from 'react-native-image-picker';
 
+const optionsImg = {
+    title: 'Select a photo',
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+};
+
+
+import CollapseView from 'react-native-collapse-view';
 
 
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import CardLabel from "../components/details/CardLabel";
-import CardEditLabel from "../components/details/CardEditLabel";
 
 import realm from '../realm/Realm';
 
@@ -84,7 +97,13 @@ export default class TaskDetailScreen extends Component {
         this.state = {
 
             txtTitle: 'this is title yeah',
-            idGroupLabel: this.props.navigation.state.params.idGroupLabel || 1
+            idGroupLabel: this.props.navigation.state.params.idGroupLabel || 1,
+
+            cover: {
+                width: Dimensions.get('window').width,
+                height: 200,
+                uri: ""
+            },
 
         };
         this.onChangeTitle = this.onChangeTitle.bind(this);
@@ -92,13 +111,10 @@ export default class TaskDetailScreen extends Component {
         this.onClickLabel = this.onClickLabel.bind(this);
 
 
-
-
         this.initData();
     }
 
-    initData()
-    {
+    initData() {
         // Label
         let group = realm.objectForPrimaryKey('LabelGroup', this.state.idGroupLabel);
         if (group == null) {
@@ -114,7 +130,6 @@ export default class TaskDetailScreen extends Component {
         }
         this.state.groupLabel = group;
     }
-
 
 
     componentDidMount() {
@@ -165,7 +180,7 @@ export default class TaskDetailScreen extends Component {
                             backgroundColor: '#026AA7',
                             alignItems: 'flex-start',
                             justifyContent: 'center',
-                            marginLeft: 70
+                            paddingLeft: 70
                         }}>
                             <Text style={styles.title}>
                                 {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 30)}
@@ -179,17 +194,38 @@ export default class TaskDetailScreen extends Component {
                     backgroundColor="#026AA7"
                     contentBackgroundColor="#fff"
 
-                    parallaxHeaderHeight={230}
+                    parallaxHeaderHeight={this.state.cover.height}
                     fadeOutForeground={true}
                     // onChangeHeaderVisibility={alert("changed!")}
 
 
-                    renderForeground={() => (
-                        <Image
-                            source={require('../resources/night_sky.jpg')}
-                            style={{width: '100%', height: 230}}>
-                        </Image>
-                    )}
+                    renderForeground={() => {
+
+                        if (this.state.cover.uri)
+                            return (
+                                <Image
+
+                                    defaultSource={require('../resources/night_sky.jpg')}
+                                    resizeMode='cover'
+                                    style={{
+                                        width: this.state.cover.width,
+                                        height: this.state.cover.height,
+                                    }}
+                                    source={{uri: this.state.cover.uri}}
+                                />
+                            );
+                        else
+                            return (
+                                <Image
+                                    resizeMode='cover'
+                                    style={{
+                                        width: this.state.cover.width,
+                                        height: this.state.cover.height,
+                                    }}
+                                    source={require('../resources/night_sky.jpg')}
+                                />
+                            );
+                    }}
 
 
                 >
@@ -240,6 +276,20 @@ export default class TaskDetailScreen extends Component {
                         clickLabelCallback={this.onClickLabel}
                         groupLabel={this.state.groupLabel}
                     />
+                    <CollapseView
+                        tension={100}
+                        collapse={false}
+                        renderView={() => <Text>This is the title</Text>}
+                        renderCollapseView={() => <Text style={{fontWeight: 'bold'}}>This is the content, very
+                            much</Text>}
+                    />
+
+
+                    <View>
+                        <Button title="Load Images" onPress={this._handleButtonPress.bind(this)}/>
+                    </View>
+
+
                     <View style={styles.container}>
 
                         <FlatList
@@ -255,6 +305,42 @@ export default class TaskDetailScreen extends Component {
         );
     }
 
+    _handleButtonPress = () => {
+        /**
+         * The first arg is the options object for customization (it can also be null or omitted for default options),
+         * The second arg is the callback which sends object: response (more info in the API Reference)
+         */
+        ImagePicker.showImagePicker(optionsImg, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+
+                // You can also display the image using data:
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+
+                var width = Dimensions.get('window').width;
+                var height = width / response.width;
+                height = response.height * height;
+
+                this.setState({
+                    cover: {
+                        width: width,
+                        height: height,
+                        uri: response.uri,
+                    },
+                });
+            }
+        });
+
+
+    };
 
     onChangeTitle(txt) {
         this.setState({txtTitle: txt});
