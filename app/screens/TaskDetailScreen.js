@@ -28,7 +28,22 @@ import {
 } from 'react-native-elements';
 
 
+
+
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-picker';
+import CollapseView from 'react-native-collapse-view';
+import ActionButton from "react-native-action-button";
+
+
+import CardLabel from "../components/details/CardLabel";
+import CardDateTime from "../components/details/CardDateTime";
+
+import realm from '../realm/Realm';
+
+
+
+
 
 const optionsImg = {
     title: 'Select a photo',
@@ -39,13 +54,6 @@ const optionsImg = {
 };
 
 
-import CollapseView from 'react-native-collapse-view';
-
-
-import ParallaxScrollView from 'react-native-parallax-scroll-view';
-import CardLabel from "../components/details/CardLabel";
-
-import realm from '../realm/Realm';
 
 
 export default class TaskDetailScreen extends Component {
@@ -284,6 +292,12 @@ export default class TaskDetailScreen extends Component {
                             much</Text>}
                     />
 
+                    <CardDateTime
+                        dateTimeModel={{
+                            time: new Date(),
+                            isCheck: false
+                        }}
+                    />
 
                     <View>
                         <Button title="Load Images" onPress={this._handleButtonPress.bind(this)}/>
@@ -299,6 +313,17 @@ export default class TaskDetailScreen extends Component {
                         />
                     </View>
                 </ParallaxScrollView>
+                <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.addBoard()}>
+                        <Icon name='add' color='white'/>
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
+                        <Icon name='remove' color='white' />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.dialogComponent.show()}}>
+                        <Icon name='ios-add' color='white' />
+                    </ActionButton.Item>
+                </ActionButton>
 
             </View>
 

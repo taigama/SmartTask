@@ -45,6 +45,7 @@ import {
 import LabelEditable from "../components/details/LabelEditable";
 import realm, {getNewId} from '../realm/Realm';
 import CardEditLabel from "../components/details/CardEditLabel";
+import ActionButton from "react-native-action-button";
 
 
 export default class EditLabelScreen extends Component {
@@ -220,17 +221,13 @@ export default class EditLabelScreen extends Component {
                     }
                 </ScrollView>
 
-                <View style={styles.floatingView}>
-                    <TouchableOpacity
-                        onPress={this.onClickAddLabel}
-                    >
-                        <Icon
-                            name='add-circle'
-                            color='#f5f'
-                            size={50}
-                        />
-                    </TouchableOpacity>
-                </View>
+
+
+                <ActionButton
+                    renderIcon={() => <Icon size={54} name='add-circle' color='#d0d'/>}
+                    buttonColor='#fff' onPress={this.onClickAddLabel}
+                >
+                </ActionButton>
 
                 <DialogComponent
                     ref={(dialogComponent) => {
@@ -333,40 +330,39 @@ export default class EditLabelScreen extends Component {
 
     createLabel(text, color) {
         var labels = realm.objects("Label");
-        if (labels == null) {
-            this.presetData();
-            this.forceUpdate();
+
+        var newLabelId = 1;
+        if(labels != null)
+        {
+            newLabelId = getNewId(labels, 'key');
         }
-        else {
-            let groups = realm.objects("LabelGroup");
-            let links = realm.objects("LabelLink");
-
-            var newLabelId = getNewId(labels, 'key');
 
 
-            realm.write(() => {
+        let groups = realm.objects("LabelGroup");
+        let links = realm.objects("LabelLink");
 
-                // added preset labels
-                let label = realm.create('Label', {
-                    key: newLabelId,
-                    color: color,
-                    content: text
-                }, false);
+        realm.write(() => {
 
-                groups.forEach((group) => {
-                    var newLinkId = getNewId(links, 'key');
-                    group.links.push({
-                        key: newLinkId,
-                        idLabel: newLabelId,
-                        isCheck: false,
-                        labelGroup: group
-                    });
+            // added preset labels
+            let label = realm.create('Label', {
+                key: newLabelId,
+                color: color,
+                content: text
+            }, false);
+
+            groups.forEach((group) => {
+                var newLinkId = getNewId(links, 'key');
+                group.links.push({
+                    key: newLinkId,
+                    idLabel: newLabelId,
+                    isCheck: false,
+                    labelGroup: group
                 });
             });
-            this.setState({
-                labels: realm.objects("Label")
-            });
-        }
+        });
+        this.setState({
+            labels: realm.objects("Label")
+        });
     }
 
     deleteLabel() {
@@ -389,7 +385,7 @@ export default class EditLabelScreen extends Component {
 const styles = StyleSheet.create({
     contentContainer: {
         padding: 20,
-        paddingBottom: 80,
+        paddingBottom: 100,
     },
     editLabelContent: {
         width: '100%'

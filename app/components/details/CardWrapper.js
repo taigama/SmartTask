@@ -39,6 +39,11 @@ export default class CardWrapper extends React.Component {
         };
     }
 
+    updateIconColor(color)
+    {
+        this.setState({iconColor: color});
+    }
+
 
     render() {
 
