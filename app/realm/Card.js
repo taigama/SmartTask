@@ -43,7 +43,7 @@ Card.schema = {
     description: 'string?',
     labels: 'Label[]',
     checkList: 'Check[]',
-    dueDate: 'date',
+    dueDate: 'date?',
     dueDateCheck: {type: 'bool', default: false},
     archived: {type: 'bool', default: false},
     cardGroup: {type: 'linkingObjects', objectType: 'CardGroup', property: 'cards'},

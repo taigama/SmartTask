@@ -11,7 +11,6 @@ import Toast, {DURATION} from 'react-native-easy-toast';
 import ActionButton from 'react-native-action-button';
 import uuid from 'react-native-uuid';
 
-import realm from '../../Realm/Realm'
 import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
@@ -21,6 +20,9 @@ import CardGroupItem from './CardGroupItem';
 import WorkspaceSideBar from './WorkspaceSideBar';
 import { showAddCardDialog, showAddGroupDialog, addGroup } from './WorkspaceReducer';
 import { ActionType, DialogType } from './Constants';
+import realm from '../../Realm/Realm';
+import Card from '../../Realm/Card';
+import CardGroup from '../../Realm/CardGroup';
 
 // Fix drawer overlay black darken android
 Drawer.defaultProps.styles.mainOverlay.elevation = 0;
@@ -37,7 +39,7 @@ class WorkspaceScreen extends Component<IData> {
 
     this.handleAction = this.handleAction.bind(this);
   }
-
+  
   render() {
     return (
       <Drawer
@@ -456,18 +458,15 @@ class WorkspaceScreen extends Component<IData> {
   addGroup(title?: string) {
     title = title || 'New group';
     realm.write(() => {
-      let group = realm.create('CardGroup', { id: uuid.v4(), title: title, cards: [] });
-      this.state.board.cardGroups.push(group);
+      this.state.board.cardGroups.push(CardGroup.create(title));
       setTimeout(() => this._carousel.snapToItem(this.visibleCount + 1), 100);
       this.refresh();
     });
   }
 
   addCard(title?: string) {
-    title = title || "New card";
     realm.write(() => {
-      let card = realm.create("Card", { id: uuid.v4(), title: title });
-      this.state.currentGroup.cards.push(card);
+      this.state.currentGroup.cards.push(Card.create(title));
     });
   }
 

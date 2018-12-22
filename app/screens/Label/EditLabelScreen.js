@@ -6,7 +6,8 @@ import { Icon } from 'react-native-elements';
 
 import LabelEditable from "../Detail/Label/LabelEditable";
 import CardEditLabel from "../Detail/Label/CardEditLabel";
-import realm, { getNewId } from '../../Realm/Realm';
+import realm from '../../Realm/Realm';
+import Label from '../../Realm/Label';
 
 
 export default class EditLabelScreen extends Component {
@@ -41,16 +42,12 @@ export default class EditLabelScreen extends Component {
     };
   };
 
-
   constructor(props) {
     super(props);
-
-
     this.state = {
       group: this.props.navigation.state.params.groupLabel,
       labels: realm.objects('Label'),
     };
-
     this.onClickEditLabel = this.onClickEditLabel.bind(this);
     this.onClickAddLabel = this.onClickAddLabel.bind(this);
     this.onEndEditLabel = this.onEndEditLabel.bind(this);
@@ -137,83 +134,33 @@ export default class EditLabelScreen extends Component {
     }
   }
 
-
-  componentDidMount() {
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
-  }
-
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    return null;
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-  }
-
-
-  componentWillUnmount() {
-
-  }
-
-  componentDidCatch(error, info) {
-    logComponentStackToMyService(info.componentStack);
-  }
-
   render() {
-
-
-    return (
-
-      <View style={{ flex: 1 }}>
-
-        <ScrollView
-          contentContainerStyle={styles.contentContainer}
-        >
-          {
-            this.state.group.links.map((link) =>
-              <LabelEditable
-                key={link.idLabel}
-                data={link}
-                editCallback={this.onClickEditLabel}
-              />
-            )
-          }
-        </ScrollView>
-
-
-
-        <ActionButton
-          renderIcon={() => <Icon size={54} name='add-circle' color='#d0d' />}
-          buttonColor='#fff' onPress={this.onClickAddLabel}
-        >
-        </ActionButton>
-
-        <DialogComponent
-          ref={(dialogComponent) => {
-            this.dialog = dialogComponent;
-          }}
-          dialogAnimation={new SlideAnimation({ slideFrom: 'bottom' })}
-          width={1}
-          height={1}
-        >
-          <DialogTitle
-            title="Edit label..."
+    return <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {this.state.group.links.map(link => (
+          <LabelEditable
+            key={link.idLabel}
+            data={link}
+            editCallback={this.onClickEditLabel}
           />
-          <DialogContent>
-            <CardEditLabel
-              editComplete={this.onEndEditLabel}
+        ))}
+      </ScrollView>
 
-              ref={(cardEdit) => {
-                this.cardEdit = cardEdit;
-              }}
-            />
-          </DialogContent>
-        </DialogComponent>
-      </View>
+      <ActionButton renderIcon={() => <Icon size={54} name="add-circle" color="#d0d" />} buttonColor="#fff" onPress={this.onClickAddLabel} />
 
-    );
+      <DialogComponent ref={dialogComponent => {
+        this.dialog = dialogComponent;
+      }} dialogAnimation={new SlideAnimation({
+        slideFrom: "bottom"
+      })} width={1} height={1}>
+        <DialogTitle title="Edit label..." />
+        <DialogContent>
+          <CardEditLabel editComplete={this.onEndEditLabel} ref={cardEdit => {
+            this.cardEdit = cardEdit;
+          }} />
+        </DialogContent>
+      </DialogComponent>
+    </View>;
   }
 
   onClickEditLabel(labelComponent, labelData) {

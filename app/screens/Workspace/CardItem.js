@@ -5,6 +5,7 @@ import { Window } from '../../_Commons/Utils';
 import { IData } from '../../_Commons/IData';
 import { Badge } from "react-native-elements";
 import { Icon } from "native-base";
+import { Actions } from "react-native-router-flux";
 
 export default class CardItem extends Component<IData> {
   constructor(props) {
@@ -16,7 +17,7 @@ export default class CardItem extends Component<IData> {
 
   render() {
     return (
-      <TouchableOpacity style={styles.container} onPress={() => null}  activeOpacity={0.8}>
+      <TouchableOpacity style={styles.container} onPress={() => Actions.detail(this.state.card)}  activeOpacity={0.8}>
         <View style={styles.labelContainer}>
         </View>
         <View style={styles.titleContainer}>

@@ -30,54 +30,9 @@ const optionsImg = {
  *
  * ------------------------------------------------------------------------------ */
 export default class TaskDetailScreen extends Component {
-	renderHeader() {
-    return (
-      <Header>
-        <Left>
-          <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10)}} style={{marginLeft: 10}}>
-            <Icon 
-              name='arrow-back'
-              type="MaterialIcons"
-              style={{fontSize: 25, color: 'white'}}
-            /> 
-          </TouchableOpacity>
-        </Left>
-        <Body>
-          <Title>{this.props.data.titie}</Title>
-        </Body>
-        <Right>
-          <TouchableOpacity onPress={() => this.testFunction()} style={{marginRight: 20}}>
-            <Icon 
-              name='alert-box'
-              type='MaterialCommunityIcons'
-              style={{fontSize: 25, color: 'white'}}
-            /> 
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{marginRight: 20}}>
-            <Icon 
-              name='add'
-              style={{fontSize: 25, color: 'white'}}
-            /> 
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginRight: 10}}>
-            <Icon 
-              name="dots-vertical"
-							type="MaterialCommunityIcons"
-							style={{ fontSize: 25, color: "black" }}
-            /> 
-          </TouchableOpacity>
-        </Right>
-      </Header>
-    );
-  }
-
-
 	constructor(props) {
 		super(props);
-
-
-		var data = this.props.data;// TaskSchema
-
+		var data = this.props.data; // Card
 
 		this.state = {
 			title: data.title,
@@ -118,7 +73,6 @@ export default class TaskDetailScreen extends Component {
 			}
 		}
 
-
 		this.initData();
 	}
 
@@ -138,28 +92,32 @@ export default class TaskDetailScreen extends Component {
 		this.onTrulyDeleteTask = this.onTrulyDeleteTask.bind(this);
 	}
 
-
-	componentDidMount() {
-	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		return true;
-	}
-
-	getSnapshotBeforeUpdate(prevProps, prevState) {
-		return null;
-	}
-
-	componentDidUpdate(prevProps, prevState, snapshot) {
-	}
-
-
-	componentWillUnmount() {
-
-	}
-
-	componentDidCatch(error, info) {
-		logComponentStackToMyService(info.componentStack);
+	renderHeader() {
+		return (
+			<Header transparent>
+				<Left>
+					<TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10) }} style={{ marginLeft: 10 }}>
+						<Icon
+							name='arrow-back'
+							type="MaterialIcons"
+							style={{ fontSize: 25, color: 'white' }}
+						/>
+					</TouchableOpacity>
+				</Left>
+				<Body>
+					<Title>{this.props.data.titie}</Title>
+				</Body>
+				<Right>
+					<TouchableOpacity onPress={() => this.drawer._root.open()} style={{ marginRight: 10 }}>
+						<Icon
+							name="dots-vertical"
+							type="MaterialCommunityIcons"
+							style={{ fontSize: 25, color: "black" }}
+						/>
+					</TouchableOpacity>
+				</Right>
+			</Header>
+		);
 	}
 
 	renderStickyHeader() {
@@ -174,7 +132,6 @@ export default class TaskDetailScreen extends Component {
 		if (this.state.cover.uri)
 			return (
 				<Image
-
 					defaultSource={require('../../_Resources/moon.jpg')}
 					resizeMode='cover'
 					style={{

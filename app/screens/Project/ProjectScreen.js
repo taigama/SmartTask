@@ -16,8 +16,9 @@ import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
 import BoardItem from './BoardItem';
 import { ActionType, DialogType } from './Constants';
-import { Board } from '../../Realm/Realm';
 import { styles } from './ProjectStyle';
+import realm from '../../Realm/Realm';
+import Board from '../../Realm/Board';
 
 class ProjectScreen extends Component {
   constructor(props) {
@@ -27,9 +28,6 @@ class ProjectScreen extends Component {
     this.currentBoard = null;
     this.boards = realm.objects('Board');
     this.handleAction = this.handleAction.bind(this);
-  }
-
-  componentDidMount() {
   }
 
   render() {
@@ -83,18 +81,17 @@ class ProjectScreen extends Component {
   renderHeader() {
     return (
       <Header>
-        {/* <Left>
-          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginLeft: 10}}>
-            <Icon 
-              name='menu'
-              style={{fontSize: 25, color: 'white'}}
-            /> 
-          </TouchableOpacity>
-        </Left> */}
         <Body>
           <Title>    {this.screenTitle}</Title>
         </Body>
         <Right>
+        <TouchableOpacity onPress={() => realm.write(() => { realm.deleteAll(); this.refresh(); })} style={{marginRight: 30}}>
+            <Icon 
+              name='alert'
+              type="MaterialCommunityIcons"
+              style={{fontSize: 25, color: 'white'}}
+            /> 
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => Actions.search()} style={{marginRight: 10}}>
             <Icon 
               name='search'
@@ -219,7 +216,7 @@ class ProjectScreen extends Component {
   addBoard(title?: string) {
     title = title ? title : 'New board';
     realm.write(() => {
-      let board = realm.create('Board', { id: uuid.v4(), title: title });
+      Board.create(title);
       this.refresh();
     });
   
