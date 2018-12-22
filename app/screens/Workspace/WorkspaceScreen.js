@@ -15,7 +15,7 @@ import realm from '../../Realm/Realm'
 import { IData } from '../../_Commons/IData';
 import { Window } from '../../_Commons/Utils';
 import FormModal from '../../_Commons/FormModal';
-
+import Helper from '../../_Commons/Helper';
 import CardItem from './CardItem';
 import CardGroupItem from './CardGroupItem';
 import WorkspaceSideBar from './WorkspaceSideBar';
@@ -124,7 +124,7 @@ class WorkspaceScreen extends Component<IData> {
           <Title>{this.state.board.title}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={this.testFunction.bind(this)} style={{marginRight: 20}}>
+          <TouchableOpacity onPress={() => this.testFunction()} style={{marginRight: 20}}>
             <Icon 
               name='alert-box'
               type='MaterialCommunityIcons'
@@ -551,6 +551,10 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   testFunction() {
+    Actions.detail({
+      data: Helper.createTask(),
+      deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
+    });
   }
 };
 

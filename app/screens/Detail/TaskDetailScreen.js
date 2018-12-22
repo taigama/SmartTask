@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TextInput, Animated, ImageBackground, Image, TouchableOpacity, Platform, StyleSheet, Text, View, StatusBar, FlatList, Button, ScrollView, Dimensions, Alert } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { Header } from 'native-base';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-picker';
 import ActionButton from "react-native-action-button";
@@ -22,49 +23,60 @@ const optionsImg = {
 
 /** ------------------------------------------------------------------------------
  * ================================================================================
- * this.props.navigation.state.params.
+ * this.props.
  *
  * @param data : TaskChema
  * @param deleteCallback: function(task) (when this task be deleted)
  *
  * ------------------------------------------------------------------------------ */
 export default class TaskDetailScreen extends Component {
-	static navigationOptions = ({ navigation }) => {
-		const { navigate } = navigation;
-		return {
-
-
-			//navigation.getParam('detail_id',"default param")
-			headerTitle: "",
-
-
-			headerStyle: {
-				backgroundColor: '#0000',
-			},
-			headerTintColor: '#fff',
-			headerTitleStyle: {
-				fontWeight: 'bold',
-			},
-			headerLeft: (
-				<TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 20 }}>
-					<Icon
-						name='arrow-back'
-						color='white'
-						size={30}
-					/>
-				</TouchableOpacity>
-			),
-			headerTransparent: true,
-			headerBackgroundTransitionPreset: "fade",
-		};
-	};
+	renderHeader() {
+    return (
+      <Header>
+        <Left>
+          <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10)}} style={{marginLeft: 10}}>
+            <Icon 
+              name='arrow-back'
+              type="MaterialIcons"
+              style={{fontSize: 25, color: 'white'}}
+            /> 
+          </TouchableOpacity>
+        </Left>
+        <Body>
+          <Title>{this.props.data.titie}</Title>
+        </Body>
+        <Right>
+          <TouchableOpacity onPress={() => this.testFunction()} style={{marginRight: 20}}>
+            <Icon 
+              name='alert-box'
+              type='MaterialCommunityIcons'
+              style={{fontSize: 25, color: 'white'}}
+            /> 
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{marginRight: 20}}>
+            <Icon 
+              name='add'
+              style={{fontSize: 25, color: 'white'}}
+            /> 
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginRight: 10}}>
+            <Icon 
+              name="dots-vertical"
+							type="MaterialCommunityIcons"
+							style={{ fontSize: 25, color: "black" }}
+            /> 
+          </TouchableOpacity>
+        </Right>
+      </Header>
+    );
+  }
 
 
 	constructor(props) {
 		super(props);
 
 
-		var data = this.props.navigation.state.params.data;// TaskSchema
+		var data = this.props.data;// TaskSchema
 
 
 		this.state = {
@@ -341,7 +353,7 @@ export default class TaskDetailScreen extends Component {
 	};
 
 	onChangeTitle(txt) {
-		var data = this.props.navigation.state.params.data;// TaskSchema
+		var data = this.props.data;// TaskSchema
 		realm.write(() => {
 			data.title = txt;
 		});
@@ -350,7 +362,7 @@ export default class TaskDetailScreen extends Component {
 	}
 
 	onChangeDescription(txt) {
-		var data = this.props.navigation.state.params.data;// TaskSchema
+		var data = this.props.data;// TaskSchema
 		realm.write(() => {
 			data.description = txt;
 		});
@@ -380,8 +392,8 @@ export default class TaskDetailScreen extends Component {
 	}
 
 	onTrulyDeleteTask() {
-		this.props.navigation.state.params.deleteCallback(
-			this.props.navigation.state.params.data
+		this.props.deleteCallback(
+			this.props.data
 		);
 		this.props.navigation.goBack();
 	}

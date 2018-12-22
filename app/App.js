@@ -47,6 +47,7 @@ export const App = () => {
               <Scene key="search" direction="fade" component={SearchScreen} title="Splash" hideNavBar />
               <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar initial />
               <Scene key="workspace" direction="horizontal" component={WorkspaceScreen} title="Workspace" hideNavBar />
+              <Scene key="detail" direction="vertical" component={TaskDetailScreen} title="Detail" hideNavBar />
             </Stack >
           </Modal>
         </Overlay>

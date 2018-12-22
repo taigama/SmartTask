@@ -201,9 +201,16 @@ export const TaskSchema = {
 
 
 export default realm = new Realm({
-  schema: [Board, CardGroup, Card], 
-  schemaVersion: 8, 
+  schema: [Board, CardGroup, Card, LabelSchema, LabelLinkSchema, LabelGroupSchema,
+    DueTimeSchema, CheckSchema, CheckListSchema, ImageObjectSchema, TaskSchema], 
+  schemaVersion: 9, 
   migration: (oldRealm, newRealm) => {
     newRealm.deleteAll();
   }
 });
+
+export const getNewId = (collection, primaryKey) => {
+  let maxId = Math.max.apply(null, collection.map((item) => item[primaryKey]));
+  maxId = maxId === undefined ? 1 : (maxId + 1);
+  return maxId;
+};
