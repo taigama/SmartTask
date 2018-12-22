@@ -22,17 +22,17 @@ const transitionConfig = () => ({
 
 const transitionConfigV2 = () => ({
   screenInterpolator: (props) => {
-      switch (props.scene.route.params.direction) {
-          case 'vertical':
-              return StackViewStyleInterpolator.forVertical(props);
-          case 'fade':
-              return StackViewStyleInterpolator.forFade(props);
-          case 'none':
-              return StackViewStyleInterpolator.forInitial
-          case 'horizontal':
-          default:
-              return StackViewStyleInterpolator.forHorizontal(props)
-      }
+    switch (props.scene.route.params.direction) {
+      case 'vertical':
+        return StackViewStyleInterpolator.forVertical(props);
+      case 'fade':
+        return StackViewStyleInterpolator.forFade(props);
+      case 'none':
+        return StackViewStyleInterpolator.forInitial
+      case 'horizontal':
+      default:
+        return StackViewStyleInterpolator.forHorizontal(props)
+    }
   }
 });
 
@@ -45,7 +45,7 @@ export const App = () => {
             <Stack key="root" transitionConfig={transitionConfigV2}>
               <Scene key="splash" component={SplashScreen} title="Splash" hideNavBar />
               <Scene key="search" direction="fade" component={SearchScreen} title="Splash" hideNavBar />
-              <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar initial/>
+              <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar initial />
               <Scene key="workspace" direction="horizontal" component={WorkspaceScreen} title="Workspace" hideNavBar />
             </Stack >
           </Modal>
