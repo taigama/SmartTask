@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 
 import DevelopeScreen from './Screens/Develope/DevelopeScreen';
 import WorkspaceScreen from './Screens/Workspace/WorkspaceScreen';
-import TaskDetailScreen from './Screens/CardDetail/TaskDetailScreen';
+import TaskDetailScreen from './Screens/Detail/TaskDetailScreen';
 import ProjectScreen from './Screens/Project/ProjectScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
 import AllReducers from './_Commons/AllReducers';

@@ -1,75 +1,69 @@
-import React, {Component} from "react";
-import {
-    View,
-    StyleSheet,
-    Text, TouchableOpacity,
-} from "react-native";
-
+import React, { Component } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import PropTypes from "prop-types";
 
 
 const LABEL_BORDER_RADIUS = 5;
 const LABEL_MARGIN = 4;
 
-
 export default class Label extends React.Component {
 
 
-    static propTypes = {
-        data: PropTypes.object.isRequired,
-        clickCallback: PropTypes.func
-    };
+	static propTypes = {
+		data: PropTypes.object.isRequired,
+		clickCallback: PropTypes.func
+	};
 
-    constructor(props) {
-        super(props);
-
-
-        const {data, clickCallback} = this.props;
-
-        this.state = {
-            backgroundColor: data.color,
-            labelString: data.content,
-        };
-
-        if (clickCallback) {
-            this.state.callback = clickCallback;
-        }
-    }
-
-    render() {
+	constructor(props) {
+		super(props);
 
 
-        return (
-            <TouchableOpacity
-                onPress={this.state.callback}
-                style={[styles.labelBackground, {backgroundColor: this.state.backgroundColor}]}
-            >
-                <Text
-                    numberOfLines={1}
-                    style={styles.labelText}
-                >
-                    {this.state.labelString}
-                </Text>
-            </TouchableOpacity>
-        )
-    }
+		const { data, clickCallback } = this.props;
+
+		this.state = {
+			backgroundColor: data.color,
+			labelString: data.content,
+		};
+
+		if (clickCallback) {
+			this.state.callback = clickCallback;
+		}
+	}
+
+	render() {
+
+
+		return (
+			<TouchableOpacity
+				onPress={this.state.callback}
+				style={[styles.labelBackground, { backgroundColor: this.state.backgroundColor }]}
+			>
+				<Text
+					numberOfLines={1}
+					style={styles.labelText}
+				>
+					{this.state.labelString}
+				</Text>
+			</TouchableOpacity>
+		)
+	}
 
 
 }
 
 const styles = StyleSheet.create({
-    labelBackground: {
-        borderRadius: LABEL_BORDER_RADIUS,
-        height: 30,
-        minWidth: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: LABEL_MARGIN,
-        marginTop: LABEL_MARGIN
-    },
-    labelText: {
-        color: 'white',
-        margin: 5,
-        fontWeight: 'bold'
-    },
+	labelBackground: {
+		borderRadius: LABEL_BORDER_RADIUS,
+		height: 30,
+		minWidth: 50,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginRight: LABEL_MARGIN,
+		marginTop: LABEL_MARGIN
+	},
+	labelText: {
+		color: 'white',
+		margin: 5,
+		fontWeight: 'bold'
+	},
 });

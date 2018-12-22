@@ -5,7 +5,6 @@ import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-picker';
 import ActionButton from "react-native-action-button";
 
-
 import CardLabel from "./Label/CardLabel";
 import CardDateTime from "./DateTime/CardDateTime";
 import CardImage from "./Image/CardImage";
@@ -164,7 +163,7 @@ export default class TaskDetailScreen extends Component {
 			return (
 				<Image
 
-					defaultSource={require('../resources/night_sky.jpg')}
+					defaultSource={require('../../_Resources/moon.jpg')}
 					resizeMode='cover'
 					style={{
 						width: this.state.cover.width,
@@ -181,7 +180,7 @@ export default class TaskDetailScreen extends Component {
 						width: this.state.cover.width,
 						height: this.state.cover.height,
 					}}
-					source={require('../resources/night_sky.jpg')}
+					source={require('../../_Resources/moon.jpg')}
 				/>
 			);
 	}
