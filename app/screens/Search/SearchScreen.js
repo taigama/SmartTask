@@ -16,10 +16,8 @@ export default class SearchScreen extends Component<IData> {
     this.state = {
       filteredCards: [],
     }
-
     this.onChangeText = this.onChangeText.bind(this);
   }
-
 
   render() {
     return (

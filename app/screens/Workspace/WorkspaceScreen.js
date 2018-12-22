@@ -74,7 +74,7 @@ class WorkspaceScreen extends Component<IData> {
         {this.renderMoveGroupdDialog()}
         {this.renderRenameGroupdDialog()}
         {this.renderCopyGroupdDialog()}
-        {this.renderFAB()}
+        {/* {this.renderFAB()} */}
       </Drawer>
     );
   }
@@ -126,13 +126,13 @@ class WorkspaceScreen extends Component<IData> {
           <Title>{this.state.board.title}</Title>
         </Body>
         <Right>
-          <TouchableOpacity onPress={() => this.testFunction()} style={{marginRight: 20}}>
+          {/* <TouchableOpacity onPress={() => this.testFunction()} style={{marginRight: 20}}>
             <Icon 
               name='alert-box'
               type='MaterialCommunityIcons'
               style={{fontSize: 25, color: 'white'}}
             /> 
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{marginRight: 20}}>
             <Icon 
               name='add'
