@@ -83,16 +83,16 @@ class ProjectScreen extends Component {
   renderHeader() {
     return (
       <Header>
-        <Left>
+        {/* <Left>
           <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginLeft: 10}}>
             <Icon 
               name='menu'
               style={{fontSize: 25, color: 'white'}}
             /> 
           </TouchableOpacity>
-        </Left>
+        </Left> */}
         <Body>
-          <Title>{this.screenTitle}</Title>
+          <Title>    {this.screenTitle}</Title>
         </Body>
         <Right>
           <TouchableOpacity onPress={() => Actions.search()} style={{marginRight: 10}}>

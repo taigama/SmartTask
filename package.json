@@ -33,7 +33,15 @@
     "react-navigation": "^3.0.5",
     "react-redux": "^6.0.0",
     "realm": "^2.21.0",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "prop-types": "latest",
+    "react-native-collapse-view": "^1.0.0",
+    "react-native-color": "0.0.10",
+    "react-native-image-picker": "^0.27.2",
+    "react-native-modal-datetime-picker": "^6.0.0",
+    "react-native-parallax-scroll-view": "^0.21.3",
+    "react-native-menu": "^0.23.0",
+    "tinycolor2": "latest"
   },
   "devDependencies": {
     "@types/node": "^10.12.18",

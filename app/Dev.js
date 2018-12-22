@@ -17,6 +17,7 @@ export const App = () => {
           title="Splash"
           hideNavBar
         />
-      </Router>
+      </Scene>
+    </Router>
   );
 }
