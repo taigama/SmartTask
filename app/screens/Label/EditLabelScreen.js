@@ -6,7 +6,7 @@ import { Icon } from 'react-native-elements';
 
 import LabelEditable from "../Detail/Label/LabelEditable";
 import CardEditLabel from "../Detail/Label/CardEditLabel";
-import realm, { getNewId } from '../Realm/Realm';
+import realm, { getNewId } from '../../Realm/Realm';
 
 
 export default class EditLabelScreen extends Component {

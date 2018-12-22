@@ -12,6 +12,7 @@ import ProjectScreen from './Screens/Project/ProjectScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
 import AllReducers from './_Commons/AllReducers';
 import SearchScreen from './Screens/Search/SearchScreen';
+import EditLabelScreen from './Screens/Label/EditLabelScreen';
 import Modal from 'react-native-modal';
 
 const store = createStore(AllReducers);
@@ -43,11 +44,12 @@ export const App = () => {
         <Overlay>
           <Modal key="modal" hideNavBar>
             <Stack key="root" transitionConfig={transitionConfigV2}>
-              <Scene key="splash" component={SplashScreen} title="Splash" hideNavBar />
+              <Scene key="splash" component={SplashScreen} title="Splash" hideNavBar initial />
               <Scene key="search" direction="fade" component={SearchScreen} title="Splash" hideNavBar />
-              <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar initial />
+              <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar />
               <Scene key="workspace" direction="horizontal" component={WorkspaceScreen} title="Workspace" hideNavBar />
               <Scene key="detail" direction="vertical" component={TaskDetailScreen} title="Detail" hideNavBar />
+              <Scene key="label" direction="fade" component={EditLabelScreen} title="Edit labels" hideNavBar />
             </Stack >
           </Modal>
         </Overlay>

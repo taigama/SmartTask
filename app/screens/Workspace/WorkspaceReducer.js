@@ -1,5 +1,6 @@
 import uuid from 'react-native-uuid';
-import realm, { Board } from '../../Realm/Realm';
+import realm from '../../Realm/Realm';
+import Board from '../../Realm/Board';
 
 
 const UPDATE_BOARD = 'WORKSPACE_UPDATE_BOARD';
