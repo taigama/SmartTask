@@ -27,6 +27,7 @@ export default class SearchScreen extends Component<IData> {
         {this.renderHeader()}
         <List 
           contentContainerStyle={{padding: 20}}
+          renderSeparator={() => <View style={{height: 10}}></View>}
           dataArray={this.state.filteredCards}
           renderRow={(item) => <CardItem data={item} />}
         />
@@ -37,7 +38,7 @@ export default class SearchScreen extends Component<IData> {
   renderHeader() {
     return (
       <Header searchBar rounded>
-        <TouchableOpacity style={{width: 50, height: "100%", justifyContent: "center"}}>
+        <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()}>
           <Icon name="arrow-back" type="MaterialIcons" style={{ color: 'white' }} />
         </TouchableOpacity>
         <Item>
@@ -62,6 +63,11 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "white",
     flexDirection: "row",
+  },
+  headerButton: {
+    width: 50,
+    height: "100%", 
+    justifyContent: "center"
   },
   searchBarContainer: {
     backgroundColor: "grey",

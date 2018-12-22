@@ -114,7 +114,7 @@ class WorkspaceScreen extends Component<IData> {
         <Left>
           <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10)}} style={{marginLeft: 10}}>
             <Icon 
-              name='keyboard-arrow-left'
+              name='arrow-back'
               type="MaterialIcons"
               style={{fontSize: 25, color: 'white'}}
             /> 

@@ -54,12 +54,6 @@ class ProjectScreen extends Component {
             </List>
           </List>
           </Content>
-          {/* <FlatList
-            ItemSeparatorComponent={() => <View style={{justifyContent:'center', width: '100%', backgroundColor: '#F6F8FA', height: 3}}/>}
-            keyExtractor={(item, index) => item.id}
-            data={this.boards}
-            renderItem={({item}) => <BoardItem data={item} handleAction={this.handleAction} onPress={() => Actions.workspace(item)}/>} 
-          /> */}
          {this.renderDialogAddBoard()}
          {this.renderDialogRenameBoard()}
          {this.renderFAB()}
