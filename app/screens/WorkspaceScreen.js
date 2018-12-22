@@ -10,6 +10,9 @@ import { IData } from '../components/IData';
 import { Window } from '../components/Utils';
 import realm from '../realm/Realm'
 
+
+import Helper from '../components/Helper'
+
 export default class WorkspaceScreen extends Component<IData> {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -31,7 +34,10 @@ export default class WorkspaceScreen extends Component<IData> {
         </TouchableOpacity>
       ),
       headerRight: (
-        <TouchableOpacity onPress={() => navigation.navigate('TaskDetail', {idGroupLabel: 1})} style={{marginRight: 20}}>
+        <TouchableOpacity onPress={() => navigation.navigate('TaskDetail', {
+          data: Helper.createTask(),
+          deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
+        })} style={{marginRight: 20}}>
           <Icon 
             name='dehaze'
             color='white'

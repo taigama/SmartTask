@@ -27,9 +27,9 @@ export const CardSchema = {
 
 export const ImageObjectSchema = {
     name: 'ImageObject',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
         width: {type: 'int', default: 100},
         height: {type: 'int', default: 100},
         uri: {type: 'string', default: ""},
@@ -37,22 +37,11 @@ export const ImageObjectSchema = {
     },
 };
 
-export const CommentSchema = {
-    name: 'Comment',
-    primaryKey: 'key',
-    properties: {
-        key: {type: 'int', default: 0},
-        time: {type: 'date', default: new Date()},
-        content: {type: 'string', default: ""},
-        task: {type: 'linkingObjects', objectType: 'Task', property: 'comments'},
-    },
-};
-
 export const CheckSchema = {
     name: 'Check',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
         isCheck: {type: 'bool', default: false},
         content: {type: 'string', default: ""},
         checkList: {type: 'linkingObjects', objectType: 'CheckList', property: 'checks'},
@@ -61,21 +50,21 @@ export const CheckSchema = {
 
 export const CheckListSchema = {
     name: 'CheckList',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
-        isCheck: {type: 'bool', default: false},
+        id: {type: 'int', default: 0},
+        title: {type: 'string', default: 'CheckList'},
         checks: 'Check[]',
-        task: {type: 'linkingObjects', objectType: 'Task', property: 'checkLists'},
+        task: {type: 'linkingObjects', objectType: 'Task', property: 'checkList'},
     },
 };
 
 
 export const LabelSchema = {
   name: 'Label',
-  primaryKey: 'key',
+  primaryKey: 'id',
   properties: {
-    key: {type: 'int', default: 0},
+    id: {type: 'int', default: 0},
     color: {type: 'string', default: '#ff0000'},
     content: {type: 'string', default: ''}
   },
@@ -83,9 +72,9 @@ export const LabelSchema = {
 
 export const LabelLinkSchema = {
     name: 'LabelLink',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
         idLabel: 'int',
         isCheck: {type: 'bool', default: false},
         labelGroup: {type: 'linkingObjects', objectType: 'LabelGroup', property: 'links'},
@@ -94,9 +83,9 @@ export const LabelLinkSchema = {
 
 export const LabelGroupSchema = {
     name: 'LabelGroup',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
         links: 'LabelLink[]',
         task: {type: 'linkingObjects', objectType: 'Task', property: 'labelGroup'},
     },
@@ -105,9 +94,9 @@ export const LabelGroupSchema = {
 
 export const DueTimeSchema = {
     name: 'DueTime',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
         time: {type: 'date', default: new Date()},
         isCheck: {type: 'bool', default: false},
         task: {type: 'linkingObjects', objectType: 'Task', property: 'dueTime'},
@@ -116,14 +105,15 @@ export const DueTimeSchema = {
 
 export const TaskSchema = {
     name: 'Task',
-    primaryKey: 'key',
+    primaryKey: 'id',
     properties: {
-        key: {type: 'int', default: 0},
+        id: {type: 'int', default: 0},
+        title: {type: 'string', default: 'New task'},
+        description: {type: 'string', default: ''},
         lastImageId: {type: 'int', default: 0},
         labelGroup: 'LabelGroup',
         dueTime: 'DueTime',
-        checkLists: 'CheckList[]',
-        comments: 'Comment[]',
+        checkList: 'CheckList',
         images: 'ImageObject[]'
     },
 };

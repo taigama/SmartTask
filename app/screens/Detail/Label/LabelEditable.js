@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 import React, {Component} from "react";
 import {
     View,
@@ -10,6 +8,9 @@ import {
 import {
     Icon
 } from "react-native-elements"
+
+import PropTypes from "prop-types";
+
 
 const LABEL_BORDER_RADIUS = 5;
 const LABEL_MARGIN = 4;

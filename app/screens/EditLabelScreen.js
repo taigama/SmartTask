@@ -1,6 +1,3 @@
-import Helper from '../components/Helper.js';
-
-
 import React, {Component} from 'react';
 import {
     TextInput,
@@ -16,6 +13,10 @@ import {
     FlatList,
     ScrollView
 } from 'react-native';
+import {
+    Icon
+} from 'react-native-elements';
+
 
 import {
     DialogComponent,
@@ -23,29 +24,14 @@ import {
     DialogTitle,
     DialogContent
 } from 'react-native-dialog-component';
-
-import {
-    SlidersColorPicker,
-    HueGradient,
-    SaturationGradient,
-    LightnessGradient,
-    HueSlider,
-    SaturationSlider,
-    LightnessSlider
-} from 'react-native-color';
-
-import tinycolor from 'tinycolor2';
-
-import {
-
-    Icon
-} from 'react-native-elements';
-
-
-import LabelEditable from "../components/details/LabelEditable";
-import realm, {getNewId} from '../realm/Realm';
-import CardEditLabel from "../components/details/CardEditLabel";
 import ActionButton from "react-native-action-button";
+
+
+import LabelEditable from "./Detail/Label/LabelEditable";
+import CardEditLabel from "./Detail/Label/CardEditLabel";
+
+
+import realm, {getNewId} from '../realm/Realm';
 
 
 export default class EditLabelScreen extends Component {
@@ -334,7 +320,7 @@ export default class EditLabelScreen extends Component {
         var newLabelId = 1;
         if(labels != null)
         {
-            newLabelId = getNewId(labels, 'key');
+            newLabelId = getNewId(labels, 'id');
         }
 
 
@@ -351,7 +337,7 @@ export default class EditLabelScreen extends Component {
             }, false);
 
             groups.forEach((group) => {
-                var newLinkId = getNewId(links, 'key');
+                var newLinkId = getNewId(links, 'id');
                 group.links.push({
                     key: newLinkId,
                     idLabel: newLabelId,
@@ -366,7 +352,7 @@ export default class EditLabelScreen extends Component {
     }
 
     deleteLabel() {
-        var id = this.currentLabel.data.key;
+        var id = this.currentLabel.data.id;
 
         realm.write(() => {
             var links = realm.objects("LabelLink").filtered("idLabel == " + id.toString());

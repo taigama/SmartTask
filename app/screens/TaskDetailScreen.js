@@ -1,6 +1,3 @@
-import Helper from '../components/Helper.js';
-
-
 import React, {Component} from 'react';
 import {
     TextInput,
@@ -16,33 +13,28 @@ import {
     FlatList,
     Button,
     ScrollView,
-    Dimensions
+    Dimensions,
+    Alert
 } from 'react-native';
-
-
 import {
-    List,
-    ListItem,
-    Header,
     Icon
 } from 'react-native-elements';
 
 
-
-
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-picker';
-import CollapseView from 'react-native-collapse-view';
 import ActionButton from "react-native-action-button";
 
 
-import CardLabel from "../components/details/CardLabel";
-import CardDateTime from "../components/details/CardDateTime";
+import CardLabel from "./Detail/Label/CardLabel";
+import CardDateTime from "./Detail/DateTime/CardDateTime";
+import CardImage from "./Detail/Image/CardImage";
+
+import Helper from '../components/Helper.js';
+
 
 import realm from '../realm/Realm';
-
-
-
+import CheckList from "./Detail/CheckList/CheckList";
 
 
 const optionsImg = {
@@ -53,9 +45,14 @@ const optionsImg = {
     },
 };
 
-
-
-
+/** ------------------------------------------------------------------------------
+ * ================================================================================
+ * this.props.navigation.state.params.
+ *
+ * @param data : TaskChema
+ * @param deleteCallback: function(task) (when this task be deleted)
+ *
+ * ------------------------------------------------------------------------------ */
 export default class TaskDetailScreen extends Component {
     static navigationOptions = ({navigation}) => {
         const {navigate} = navigation;
@@ -82,17 +79,6 @@ export default class TaskDetailScreen extends Component {
                     />
                 </TouchableOpacity>
             ),
-            headerRight: (
-                <TouchableOpacity
-                    onPress={() => alert('This will be a menu')}
-                    style={{marginRight: 20}}>
-                    <Icon
-                        name='more-vert'
-                        color='white'
-                        size={30}
-                    />
-                </TouchableOpacity>
-            ),
             headerTransparent: true,
             headerBackgroundTransitionPreset: "fade",
         };
@@ -102,41 +88,67 @@ export default class TaskDetailScreen extends Component {
     constructor(props) {
         super(props);
 
+
+        var data = this.props.navigation.state.params.data;// TaskSchema
+
+
         this.state = {
+            title: data.title,
+            description: data.description,
+            groupLabel: data.labelGroup,
+            dueTime: data.dueTime,
+            checkList: data.checkList,
+            images: data.images || [],
 
-            txtTitle: 'this is title yeah',
-            idGroupLabel: this.props.navigation.state.params.idGroupLabel || 1,
 
-            cover: {
+            // TODO: ============= update project variable here (data.project)
+            project: {
+                name: 'Example project',
+                workspace: {
+                    name: 'Sample workspace'
+                }
+            }
+        };
+
+        if (data.lastImageId) {
+            var img = realm.objectForPrimaryKey('ImageObject', data.lastImageId);
+
+            var width = Dimensions.get('window').width;
+            var height = width / img.width;// this is scale
+            height = img.height * height;
+
+            this.state.cover = {
+                width: width,
+                height: height,
+                uri: data.uri,
+            }
+        }
+        else {
+            this.state.cover = {
                 width: Dimensions.get('window').width,
                 height: 200,
                 uri: ""
-            },
-
-        };
-        this.onChangeTitle = this.onChangeTitle.bind(this);
-        this.onChangedDescription = this.onChangedDescription.bind(this);
-        this.onClickLabel = this.onClickLabel.bind(this);
+            }
+        }
 
 
         this.initData();
     }
 
     initData() {
-        // Label
-        let group = realm.objectForPrimaryKey('LabelGroup', this.state.idGroupLabel);
-        if (group == null) {
-            realm.write(() => {
 
-                // create group
-                group = realm.create('LabelGroup', {
-                    key: this.state.idGroupLabel,
-                    links: [],
-                }, true);
+        this.renderStickyHeader = this.renderStickyHeader.bind(this);
+        this.renderForeground = this.renderForeground.bind(this);
 
-            });
-        }
-        this.state.groupLabel = group;
+
+        this.onChangeTitle = this.onChangeTitle.bind(this);
+        this.onChangeDescription = this.onChangeDescription.bind(this);
+
+        this.onClickLabel = this.onClickLabel.bind(this);
+
+        this.onClickAddImage = this.onClickAddImage.bind(this);
+        this.onClickDeleteTask = this.onClickDeleteTask.bind(this);
+        this.onTrulyDeleteTask = this.onTrulyDeleteTask.bind(this);
     }
 
 
@@ -163,40 +175,133 @@ export default class TaskDetailScreen extends Component {
         logComponentStackToMyService(info.componentStack);
     }
 
+    renderStickyHeader() {
+        return <View style={styles.stickyHeader}>
+            <Text style={styles.title}>
+                {Helper.ellipsis(this.state.title, 30)}
+            </Text>
+        </View>
+    }
+
+    renderForeground() {
+        if (this.state.cover.uri)
+            return (
+                <Image
+
+                    defaultSource={require('../resources/night_sky.jpg')}
+                    resizeMode='cover'
+                    style={{
+                        width: this.state.cover.width,
+                        height: this.state.cover.height,
+                    }}
+                    source={{uri: this.state.cover.uri}}
+                />
+            );
+        else
+            return (
+                <Image
+                    resizeMode='cover'
+                    style={{
+                        width: this.state.cover.width,
+                        height: this.state.cover.height,
+                    }}
+                    source={require('../resources/night_sky.jpg')}
+                />
+            );
+    }
+
+    renderTitleSection() {
+        return <View style={styles.titleView}>
+
+            <TextInput
+                style={styles.titleBellowImg}
+                placeholder="Name of this task..."
+                placeholderTextColor="#aaa"
+
+                defaultValue={this.state.title}
+                onChangeText={this.onChangeTitle}
+            />
+
+            <View style={{flexDirection: 'row'}}>
+                <Text style={styles.subTitleBellowImg}>
+                    {this.state.project.name}
+                </Text>
+
+                <Text style={styles.subTitleSeparate}>
+                    in list
+                </Text>
+
+                <Text style={styles.subTitleBellowImg}>
+                    {this.state.project.workspace.name}
+                </Text>
+            </View>
+
+        </View>
+    }
+
+    renderDescription() {
+        return <View style={styles.container}>
+            <TextInput
+                placeholder="Edit card description..."
+                placeholderTextColor="#aaa"
+
+                defaultValue={this.state.description}
+                onChangeText={this.onChangeDescription}
+            />
+        </View>
+    }
+
+    renderLabel() {
+        return <CardLabel
+            ref={(cardLabel) => {
+                this.cardLabel = cardLabel;
+            }}
+            clickLabelCallback={this.onClickLabel}
+            groupLabel={this.state.groupLabel}
+        />
+    }
+
+    renderDateTime() {
+        return <CardDateTime
+            dateTimeModel={this.state.dueTime}
+        />
+    }
+
+
+    renderCheckList() {
+        return <CheckList
+            data={this.state.checkLists}
+
+        />
+    }
+
+
+    renderImages() {
+        return <CardImage
+            listImage={this.state.listImage}
+        />
+    }
+
+    renderActionButton() {
+        return <ActionButton buttonColor="rgba(231,76,60,1)">
+            <ActionButton.Item buttonColor='#9b59b6' title="Add image" onPress={this.onClickAddImage}>
+                <Icon name='add' color='white'/>
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#3498db' title="Delete task" onPress={this.onClickDeleteTask}>
+                <Icon name='remove' color='white'/>
+            </ActionButton.Item>
+        </ActionButton>
+    }
+
 
     render() {
-
-
-        var names = [
-            {key: 'Suck'},
-            {key: 'Jackson'},
-            {key: 'James'},
-            {key: 'Joel'},
-            {key: 'John'},
-            {key: 'Jillian'}
-        ];
-
-
         return (
 
             <View style={{flex: 1}}>
 
                 <ParallaxScrollView
-                    renderStickyHeader={() => (
-                        <View style={{
-                            height: 56,
-                            backgroundColor: '#026AA7',
-                            alignItems: 'flex-start',
-                            justifyContent: 'center',
-                            paddingLeft: 70
-                        }}>
-                            <Text style={styles.title}>
-                                {Helper.ellipsis('This is the detail screeeeeeeeeeeeeeeeeeen', 30)}
-                            </Text>
-                        </View>
-                    )}
+                    renderStickyHeader={this.renderStickyHeader}
                     stickyHeaderHeight={56}
-
                     fadeOutForeground={false}
 
                     backgroundColor="#026AA7"
@@ -204,133 +309,26 @@ export default class TaskDetailScreen extends Component {
 
                     parallaxHeaderHeight={this.state.cover.height}
                     fadeOutForeground={true}
-                    // onChangeHeaderVisibility={alert("changed!")}
 
-
-                    renderForeground={() => {
-
-                        if (this.state.cover.uri)
-                            return (
-                                <Image
-
-                                    defaultSource={require('../resources/night_sky.jpg')}
-                                    resizeMode='cover'
-                                    style={{
-                                        width: this.state.cover.width,
-                                        height: this.state.cover.height,
-                                    }}
-                                    source={{uri: this.state.cover.uri}}
-                                />
-                            );
-                        else
-                            return (
-                                <Image
-                                    resizeMode='cover'
-                                    style={{
-                                        width: this.state.cover.width,
-                                        height: this.state.cover.height,
-                                    }}
-                                    source={require('../resources/night_sky.jpg')}
-                                />
-                            );
-                    }}
-
-
+                    renderForeground={this.renderForeground}
                 >
-                    <View style={styles.titleView}>
 
-                        <TextInput
-                            style={styles.titleBellowImg}
-                            placeholder="Name of this task..."
-                            placeholderTextColor="#aaa"
+                    {this.renderTitleSection()}
 
-                            multiline={false}
+                    {this.renderDescription()}
+                    {this.renderLabel()}
+                    {this.renderDateTime()}
+                    {this.renderCheckList()}
+                    {this.renderImages()}
 
-                            defaultValue={this.state.txtTitle}
-                            onChangeText={this.onChangeTitle}
-                        />
-
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={styles.subTitleBellowImg}>
-                                {'<'}Project{'>'}
-                            </Text>
-
-                            <Text style={styles.subTitleSeparate}>
-                                in list
-                            </Text>
-
-                            <Text style={styles.subTitleBellowImg}>
-                                {this.state.txtTitle.split(' ').map((word) => word && 'c').join('-')}
-                            </Text>
-                        </View>
-
-                    </View>
-
-                    <View style={styles.container}>
-                        <TextInput
-                            placeholder="Edit card description..."
-                            placeholderTextColor="#aaa"
-
-                            multiline={false}
-
-                            onSubmitEditing={this.onChangedDescription}
-                        />
-
-                    </View>
-                    <CardLabel
-                        ref={(cardLabel) => {
-                            this.cardLabel = cardLabel;
-                        }}
-                        clickLabelCallback={this.onClickLabel}
-                        groupLabel={this.state.groupLabel}
-                    />
-                    <CollapseView
-                        tension={100}
-                        collapse={false}
-                        renderView={() => <Text>This is the title</Text>}
-                        renderCollapseView={() => <Text style={{fontWeight: 'bold'}}>This is the content, very
-                            much</Text>}
-                    />
-
-                    <CardDateTime
-                        dateTimeModel={{
-                            time: new Date(),
-                            isCheck: false
-                        }}
-                    />
-
-                    <View>
-                        <Button title="Load Images" onPress={this._handleButtonPress.bind(this)}/>
-                    </View>
-
-
-                    <View style={styles.container}>
-
-                        <FlatList
-                            data={names}
-                            renderItem={({item}) => <Text
-                                style={styles.item}>{item.key == undefined ? 'undefined' : item.key}</Text>}
-                        />
-                    </View>
                 </ParallaxScrollView>
-                <ActionButton buttonColor="rgba(231,76,60,1)">
-                    <ActionButton.Item buttonColor='#9b59b6' title="New board" onPress={() => this.addBoard()}>
-                        <Icon name='add' color='white'/>
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Delete all" onPress={() => {this.deleteAll()}}>
-                        <Icon name='remove' color='white' />
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Popup" onPress={() => {this.dialogComponent.show()}}>
-                        <Icon name='ios-add' color='white' />
-                    </ActionButton.Item>
-                </ActionButton>
-
+                {this.renderActionButton()}
             </View>
 
         );
     }
 
-    _handleButtonPress = () => {
+    onClickAddImage() {
         /**
          * The first arg is the options object for customization (it can also be null or omitted for default options),
          * The second arg is the callback which sends object: response (more info in the API Reference)
@@ -368,11 +366,19 @@ export default class TaskDetailScreen extends Component {
     };
 
     onChangeTitle(txt) {
-        this.setState({txtTitle: txt});
+        var data = this.props.navigation.state.params.data;// TaskSchema
+        realm.write(() => {
+            data.title = txt;
+        });
+
+        this.setState({title: txt});
     }
 
-    onChangedDescription(e) {
-        alert('description: ' + e.nativeEvent.text);
+    onChangeDescription(txt) {
+        var data = this.props.navigation.state.params.data;// TaskSchema
+        realm.write(() => {
+            data.description = txt;
+        });
     }
 
     onClickLabel() {
@@ -386,12 +392,37 @@ export default class TaskDetailScreen extends Component {
             });
     }
 
+
+    onClickDeleteTask() {
+        Alert.alert(
+            'Deleting task',
+            'Do you really want to delete this task?',
+            [
+                {text: 'Cancel'},
+                {text: 'OK', onPress: this.onTrulyDeleteTask},
+            ]
+        );
+    }
+
+    onTrulyDeleteTask() {
+        this.props.navigation.state.params.deleteCallback(
+            this.props.navigation.state.params.data
+        );
+        this.props.navigation.goBack();
+    }
 }
 
 const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         color: '#fff',
+    },
+    stickyHeader: {
+        height: 56,
+        backgroundColor: '#026AA7',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        paddingLeft: 70
     },
     titleView: {
         backgroundColor: '#026AA7',

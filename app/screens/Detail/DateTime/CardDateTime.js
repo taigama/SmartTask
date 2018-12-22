@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 import React, {Component} from "react";
 import {
     View,
@@ -7,13 +5,17 @@ import {
     Text,
     TouchableOpacity
 } from "react-native";
-
-import CardWrapper from './CardWrapper';
-
-import realm from '../../realm/Realm';
-
-import DateTimePicker from 'react-native-modal-datetime-picker';
 import {Icon} from "react-native-elements";
+
+import PropTypes from "prop-types";
+import DateTimePicker from 'react-native-modal-datetime-picker';
+
+
+import CardWrapper from '../CardWrapper';
+import Checkbox from '../Checkbox';
+
+
+import realm from '../../../realm/Realm';
 
 
 export default class CardDateTime extends Component {

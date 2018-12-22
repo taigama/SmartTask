@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 import React, {Component} from "react";
 import {
     View,
@@ -11,7 +9,7 @@ import {
     Alert
 } from "react-native";
 
-
+import PropTypes from "prop-types";
 import tinycolor from "tinycolor2";
 import {
     HueSlider,
@@ -200,7 +198,7 @@ export default class CardEditLabel extends React.PureComponent {
                 {text: 'Cancel'},
                 {text: 'OK', onPress: this.onConfirmDelete},
             ]
-        )
+        );
     }
 
     onConfirmDelete() {

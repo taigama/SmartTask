@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 import React, {Component} from "react";
 import {
     View,
@@ -7,11 +5,13 @@ import {
     Text, TouchableOpacity
 } from "react-native";
 
-import CardWrapper from './CardWrapper';
+import PropTypes from "prop-types";
+
+import CardWrapper from '../CardWrapper';
 import Label from './Label';
 
-import realm from '../../realm/Realm';
 
+import realm from '../../../realm/Realm';
 
 
 export default class CardLabel extends Component {
@@ -27,11 +27,23 @@ export default class CardLabel extends Component {
 
         this.state = {
             groupLabel: groupLabel,
-            id: groupLabel.key
+            id: groupLabel.id
         };
 
-        if (groupLabel.links.length !== 0) {
+        if (groupLabel.links == null || groupLabel.links.length === 0) {
+            this.viewSub = () => (
+                <TouchableOpacity
+                    onPress={this.onClickLabel}
+                    style={styles.backgroundText}
+                >
+                    <Text style={styles.emptyText}>
+                        Labels...
+                    </Text>
+                </TouchableOpacity>
 
+            );
+        }
+        else {
             this.state.labels = [];
             var links = groupLabel.links,
                 length = groupLabel.links.length,
@@ -47,19 +59,6 @@ export default class CardLabel extends Component {
                 this.state.labels.map((label) => <Label clickCallback={this.onClickLabel} data={label}/>)
             );
         }
-        else {
-            this.viewSub = () => (
-                <TouchableOpacity
-                    onPress={this.onClickLabel}
-                    style={styles.backgroundText}
-                >
-                    <Text style={styles.emptyText}>
-                        Labels...
-                    </Text>
-                </TouchableOpacity>
-
-            );
-        }
         this.onClickLabel = clickLabelCallback;
     }
 
@@ -69,7 +68,7 @@ export default class CardLabel extends Component {
         let labels = [];
 
 
-        if (groupLabel.links.length !== 0) {
+        if (groupLabel.links && groupLabel.links.length !== 0) {
 
             var links = groupLabel.links,
                 length = groupLabel.links.length,
@@ -101,9 +100,9 @@ export default class CardLabel extends Component {
     }
 
     renderChild() {
-        if(this.state.labels.length !== 0)
+        if(this.state.labels && this.state.labels.length !== 0)
         {
-            return this.state.labels.map((label) => <Label key={label.key} clickCallback={this.onClickLabel} data={label}/>);
+            return this.state.labels.map((label) => <Label key={label.id} clickCallback={this.onClickLabel} data={label}/>);
         }
         else
         {
