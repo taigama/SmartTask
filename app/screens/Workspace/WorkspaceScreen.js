@@ -596,36 +596,38 @@ class WorkspaceScreen extends Component<IData> {
   }
 
   searchArchivedGroups() {
-    let sourceGroups = this.state.board.cardGroups.filtered('archived = true');
-    let searchProps = {
-      placeholder: 'Search archived groups by title',
-      source: sourceGroups,
-      defaultValues: sourceGroups,
-      filteredField: 'title',
-      renderRow: (item) => <CardGroupItem data={item} handleAction={this.handleAction} />
-    }
-    Actions.searchws(searchProps);
+    // let sourceGroups = this.state.board.cardGroups.filtered('archived = true');
+    // let searchProps = {
+    //   placeholder: 'Search archived groups by title',
+    //   source: sourceGroups,
+    //   defaultValues: sourceGroups,
+    //   filteredField: 'title',
+    //   renderRow: (item) => <CardGroupItem data={item} handleAction={this.handleAction} />
+    // }
+    // Actions.searchws(searchProps);
+    Actions.archivedGroup({ board: this.state.board});
   }
 
   searchArchivedCards() {
-    realm.write(() => {
-      let sourceCards = [];
-      let sourceGroups = this.state.board.cardGroups;
-      for (let i = 0; i < sourceGroups.length; i++) {
-        let filteredCards = sourceGroups[i].cards.filtered('archived = true');
-        for (let j = 0; j < filteredCards.length; j++) {
-          sourceCards.push(filteredCards[j]);
-        }
-      }
-      let searchProps = {
-        placeholder: 'Search archived cards by title',
-        source: sourceCards,
-        defaultValues: sourceCards,
-        filteredField: 'title',
-        renderRow: (item) => <CardItem data={item} />
-      }
-      Actions.searchws(searchProps);
-    });
+    // realm.write(() => {
+    //   let sourceCards = [];
+    //   let sourceGroups = this.state.board.cardGroups;
+    //   for (let i = 0; i < sourceGroups.length; i++) {
+    //     let filteredCards = sourceGroups[i].cards.filtered('archived = true');
+    //     for (let j = 0; j < filteredCards.length; j++) {
+    //       sourceCards.push(filteredCards[j]);
+    //     }
+    //   }
+    //   let searchProps = {
+    //     placeholder: 'Search archived cards by title',
+    //     source: sourceCards,
+    //     defaultValues: sourceCards,
+    //     filteredField: 'title',
+    //     renderRow: (item) => <CardItem data={item} />
+    //   }
+    //   Actions.searchws(searchProps);
+    // });
+    Actions.archivedCard({ board: this.state.board});
   }
 
   bookmarkBoard() {

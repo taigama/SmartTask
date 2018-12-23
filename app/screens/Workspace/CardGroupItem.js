@@ -42,7 +42,7 @@ class CardGroupItem extends React.Component<CardGroupProps, IData> {
           <View style={styles.groupHeader}>
             <Left>
               <Text style={{ padding: 5, fontSize: 20, fontWeight: "bold" }}>
-                {this.state.group.title} ({this.state.group.cards.length} / {realm.objects('Card').length}) 
+                {this.state.group.title}
               </Text>
             </Left>
             <Right>
