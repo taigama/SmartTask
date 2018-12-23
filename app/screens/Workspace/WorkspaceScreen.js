@@ -35,6 +35,7 @@ class WorkspaceScreen extends Component<IData> {
     this.state = {
       board: this.props.data,
       currentGroup: null,
+      currentCard: null,
     };
 
     this.handleAction = this.handleAction.bind(this);
@@ -75,28 +76,32 @@ class WorkspaceScreen extends Component<IData> {
         {this.renderRenameGroupdDialog()}
         {this.renderCopyGroupdDialog()}
         {this.renderRenameBoardDialog()}
+        {this.renderMoveOneCardDialog()}
         {/* {this.renderFAB()} */}
       </Drawer>
     );
   }
 
-  handleAction(actionType?: string, data?: any) {
-    this.state.currentGroup = data;
+  handleAction(actionType?: string, group?: any, card?: any) {
+    this.state.currentGroup = group;
+    this.state.currentCard = card;
 
     actionType = actionType || ActionType.NOTHING;
     switch (actionType) {
-      case ActionType.ARCHIVE_GROUP: this.archiveGroup(data); break;
-      case ActionType.ARCHIVE_ALL_CARDS: this.archiveAllCards(data); break;
+      case ActionType.ARCHIVE_GROUP: this.archiveGroup(group); break;
+      case ActionType.ARCHIVE_ALL_CARDS: this.archiveAllCards(group); break;
       case ActionType.COPY_GROUP: this.refs[DialogType.COPY_GROUP].show(); break;
       case ActionType.MOVE_GROUP: this.refs[DialogType.MOVE_GROUP].show(); break;
       case ActionType.RENAME_GROUP: this.refs[DialogType.RENAME_GROUP].show(); break;
       case ActionType.MOVE_ALL_CARDS: this.refs[DialogType.MOVE_CARD].show(); break;
+      case ActionType.MOVE_CARD: this.refs[DialogType.MOVE_ONE_CARD].show(); break;
       case ActionType.ADD_CARD: this.refs[DialogType.ADD_CARD].show(); break;
       case ActionType.ADD_GROUP: this.refs[DialogType.ADD_GROUP].show(); break;
       case ActionType.RENAME_BOARD: this.refs[DialogType.RENAME_BOARD].show(); break;
       case ActionType.BOOKMARK_BOARD: this.bookmarkBoard(); break;
       case ActionType.SHOW_ARCHIVED_CARDS: this.searchArchivedCards(); break;
       case ActionType.SHOW_ARCHIVED_GROUPS: this.searchArchivedGroups(); break;
+      case ActionType.ARCHIVE_CARD: this.archiveCard(card); break;
       case ActionType.EDIT_LABELS: break;
       default: break;
     }
@@ -459,6 +464,54 @@ class WorkspaceScreen extends Component<IData> {
     );
   }
 
+  renderMoveOneCardDialog() {
+    return (
+      <FormModal
+        ref={DialogType.MOVE_ONE_CARD}
+        isVisible={false}
+        titleStyle={{ color: '#32383B' }}
+        onBackdropPress={() => this.refs[DialogType.MOVE_ONE_CARD].hide()}
+        onBackButtonPress={() => this.refs[DialogType.MOVE_ONE_CARD].hide()}
+        onSwipe={() => this.refs[DialogType.MOVE_ONE_CARD].hide()}
+        swipeDirection='left'
+        title='Move all cards...'>
+        <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
+          <Picker
+            mode="dialog"
+            selectedValue={this.state.selectedValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({ selectedValue: itemValue })}>
+            {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
+              return (
+                <Picker.Item key={group.id} label={group.title} value={group.id} />
+              );
+            })}
+          </Picker>
+        </View>
+        <Button
+          title="MOVE"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#6E60F9",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.moveOneCard(this.state.selectedValue);
+            this.refs[DialogType.MOVE_ONE_CARD].hide();
+            this.refresh();
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
   renderRenameBoardDialog() {
     return (
       <FormModal
@@ -575,6 +628,30 @@ class WorkspaceScreen extends Component<IData> {
     };
   }
 
+  moveOneCard(desGroupId?: string) {
+    let srcGroup = this.state.currentGroup;
+    if (desGroupId && desGroupId !== srcGroup.id) {
+      realm.write(() => {
+        let desGroup = realm.objectForPrimaryKey('CardGroup', desGroupId);
+        let length = srcGroup.cards.length;
+        let index = 0;
+        for (let i = 0; i < length; i++) {
+          if (srcGroup.cards[i].id === this.state.currentCard.id) {
+            index = i;
+            break;
+          }
+        }
+        let movedCards = srcGroup.cards.splice(index, 1);
+        for (let i = 0; i < movedCards.length; i++) {
+          desGroup.cards.push(movedCards[i]);
+        }
+        this.showToaster('Move card from [' + srcGroup.title + '] to [' + desGroup + ']')
+      })
+    } else {
+      this.showToaster('Actions is not valid');
+    };
+  }
+
   moveGroup(desBoardId?: string) {
     let srcBoard = this.state.board;
     if (desBoardId && desBoardId !== srcBoard) {
@@ -595,38 +672,18 @@ class WorkspaceScreen extends Component<IData> {
     }
   }
 
+  archiveCard(card) {
+    realm.write(() => {
+      card.archived = !card.archived;
+      this.refresh();
+    })
+  }
+
   searchArchivedGroups() {
-    // let sourceGroups = this.state.board.cardGroups.filtered('archived = true');
-    // let searchProps = {
-    //   placeholder: 'Search archived groups by title',
-    //   source: sourceGroups,
-    //   defaultValues: sourceGroups,
-    //   filteredField: 'title',
-    //   renderRow: (item) => <CardGroupItem data={item} handleAction={this.handleAction} />
-    // }
-    // Actions.searchws(searchProps);
     Actions.archivedGroup({ board: this.state.board});
   }
 
   searchArchivedCards() {
-    // realm.write(() => {
-    //   let sourceCards = [];
-    //   let sourceGroups = this.state.board.cardGroups;
-    //   for (let i = 0; i < sourceGroups.length; i++) {
-    //     let filteredCards = sourceGroups[i].cards.filtered('archived = true');
-    //     for (let j = 0; j < filteredCards.length; j++) {
-    //       sourceCards.push(filteredCards[j]);
-    //     }
-    //   }
-    //   let searchProps = {
-    //     placeholder: 'Search archived cards by title',
-    //     source: sourceCards,
-    //     defaultValues: sourceCards,
-    //     filteredField: 'title',
-    //     renderRow: (item) => <CardItem data={item} />
-    //   }
-    //   Actions.searchws(searchProps);
-    // });
     Actions.archivedCard({ board: this.state.board});
   }
 

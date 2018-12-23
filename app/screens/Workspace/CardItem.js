@@ -1,13 +1,22 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, SliderBase, TouchableOpacity } from "react-native";
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import PropType from 'prop-types';
 
 import { Window } from '../../_Commons/Utils';
 import { IData } from '../../_Commons/IData';
 import { Badge } from "react-native-elements";
 import { Icon } from "native-base";
 import { Actions } from "react-native-router-flux";
+import { ActionType } from './Constants';
 
-export default class CardItem extends Component<IData> {
+type CardItemProps = {
+  data?: any,
+  handleAction?: PropType.func,
+  longPressActive?: boolean,
+}
+
+export default class CardItem extends Component<CardItemProps> {
   constructor(props) {
     super(props);
     this.state = {
@@ -15,12 +24,22 @@ export default class CardItem extends Component<IData> {
     }
   }
 
+  requestMenuAction(actionType: string) {
+    this._menu.hide();
+    this.props.handleAction(actionType, this.state.card.cardGroup[0], this.state.card);
+  }
+
   render() {
+    let archiveCardStr = this.state.card.archived ? 'Unarchive card' : 'Archive card';
     return (
-      <TouchableOpacity style={styles.container} onPress={() => Actions.detail({
+      <TouchableOpacity style={styles.container} onLongPress={() => this.onLongPress()} onPress={() => Actions.detail({
         data: this.state.card,
         deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
-      })}  activeOpacity={0.8}>
+      })} activeOpacity={0.8}>
+        <Menu ref={ref => (this._menu = ref)} button={<View style={{ alignSelf: 'flex-end' }} />}>
+          <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_CARD)}>Move card</MenuItem><MenuDivider />
+          <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_CARD)}>{archiveCardStr}</MenuItem><MenuDivider />
+        </Menu>
         <View style={styles.labelContainer}>
         </View>
         <View style={styles.titleContainer}>
@@ -35,6 +54,12 @@ export default class CardItem extends Component<IData> {
         </View> */}
       </TouchableOpacity>
     );
+  }
+
+  onLongPress() {
+    if (this.props.longPressActive) {
+      this._menu.show();
+    }
   }
 }
 

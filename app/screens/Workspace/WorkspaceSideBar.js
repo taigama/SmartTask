@@ -57,12 +57,12 @@ export default class WorkspaceSideBar extends Component<WorkspaceSideBarProps> {
           </View>
           <Text style={{ fontSize: 15 }}> Archived cards</Text>
         </ListItem>
-        <ListItem noIndent onPress={() => this.props.handleAction(ActionType.EDIT_LABELS)}>
+        {/* <ListItem noIndent onPress={() => this.props.handleAction(ActionType.EDIT_LABELS)}>
           <View style={{ width: 40, justifyContent: "center" }}>
             <Icon name="label" type="MaterialIcons" style={{ textAlign: "center", fontSize: 20, color: "grey" }} />
           </View>
           <Text style={{ fontSize: 15 }}> Edit labels</Text>
-        </ListItem>
+        </ListItem> */}
       </List>
     </Container>;
   }

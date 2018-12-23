@@ -49,17 +49,14 @@ class CardGroupItem extends React.Component<CardGroupProps, IData> {
               <Menu
                 ref={ref => (this._menu = ref)}
                 button={
-                  <TouchableOpacity
-                    onPress={() => this._menu.show()}
-                  >
+                  <TouchableOpacity onPress={() => this._menu.show()}>
                     <Icon
                       name="dots-vertical"
                       type="MaterialCommunityIcons"
                       style={{ fontSize: 25, color: "black" }}
                     />
                   </TouchableOpacity>
-                }
-              >
+                }>
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.RENAME_GROUP)}>Rename group</MenuItem><MenuDivider />
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.COPY_GROUP)}>Copy group</MenuItem><MenuDivider />
                 <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_GROUP)}>Move group</MenuItem><MenuDivider />
@@ -78,7 +75,8 @@ class CardGroupItem extends React.Component<CardGroupProps, IData> {
               )}
               keyExtractor={(item, index) => item.id}
               data={this.state.group.cards.filtered('archived = false')}
-              renderItem={({ item }) => <CardItem data={item} />}
+              renderItem={({ item }) => <CardItem longPressActive data={item} handleAction={(action, group, card) => 
+                this.props.handleAction(action, group, card)} />}
             />
           </View>
           <View style={{ height: 50, justifyContent: "center" }}>
