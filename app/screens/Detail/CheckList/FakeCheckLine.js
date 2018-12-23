@@ -32,6 +32,7 @@ export default class FakeCheckLine extends React.Component {
 					ref={(input) => {
 						this.input = input;
 					}}
+          underlineColorAndroid='#3f51b555'
 					style={styles.center}
 					placeholder='Add a specific task...'
 					onSubmitEditing={this.onChangeText}

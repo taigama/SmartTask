@@ -29,7 +29,7 @@ export default class CardWrapper extends React.Component {
 			iconName: iconName,
 			iconSize: sizeIcon,
 			iconColor: iconColor ? iconColor : 'black',
-			margin: 30 - sizeIcon,
+			margin: (30 - sizeIcon) / 2.0,
 			flexStyle: flexStyle ? flexStyle : { flexDirection: 'row', flexWrap: 'wrap' },
 			minHeight: minHeight
 		};
@@ -45,7 +45,7 @@ export default class CardWrapper extends React.Component {
 		return (
 			<View style={[styles.wrapCard, { minHeight: this.state.minHeight }]}>
 				<View style={{
-					width: 30 - this.state.margin,
+					width: this.state.iconSize,
 					margin: MARGIN + this.state.margin,
 				}}>
 					<Icon

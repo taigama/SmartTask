@@ -63,9 +63,11 @@ export default class TaskDetailScreen extends Component {
       cover: {
         width: Dimensions.get('window').width,
         height: 200,
-      }
-    };
+      },
 
+      cardGroup: data.cardGroup[0],
+      board: data.cardGroup[0].board[0],
+    };
 
     this.initData();
   }
@@ -91,11 +93,8 @@ export default class TaskDetailScreen extends Component {
   renderHeader() {
     return (
       <View style={styles.nav}>
-        <View style={styles.navLeft}>
+        <View style={styles.navHalfLeft}>
           <TouchableOpacity
-            style={{
-              position: 'absolute',
-            }}
 
             onPress={() => {
               Actions.pop();
@@ -103,7 +102,7 @@ export default class TaskDetailScreen extends Component {
                 Actions.refresh();
               }, 10)
             }}
-            style={{marginLeft: 10}}>
+            style={styles.navButton}>
             <Icon
               name='arrow-back'
               type="MaterialIcons"
@@ -112,6 +111,26 @@ export default class TaskDetailScreen extends Component {
             />
           </TouchableOpacity>
         </View>
+
+        <View style={styles.navHalfRight}>
+          <TouchableOpacity
+
+            onPress={() => {
+              Actions.pop();
+              setTimeout(() => {
+                Actions.refresh();
+              }, 10)
+            }}
+            style={styles.navButton}>
+            <Icon
+              name='more-vert'
+              type="MaterialIcons"
+              style={{fontSize: 25, color: 'white'}}
+              color='#fff'
+            />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.navRight}/>
       </View>
 
@@ -121,7 +140,7 @@ export default class TaskDetailScreen extends Component {
   renderStickyHeader() {
     return <View style={styles.stickyHeader}>
       <Text style={styles.title}>
-        {Helper.ellipsis(this.state.title, 30)}
+        {Helper.ellipsis(this.state.title, 33)}
       </Text>
     </View>
   }
@@ -146,32 +165,32 @@ export default class TaskDetailScreen extends Component {
         style={styles.titleBellowImg}
         placeholder="Name of this task..."
         placeholderTextColor="#aaa"
-
         defaultValue={this.state.title}
         onChangeText={this.onChangeTitle}
       />
 
-      {/*<View style={{flexDirection: 'row'}}>*/}
-        {/*<Text style={styles.subTitleBellowImg}>*/}
-          {/*{this.state.cardGroup.title || "A group"}*/}
-        {/*</Text>*/}
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.subTitleBellowImg}>
+          {this.state.board.title || "A project"}
+        </Text>
 
-        {/*<Text style={styles.subTitleSeparate}>in board</Text>*/}
+        <Text style={styles.subTitleSeparate}>in list</Text>
 
-        {/*<Text style={styles.subTitleBellowImg}>*/}
-          {/*{this.state.cardGroup.board? (this.state.cardGroup.board.title || "A board") : "A board" }*/}
-        {/*</Text>*/}
-      {/*</View>*/}
+        <Text style={styles.subTitleBellowImg}>
+          {this.state.cardGroup.title || "A list" }
+        </Text>
+      </View>
 
     </View>
   }
 
   renderDescription() {
-    return <View style={styles.container}>
+    return <View style={styles.desc}>
       <TextInput
         placeholder="Edit card description..."
         placeholderTextColor="#aaa"
 
+        underlineColorAndroid='#3f51b555'
         defaultValue={this.state.description}
         onChangeText={this.onChangeDescription}
       />
@@ -217,7 +236,7 @@ export default class TaskDetailScreen extends Component {
           stickyHeaderHeight={56}
           fadeOutForeground={false}
 
-          backgroundColor="#026AA7"
+          backgroundColor="#3f51b5"
           contentBackgroundColor="#fff"
 
           parallaxHeaderHeight={this.state.cover.height}
@@ -305,13 +324,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 56
   },
-  navLeft: {
-    marginLeft: 10,
+  navHalfLeft: {
+    width: '50%',
+    height: 56,
+    paddingLeft: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  navHalfRight: {
+    width: '50%',
+    height: 56,
+    paddingRight: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  navButton: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  navRight: {
-    flex: 1
   },
   paralax: {
     position: 'absolute',
@@ -322,16 +353,16 @@ const styles = StyleSheet.create({
   },
   stickyHeader: {
     height: 56,
-    backgroundColor: '#026AA7',
+    backgroundColor: '#3f51b5',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingLeft: 70
+    paddingLeft: 54
   },
   titleView: {
-    backgroundColor: '#026AA7',
+    backgroundColor: '#3f51b5',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    padding: 20,
+    padding: 10,
   },
   titleBellowImg: {
     width: '100%',
@@ -351,8 +382,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5
   },
-  container: {
-    flex: 1
+  desc: {
+    padding: 0,
+    marginLeft: 10,
+    marginRight: 10,
   },
   item: {
     marginTop: -2,

@@ -52,6 +52,7 @@ export default class CheckLine extends React.Component {
 				</View>
 
 				<TextInput
+					underlineColorAndroid='#3f51b555'
 					style={styles.center}
 					placeholder='Specify what to do...'
 					defaultValue={this.state.data.content}

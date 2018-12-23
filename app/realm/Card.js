@@ -6,13 +6,17 @@ import LabelGroup from './LabelGroup';
 export default class Card {
   static create = (title?) => {
     title = title || 'New card';
+
+    var date = new Date();
+    date.setDate(date.getDate() + 1)
+
     return realm.create('Card', {
       id: uuid.v4(),
       title: title,
       description: '',
       labelGroup: LabelGroup.create(),
       checkList: [],
-      dueDate: new Date(),
+      dueDate: date,
       dueDateCheck: false,
       archived: false,
     });

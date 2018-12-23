@@ -29,7 +29,7 @@ const transitionConfigV2 = () => ({
       case 'fade':
         return StackViewStyleInterpolator.forFade(props);
       case 'none':
-        return StackViewStyleInterpolator.forInitial
+        return StackViewStyleInterpolator.forInitial;
       case 'horizontal':
       default:
         return StackViewStyleInterpolator.forHorizontal(props)

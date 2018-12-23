@@ -88,7 +88,7 @@ export default class CheckList extends Component {
 
 const styles = StyleSheet.create({
   wrap: {
-    width: '100%',
+    flex: 1,
     minHeight: 0,
     borderColor: '#555',
     borderBottomWidth: 1,
@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
     margin: CHECK_LIST_MARGIN,
     marginLeft: 0,
     marginRight: CHECK_LIST_MARGIN / 2.0,
-    borderBottomWidth: 2,
-    borderBottomColor: '#6df',
+    borderBottomWidth: 3,
+    borderBottomColor: '#3f51b5',
   },
   headerLeft: {
     marginLeft: CHECK_LIST_MARGIN,
@@ -121,5 +121,6 @@ const styles = StyleSheet.create({
   childSection: {
     width: '100%',
     minHeight: 0,
+    paddingRight: CHECK_LIST_MARGIN,
   }
 });
