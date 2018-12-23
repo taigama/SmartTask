@@ -11,6 +11,7 @@ import ProjectScreen from './Screens/Project/ProjectScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
 import AllReducers from './_Commons/AllReducers';
 import SearchScreen from './Screens/Search/SearchScreen';
+import SearchScreenWS from './Screens/Search/SearchScreenWS';
 import EditLabelScreen from './Screens/Label/EditLabelScreen';
 import Modal from 'react-native-modal';
 
@@ -44,7 +45,8 @@ export const App = () => {
           <Modal key="modal" hideNavBar>
             <Stack key="root" transitionConfig={transitionConfigV2}>
               <Scene key="splash" component={SplashScreen} title="Splash" hideNavBar  />
-              <Scene key="search" direction="fade" component={SearchScreen} title="Splash" hideNavBar />
+              <Scene key="search" direction="fade" component={SearchScreen} title="Search" hideNavBar />
+              <Scene key="searchws" direction="fade" component={SearchScreenWS} title="SearchWS" hideNavBar />
               <Scene key="project" direction="fade" component={ProjectScreen} title="Boards" hideNavBar initial/>
               <Scene key="workspace" direction="horizontal" component={WorkspaceScreen} title="Workspace" hideNavBar />
               <Scene key="detail" direction="vertical" component={TaskDetailScreen} title="Detail" hideNavBar />

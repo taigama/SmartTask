@@ -7,7 +7,7 @@ import { Actions } from 'react-native-router-flux';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
-import Toast, {DURATION} from 'react-native-easy-toast';
+import Toast, { DURATION } from 'react-native-easy-toast';
 import ActionButton from 'react-native-action-button';
 import uuid from 'react-native-uuid';
 
@@ -39,14 +39,14 @@ class WorkspaceScreen extends Component<IData> {
 
     this.handleAction = this.handleAction.bind(this);
   }
-  
+
   render() {
     return (
       <Drawer
         type='overlay'
         side="right"
         ref={(ref) => { this.drawer = ref; }}
-        content={<WorkspaceSideBar navigator={this.navigator} />}
+        content={<WorkspaceSideBar handleAction={this.handleAction} board={this.state.board} navigator={this.navigator} />}
         onClose={() => this.drawer._root.close()} >
         {this.renderHeader()}
         <ImageBackground
@@ -58,22 +58,23 @@ class WorkspaceScreen extends Component<IData> {
             layoutCardOffset={Window.width}
             ref={(c) => { this._carousel = c; }}
             data={this.getVisibleGroups()}
-            renderItem={({ item }) => 
-              <CardGroupItem 
+            renderItem={({ item }) =>
+              <CardGroupItem
                 handleAction={this.handleAction}
-                data={item} 
-            />}
+                data={item}
+              />}
             sliderWidth={Window.width}
             itemWidth={Window.width}
           />
         </ImageBackground>
-        <Toast ref="toast"/>
+        <Toast ref="toast" />
         {this.renderAddCardDialog()}
         {this.renderAddGroupdDialog()}
         {this.renderMoveCardDialog()}
         {this.renderMoveGroupdDialog()}
         {this.renderRenameGroupdDialog()}
         {this.renderCopyGroupdDialog()}
+        {this.renderRenameBoardDialog()}
         {/* {this.renderFAB()} */}
       </Drawer>
     );
@@ -84,14 +85,19 @@ class WorkspaceScreen extends Component<IData> {
 
     actionType = actionType || ActionType.NOTHING;
     switch (actionType) {
-      case ActionType.ARCHIVE_GROUP     : this.archiveGroup(data); break;
-      case ActionType.ARCHIVE_ALL_CARDS : this.archiveAllCards(data); break;
-      case ActionType.COPY_GROUP        : this.refs[DialogType.COPY_GROUP].show(); break;
-      case ActionType.MOVE_GROUP        : this.refs[DialogType.MOVE_GROUP].show(); break;
-      case ActionType.RENAME_GROUP      : this.refs[DialogType.RENAME_GROUP].show(); break;
-      case ActionType.MOVE_ALL_CARDS    : this.refs[DialogType.MOVE_CARD].show(); break;
-      case ActionType.ADD_CARD          : this.refs[DialogType.ADD_CARD].show(); break;
-      case ActionType.ADD_GROUP         : this.refs[DialogType.ADD_GROUP].show(); break;
+      case ActionType.ARCHIVE_GROUP: this.archiveGroup(data); break;
+      case ActionType.ARCHIVE_ALL_CARDS: this.archiveAllCards(data); break;
+      case ActionType.COPY_GROUP: this.refs[DialogType.COPY_GROUP].show(); break;
+      case ActionType.MOVE_GROUP: this.refs[DialogType.MOVE_GROUP].show(); break;
+      case ActionType.RENAME_GROUP: this.refs[DialogType.RENAME_GROUP].show(); break;
+      case ActionType.MOVE_ALL_CARDS: this.refs[DialogType.MOVE_CARD].show(); break;
+      case ActionType.ADD_CARD: this.refs[DialogType.ADD_CARD].show(); break;
+      case ActionType.ADD_GROUP: this.refs[DialogType.ADD_GROUP].show(); break;
+      case ActionType.RENAME_BOARD: this.refs[DialogType.RENAME_BOARD].show(); break;
+      case ActionType.BOOKMARK_BOARD: this.bookmarkBoard(); break;
+      case ActionType.SHOW_ARCHIVED_CARDS: this.searchArchivedCards(); break;
+      case ActionType.SHOW_ARCHIVED_GROUPS: this.searchArchivedGroups(); break;
+      case ActionType.EDIT_LABELS: break;
       default: break;
     }
   }
@@ -114,12 +120,12 @@ class WorkspaceScreen extends Component<IData> {
     return (
       <Header>
         <Left>
-          <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10)}} style={{marginLeft: 10}}>
-            <Icon 
+          <TouchableOpacity onPress={() => { Actions.pop(); setTimeout(() => Actions.refresh(), 10) }} style={{ marginLeft: 10 }}>
+            <Icon
               name='arrow-back'
               type="MaterialIcons"
-              style={{fontSize: 25, color: 'white'}}
-            /> 
+              style={{ fontSize: 25, color: 'white' }}
+            />
           </TouchableOpacity>
         </Left>
         <Body>
@@ -133,17 +139,17 @@ class WorkspaceScreen extends Component<IData> {
               style={{fontSize: 25, color: 'white'}}
             /> 
           </TouchableOpacity> */}
-          <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{marginRight: 20}}>
-            <Icon 
+          <TouchableOpacity onPress={() => this.handleAction(ActionType.ADD_GROUP)} style={{ marginRight: 20 }}>
+            <Icon
               name='add'
-              style={{fontSize: 25, color: 'white'}}
-            /> 
+              style={{ fontSize: 25, color: 'white' }}
+            />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{marginRight: 10}}>
-            <Icon 
+          <TouchableOpacity onPress={() => this.drawer._root.open()} style={{ marginRight: 10 }}>
+            <Icon
               name='menu'
-              style={{fontSize: 25, color: 'white'}}
-            /> 
+              style={{ fontSize: 25, color: 'white' }}
+            />
           </TouchableOpacity>
         </Right>
       </Header>
@@ -153,32 +159,30 @@ class WorkspaceScreen extends Component<IData> {
   renderFAB() {
     return (
       <ActionButton buttonColor="rgba(231,76,60,1)">
-        <ActionButton.Item buttonColor='#3498db' title="Show info" onPress={() => 
-            {
-              realm.write(() => {
-                let cards = realm.objects('Card');
-                let message = '';
-                for (let i = cards.length - 1; i >= 0; i--) {
-                  message += cards[i].title + " : " + cards[i].cardGroup + "\n";
-                }
-                alert(message);
-                this.refresh();
-              });
+        <ActionButton.Item buttonColor='#3498db' title="Show info" onPress={() => {
+          realm.write(() => {
+            let cards = realm.objects('Card');
+            let message = '';
+            for (let i = cards.length - 1; i >= 0; i--) {
+              message += cards[i].title + " : " + cards[i].cardGroup + "\n";
             }
-          }>
+            alert(message);
+            this.refresh();
+          });
+        }
+        }>
           <Icon name='remove' color='white' />
         </ActionButton.Item>
-        <ActionButton.Item buttonColor='#3498db' title="Delete all cards" onPress={() => 
-            {
-              realm.write(() => {
-                let cards = realm.objects('Card');
-                for (let i = cards.length - 1; i >= 0; i--) {
-                  realm.delete(cards[i]);
-                }
-                this.refresh();
-              });
+        <ActionButton.Item buttonColor='#3498db' title="Delete all cards" onPress={() => {
+          realm.write(() => {
+            let cards = realm.objects('Card');
+            for (let i = cards.length - 1; i >= 0; i--) {
+              realm.delete(cards[i]);
             }
-          }>
+            this.refresh();
+          });
+        }
+        }>
           <Icon name='remove' color='white' />
         </ActionButton.Item>
       </ActionButton>
@@ -187,7 +191,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderAddGroupdDialog() {
     return (
-      <FormModal 
+      <FormModal
         ref={DialogType.ADD_GROUP}
         isVisible={false}
         onBackdropPress={() => this.refs[DialogType.ADD_GROUP].hide()}
@@ -229,7 +233,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderCopyGroupdDialog() {
     return (
-      <FormModal 
+      <FormModal
         ref={DialogType.COPY_GROUP}
         isVisible={false}
         onBackdropPress={() => this.refs[DialogType.COPY_GROUP].hide()}
@@ -274,7 +278,7 @@ class WorkspaceScreen extends Component<IData> {
       <FormModal
         ref={DialogType.MOVE_GROUP}
         isVisible={false}
-        titleStyle={{color: '#32383B'}}
+        titleStyle={{ color: '#32383B' }}
         onBackdropPress={() => this.refs[DialogType.MOVE_GROUP].hide()}
         onBackButtonPress={() => this.refs[DialogType.MOVE_GROUP].hide()}
         onSwipe={() => this.refs[DialogType.MOVE_GROUP].hide()}
@@ -284,7 +288,7 @@ class WorkspaceScreen extends Component<IData> {
           <Picker
             mode="dialog"
             selectedValue={this.state.selectedBoardValue}
-            onValueChange={(itemValue, itemIndex) => this.setState({selectedBoardValue: itemValue})}>
+            onValueChange={(itemValue, itemIndex) => this.setState({ selectedBoardValue: itemValue })}>
             {realm.objects('Board').filtered('archived = false').map((board, i) => {
               return (
                 <Picker.Item key={board.id} label={board.title} value={board.id} />
@@ -319,7 +323,7 @@ class WorkspaceScreen extends Component<IData> {
 
   renderRenameGroupdDialog() {
     return (
-      <FormModal 
+      <FormModal
         ref={DialogType.RENAME_GROUP}
         isVisible={false}
         onBackdropPress={() => this.refs[DialogType.RENAME_GROUP].hide()}
@@ -335,7 +339,7 @@ class WorkspaceScreen extends Component<IData> {
           onChangeText={(text) => this.inputText = text}
         />
         <Button
-          title="ADD"
+          title="RENAME"
           fontWeight='bold'
           fontSize={20}
           raised
@@ -358,7 +362,7 @@ class WorkspaceScreen extends Component<IData> {
       </FormModal>
     );
   }
-  
+
   renderAddCardDialog() {
     return (
       <FormModal
@@ -412,7 +416,7 @@ class WorkspaceScreen extends Component<IData> {
       <FormModal
         ref={DialogType.MOVE_CARD}
         isVisible={false}
-        titleStyle={{color: '#32383B'}}
+        titleStyle={{ color: '#32383B' }}
         onBackdropPress={() => this.refs[DialogType.MOVE_CARD].hide()}
         onBackButtonPress={() => this.refs[DialogType.MOVE_CARD].hide()}
         onSwipe={() => this.refs[DialogType.MOVE_CARD].hide()}
@@ -422,7 +426,7 @@ class WorkspaceScreen extends Component<IData> {
           <Picker
             mode="dialog"
             selectedValue={this.state.selectedValue}
-            onValueChange={(itemValue, itemIndex) => this.setState({selectedValue: itemValue})}>
+            onValueChange={(itemValue, itemIndex) => this.setState({ selectedValue: itemValue })}>
             {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
               return (
                 <Picker.Item key={group.id} label={group.title} value={group.id} />
@@ -448,6 +452,48 @@ class WorkspaceScreen extends Component<IData> {
             this.moveAllCards(this.state.selectedValue);
             this.refs[DialogType.MOVE_CARD].hide();
             this.refresh();
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
+  renderRenameBoardDialog() {
+    return (
+      <FormModal
+        ref={DialogType.RENAME_BOARD}
+        isVisible={false}
+        onBackdropPress={() => this.refs[DialogType.RENAME_BOARD].hide()}
+        onBackButtonPress={() => this.refs[DialogType.RENAME_BOARD].hide()}
+        onSwipe={() => this.refs[DialogType.RENAME_BOARD].hide()}
+        swipeDirection='left'
+        title='Rename board...'>
+        <TextInput
+          autoFocus={true}
+          multiline={true}
+          style={styles.modalTextInput}
+          placeholder="Enter a title for this board"
+          onChangeText={(text) => this.inputText = text}
+        />
+        <Button
+          title="RENAME"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#00BB27",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.renameBoard(this.inputText);
+            this.refs[DialogType.RENAME_BOARD].hide();
+            this.inputText = '';
           }}
           containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
         />
@@ -528,7 +574,7 @@ class WorkspaceScreen extends Component<IData> {
       this.showToaster('Actions is not valid');
     };
   }
-  
+
   moveGroup(desBoardId?: string) {
     let srcBoard = this.state.board;
     if (desBoardId && desBoardId !== srcBoard) {
@@ -549,6 +595,53 @@ class WorkspaceScreen extends Component<IData> {
     }
   }
 
+  searchArchivedGroups() {
+    let sourceGroups = this.state.board.cardGroups.filtered('archived = true');
+    let searchProps = {
+      placeholder: 'Search archived groups by title',
+      source: sourceGroups,
+      defaultValues: sourceGroups,
+      filteredField: 'title',
+      renderRow: (item) => <CardGroupItem data={item} handleAction={this.handleAction} />
+    }
+    Actions.searchws(searchProps);
+  }
+
+  searchArchivedCards() {
+    realm.write(() => {
+      let sourceCards = [];
+      let sourceGroups = this.state.board.cardGroups;
+      for (let i = 0; i < sourceGroups.length; i++) {
+        let filteredCards = sourceGroups[i].cards.filtered('archived = true');
+        for (let j = 0; j < filteredCards.length; j++) {
+          sourceCards.push(filteredCards[j]);
+        }
+      }
+      let searchProps = {
+        placeholder: 'Search archived cards by title',
+        source: sourceCards,
+        defaultValues: sourceCards,
+        filteredField: 'title',
+        renderRow: (item) => <CardItem data={item} />
+      }
+      Actions.searchws(searchProps);
+    });
+  }
+
+  bookmarkBoard() {
+    realm.write(() => {
+      this.state.board.bookmarked = !this.state.board.bookmarked;
+      this.refresh();
+    });
+  }
+
+  renameBoard(title?) {
+    title = title || 'New board';
+    realm.write(() => {
+      this.state.board.title = title;
+      this.refresh();
+    });
+  }
 
   testFunction() {
     // Actions.detail({
@@ -570,8 +663,8 @@ const styles = StyleSheet.create({
     // justifyContent:"center",
   },
   group: {
-    backgroundColor:'#DFE3E6',
-    borderRadius:10,
+    backgroundColor: '#DFE3E6',
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#000000',
     paddingLeft: '8.5%',
@@ -588,8 +681,8 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   modal: {
-    backgroundColor:'#DFE3E6',
-    borderRadius:10,
+    backgroundColor: '#DFE3E6',
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#000000',
     paddingLeft: 10,
@@ -617,12 +710,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   modalTextInput: {
-    textAlignVertical: 'top', 
+    textAlignVertical: 'top',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    height: 150, 
-    backgroundColor: 'white', 
-    padding: 10, 
+    height: 150,
+    backgroundColor: 'white',
+    padding: 10,
     fontSize: 18
   },
   modalButton: {

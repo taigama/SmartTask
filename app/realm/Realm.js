@@ -14,7 +14,7 @@ const Realm = require('realm');
 
 export default realm = new Realm({
   schema: [Board, CardGroup, Card, LabelItem, LabelLink, LabelGroup, CheckItem, Config],
-  schemaVersion: 11, 
+  schemaVersion: 12, 
   migration: (oldRealm, newRealm) => {
     newRealm.deleteAll();
   }
