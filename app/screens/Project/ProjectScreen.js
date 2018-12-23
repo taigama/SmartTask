@@ -19,6 +19,7 @@ import { ActionType, DialogType } from './Constants';
 import { styles } from './ProjectStyle';
 import realm from '../../Realm/Realm';
 import Board from '../../Realm/Board';
+import Config from "../../Realm/Config";
 
 class ProjectScreen extends Component {
   constructor(props) {
@@ -28,6 +29,19 @@ class ProjectScreen extends Component {
     this.currentBoard = null;
     this.boards = realm.objects('Board');
     this.handleAction = this.handleAction.bind(this);
+
+    this.firstRun();
+  }
+
+  firstRun()
+  {
+    var config = realm.objects('Config');
+    if(config == null || config.length === 0)
+    {
+      realm.write(() => {
+        Config.create();
+      });
+    }
   }
 
   render() {
@@ -48,7 +62,7 @@ class ProjectScreen extends Component {
             </ListItem>
             <List 
               dataArray={this.boards}
-              renderRow={(item) => <BoardItem data={item} handleAction={this.handleAction} onPress={() => Actions.workspace(item)}/>}>
+              renderRow={(item) => <BoardItem data={item} handleAction={this.handleAction} onPress={() => Actions.workspace({data: item})}/>}>
             </List>
           </List>
           </Content>

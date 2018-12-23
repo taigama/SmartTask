@@ -22,7 +22,7 @@ export default class ConditionButton extends Component {
 		this.state = {
 			size: size || 24,
 			icon: iconName || 'launch',
-			color: color || '#333',
+			color: color || '#555',
 			isShow: isShow || true,
 		};
 

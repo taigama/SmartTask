@@ -5,14 +5,15 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import PropTypes from "prop-types";
 
 import CardWrapper from '../CardWrapper';
-import Checkbox from '../Checkbox';
 import realm from '../../../Realm/Realm';
+
+const MARGIN = 10;
 
 
 export default class CardDateTime extends Component {
 
 	static propTypes = {
-		dateTime: PropTypes.object.isRequired,
+    dateTimeModel: PropTypes.object.isRequired,
 		changeDateTimeCallback: PropTypes.func,
 	};
 
@@ -20,7 +21,7 @@ export default class CardDateTime extends Component {
 		super(props);
 		const { dateTimeModel, changeDateTimeCallback } = this.props;
 
-		let color = dateTimeModel.isCheck ? '#0d0' : (new Date()) > dateTimeModel.time ? '#e00' : '#333';
+		let color = dateTimeModel.isCheck ? '#0d0' : (new Date()) > dateTimeModel.time ? '#e00' : '#555';
 		this.state = {
 			dateTime: dateTimeModel.time,
 			isCheck: dateTimeModel.isCheck,
@@ -80,7 +81,7 @@ export default class CardDateTime extends Component {
 	};
 
 	updateColor(isChecked) {
-		let color = isChecked ? '#0d0' : (new Date()) > this.state.dateTime ? '#e00' : '#333';
+		let color = isChecked ? '#0d0' : (new Date()) > this.state.dateTime ? '#e00' : '#555';
 		this.setState({
 			color: color
 		});
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
 	},
 	dateSection: {
 		flex: 1,
-		marginRight: 20
+		marginRight: MARGIN
 	},
 	dateSectionContent: {
 		flexDirection: 'row',
@@ -186,9 +187,9 @@ const styles = StyleSheet.create({
 	},
 	dateSectionButton: {
 		width: '45%',
-		borderColor: '#000',
+		borderColor: '#555',
 		borderRadius: 5,
-		borderWidth: 2,
+		borderWidth: 1,
 		alignItems: 'center'
 	},
 	span: {

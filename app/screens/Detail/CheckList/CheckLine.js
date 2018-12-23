@@ -3,10 +3,10 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput, Alert } from "reac
 import PropTypes from "prop-types";
 
 import Checkbox from '../Checkbox';
-import ConditionButton from "../ConditionButton";
 import realm, { getNewId } from '../../../Realm/Realm';
 
-const CHECK_LINE_MARGIN = 20;
+const CHECK_LINE_MARGIN = 10;
+const LINE_HEIGHT = 40;
 
 export default class CheckLine extends React.Component {
 
@@ -31,10 +31,7 @@ export default class CheckLine extends React.Component {
 		this.onCheck = this.onCheck.bind(this);
 
 		this.onChangeText = this.onChangeText.bind(this);
-		this.onFocusText = this.onFocusText.bind(this);
-		this.onBlurText = this.onBlurText.bind(this);
 
-		this.onClickDelete = this.onClickDelete.bind(this);
 		this.onConfirmDelete = this.onConfirmDelete.bind(this);
 
 		this.txt = data.content;
@@ -58,21 +55,8 @@ export default class CheckLine extends React.Component {
 					style={styles.center}
 					placeholder='Specify what to do...'
 					defaultValue={this.state.data.content}
-					onFocus={this.onFocusText}
-					onBlur={this.onBlurText}
 					onSubmitEditing={this.onChangeText}
 				/>
-
-				<View style={styles.right}>
-					<ConditionButton
-						ref={(btnDelete) => {
-							this.btnDelete = btnDelete;
-						}}
-						isShow={false}
-						iconName='delete'
-						callback={this.onClickDelete}
-					/>
-				</View>
 			</View>
 		)
 	}
@@ -82,35 +66,25 @@ export default class CheckLine extends React.Component {
 		this.saveChange();
 	}
 
-	//
-	// this.onChangeText = this.onChangeText.bind(this);
-	// this.onFocusText = this.onFocusText.bind(this);
-	// this.onBlurText = this.onBlurText.bind(this);
-	//
-	// this.onClickDelete = this.onClickDelete.bind(this);
+	onChangeText(e) {
+		this.txt = e.nativeEvent.text;
 
-	onChangeText(txt) {
-		this.txt = txt;
-
-		this.onBlurText();
-	}
-
-	onFocusText() {
-		this.btnDelete.setShow(true);
-	}
-	onBlurText() {
-		this.btnDelete.setShow(false);
 		this.saveChange();
 	}
 
 
 	saveChange() {
+
+		if(this.txt == null || this.txt == "")
+		{
+      this.onConfirmDelete();
+      return;
+		}
+
 		var checks = [
 			this.txt != this.props.data.content,
 			this.isCheck != this.props.data.isCheck
 		];
-
-
 
 		if (checks[0] || checks[1]) {
 			var data = this.props.data;
@@ -122,16 +96,6 @@ export default class CheckLine extends React.Component {
 		}
 	}
 
-	onClickDelete() {
-		Alert.alert(
-			'Deleting line',
-			'Do you really want to delete this line?',
-			[
-				{ text: 'Cancel' },
-				{ text: 'OK', onPress: this.onConfirmDelete },
-			]
-		)
-	}
 	onConfirmDelete() {
 		if (this.props.deleteCallback)
 			this.props.deleteCallback(this.state.data);
@@ -142,7 +106,7 @@ export default class CheckLine extends React.Component {
 const styles = StyleSheet.create({
 	wrap: {
 		width: '100%',
-		height: 30,
+		height: LINE_HEIGHT,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -150,21 +114,16 @@ const styles = StyleSheet.create({
 		marginRight: CHECK_LINE_MARGIN,
 	},
 	left: {
-		marginRight: 20,
+		marginRight: CHECK_LINE_MARGIN,
 		width: 30,
-		height: 30,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	right: {
-		width: 30,
-		height: 30,
-		justifyContent: 'center',
+		height: 5,
+		justifyContent: 'flex-end',
 		alignItems: 'center'
 	},
 	center: {
-		height: 30,
 		justifyContent: 'center',
-		flex: 1
+    height: LINE_HEIGHT,
+		flex: 1,
+		paddingRight: CHECK_LINE_MARGIN,
 	}
 });

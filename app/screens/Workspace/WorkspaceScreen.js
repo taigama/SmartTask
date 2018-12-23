@@ -35,7 +35,7 @@ class WorkspaceScreen extends Component<IData> {
     this.state = {
       board: this.props.data,
       currentGroup: null,
-    }
+    };
 
     this.handleAction = this.handleAction.bind(this);
   }
@@ -549,11 +549,12 @@ class WorkspaceScreen extends Component<IData> {
     }
   }
 
+
   testFunction() {
-    Actions.detail({
-      data: Helper.createTask(),
-      deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
-    });
+    // Actions.detail({
+    //   data: this.state.currentGroup.cards[0],// TODO: replace 0 with the selected card
+    //   deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
+    // });
   }
 };
 

@@ -3,7 +3,8 @@ import { View, StyleSheet, TextInput } from "react-native";
 import PropTypes from "prop-types";
 
 
-const CHECK_LINE_MARGIN = 20;
+const CHECK_LINE_MARGIN = 10;
+const LINE_HEIGHT = 40;
 
 export default class FakeCheckLine extends React.Component {
 
@@ -36,16 +37,14 @@ export default class FakeCheckLine extends React.Component {
 					onSubmitEditing={this.onChangeText}
 				/>
 
-				<View style={styles.right}>
-				</View>
 			</View>
 		)
 	}
 
 
-	onChangeText(txt) {
+	onChangeText(e) {
 		if (this.props.callback)
-			this.props.callback(txt);
+			this.props.callback(e.nativeEvent.text);
 		this.input.clear();
 	}
 }
@@ -53,7 +52,7 @@ export default class FakeCheckLine extends React.Component {
 const styles = StyleSheet.create({
 	wrap: {
 		width: '100%',
-		height: 30,
+		height: LINE_HEIGHT,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -61,21 +60,16 @@ const styles = StyleSheet.create({
 		marginRight: CHECK_LINE_MARGIN,
 	},
 	left: {
-		marginRight: 20,
+		marginRight: CHECK_LINE_MARGIN,
 		width: 30,
-		height: 30,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	right: {
-		width: 30,
-		height: 30,
+		height: LINE_HEIGHT,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	center: {
-		height: 30,
+		height: LINE_HEIGHT,
 		justifyContent: 'center',
-		flex: 1
+		flex: 1,
+		paddingRight: CHECK_LINE_MARGIN
 	}
 });

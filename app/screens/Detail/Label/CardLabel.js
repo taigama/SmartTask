@@ -10,8 +10,8 @@ import realm from '../../../Realm/Realm';
 export default class CardLabel extends Component {
 
 	static propTypes = {
-		groupLabel: PropTypes.object.isRequired,
-		clickLabelCallback: PropTypes.func,
+    groupLabel: PropTypes.object.isRequired,
+    clickLabelCallback: PropTypes.func,
 	};
 
 	constructor(props) {
@@ -22,35 +22,29 @@ export default class CardLabel extends Component {
 			groupLabel: groupLabel,
 			id: groupLabel.id
 		};
-
-		if (groupLabel.links == null || groupLabel.links.length === 0) {
-			this.viewSub = () => (
-				<TouchableOpacity
-					onPress={this.onClickLabel}
-					style={styles.backgroundText}
-				>
-					<Text style={styles.emptyText}>
-						Labels...
-                    </Text>
-				</TouchableOpacity>
-
-			);
-		}
-		else {
-			this.state.labels = [];
-			var links = groupLabel.links,
-				length = groupLabel.links.length,
-				link;
-			for (let i = 0; i < length; ++i) {
-				if ((link = links[i]).isCheck) {
-					this.state.labels.push(realm.objectForPrimaryKey('Label', link.idLabel));
-				}
-			}
-			this.viewSub = () => (
-				this.state.labels.map((label) => <Label clickCallback={this.onClickLabel} data={label} />)
-			);
-		}
 		this.onClickLabel = clickLabelCallback;
+
+		this.firstRun();
+	}
+
+	firstRun() {
+		let groupLabel = this.state.groupLabel;
+    let labels = [];
+
+
+    if (groupLabel.links && groupLabel.links.length !== 0) {
+
+      var links = groupLabel.links,
+        length = groupLabel.links.length,
+        link;
+      for (let i = 0; i < length; ++i) {
+        if ((link = links[i]).isCheck) {
+          labels.push(realm.objectForPrimaryKey('Label', link.labelId));
+        }
+      }
+    }
+
+    this.state.labels = labels;
 	}
 
 	refresh() {
@@ -65,13 +59,9 @@ export default class CardLabel extends Component {
 				link;
 			for (let i = 0; i < length; ++i) {
 				if ((link = links[i]).isCheck) {
-					labels.push(realm.objectForPrimaryKey('Label', link.idLabel));
+					labels.push(realm.objectForPrimaryKey('Label', link.labelId));
 				}
 			}
-
-			// this.state.groupLabel = groupLabel;
-			// this.state.labels = labels;
-
 		}
 
 		this.setState({
@@ -128,9 +118,5 @@ const styles = StyleSheet.create({
 	},
 	emptyText: {
 		color: '#555'
-	},
-	dialogContent: {
-		flex: 1,
-		backgroundColor: '#0ff',
 	}
 });

@@ -10,7 +10,7 @@ export default class LabelEditable extends React.Component {
 
 
 	static propTypes = {
-		data: PropTypes.object.isRequired,
+		data: PropTypes.object.isRequired,// Label Link
 		checkCallback: PropTypes.func,
 		editCallback: PropTypes.func
 	};
@@ -20,7 +20,7 @@ export default class LabelEditable extends React.Component {
 
 		const { data, checkCallback, editCallback } = this.props;
 
-		let label = realm.objectForPrimaryKey('Label', data.idLabel);
+		let label = realm.objectForPrimaryKey('Label', data.labelId);
 
 		this.state = {
 			label: label,
@@ -48,13 +48,13 @@ export default class LabelEditable extends React.Component {
 						numberOfLines={1}
 						style={styles.labelText}
 					>
-						{this.state.label.content}
+						{this.state.label.title}
 					</Text>
 					<View style={styles.iconBackground}>
 						<Icon
 							opacity={this.state.isChecked ? 1 : 0}
 							name='check'
-							color='black'
+							color='#000'
 							size={24}
 						/>
 					</View>
@@ -65,7 +65,7 @@ export default class LabelEditable extends React.Component {
 				>
 					<Icon
 						name='edit'
-						color='black'
+						color='#000'
 						size={24}
 					/>
 				</TouchableOpacity>
@@ -78,7 +78,6 @@ export default class LabelEditable extends React.Component {
 		realm.write(() => {
 			this.props.data.isCheck = !this.state.isChecked;
 		});
-
 
 
 		if (this.checkCallback) {

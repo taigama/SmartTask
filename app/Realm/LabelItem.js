@@ -1,7 +1,7 @@
 import uuid from 'react-native-uuid';
 import realm from './Realm';
 
-export default class Label {
+export default class LabelItem {
   static create = (title?, color?) => {
     title = title || '';
     color = color || '#FFF';
@@ -10,10 +10,10 @@ export default class Label {
       title: title,
       color: color,
     });
-  }
+  };
 }
 
-Label.schema = {
+LabelItem.schema = {
   name: 'Label',
   primaryKey: 'id',
   properties: {

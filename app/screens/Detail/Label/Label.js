@@ -10,7 +10,7 @@ export default class Label extends React.Component {
 
 
 	static propTypes = {
-		data: PropTypes.object.isRequired,
+		data: PropTypes.object.isRequired,// LabelItem
 		clickCallback: PropTypes.func
 	};
 
@@ -22,7 +22,7 @@ export default class Label extends React.Component {
 
 		this.state = {
 			backgroundColor: data.color,
-			labelString: data.content,
+			labelString: data.title,
 		};
 
 		if (clickCallback) {

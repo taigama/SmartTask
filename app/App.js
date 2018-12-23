@@ -5,7 +5,6 @@ import { StackViewStyleInterpolator } from 'react-navigation-stack';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import DevelopeScreen from './Screens/Develope/DevelopeScreen';
 import WorkspaceScreen from './Screens/Workspace/WorkspaceScreen';
 import TaskDetailScreen from './Screens/Detail/TaskDetailScreen';
 import ProjectScreen from './Screens/Project/ProjectScreen';

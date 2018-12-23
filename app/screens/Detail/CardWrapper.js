@@ -4,6 +4,8 @@ import { View, StyleSheet } from "react-native";
 import { Icon } from "react-native-elements";
 
 
+const MARGIN = 10;
+
 export default class CardWrapper extends React.Component {
 
 	static propTypes = {
@@ -44,7 +46,7 @@ export default class CardWrapper extends React.Component {
 			<View style={[styles.wrapCard, { minHeight: this.state.minHeight }]}>
 				<View style={{
 					width: 30 - this.state.margin,
-					margin: 20 + this.state.margin,
+					margin: MARGIN + this.state.margin,
 				}}>
 					<Icon
 						name={this.state.iconName}
@@ -70,8 +72,8 @@ const styles = StyleSheet.create({
 	},
 	wrapContent: {
 		flex: 1,
-		marginTop: 20,
-		marginRight: 20,
-		marginBottom: 20,
+		marginTop: MARGIN,
+		marginRight: MARGIN,
+		marginBottom: MARGIN,
 	}
 });

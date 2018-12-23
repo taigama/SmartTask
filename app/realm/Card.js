@@ -1,6 +1,8 @@
 import uuid from 'react-native-uuid';
 import realm from './Realm';
 
+import LabelGroup from './LabelGroup';
+
 export default class Card {
   static create = (title?) => {
     title = title || 'New card';
@@ -8,13 +10,13 @@ export default class Card {
       id: uuid.v4(),
       title: title,
       description: '',
-      labels: [],
+      labelGroup: LabelGroup.create(),
       checkList: [],
-      dueDate: null,
+      dueDate: new Date(),
       dueDateCheck: false,
       archived: false,
     });
-  }
+  };
   
   cascadeDelete() {
     realm.delete(this);
@@ -41,9 +43,9 @@ Card.schema = {
     id: 'string',
     title: 'string?',
     description: 'string?',
-    labels: 'Label[]',
+    labelGroup: 'LabelGroup',
     checkList: 'Check[]',
-    dueDate: 'date?',
+    dueDate: 'date',
     dueDateCheck: {type: 'bool', default: false},
     archived: {type: 'bool', default: false},
     cardGroup: {type: 'linkingObjects', objectType: 'CardGroup', property: 'cards'},

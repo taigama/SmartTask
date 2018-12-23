@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import tinycolor from "tinycolor2";
 import { HueSlider, SaturationSlider, LightnessSlider } from "react-native-color";
 
+const MARGIN = 10;
+
 export default class CardEditLabel extends React.PureComponent {
 
 	static propTypes = {
@@ -87,6 +89,11 @@ export default class CardEditLabel extends React.PureComponent {
 		return <View
 			style={styles.main}
 		>
+			<View style={styles.title}>
+				<Text style={styles.txtTitle}>
+					Edit Label
+				</Text>
+			</View>
 			<TextInput
 
 				ref={(textInput) => {
@@ -196,8 +203,20 @@ export default class CardEditLabel extends React.PureComponent {
 const styles = StyleSheet.create({
 	main: {
 		width: '100%',
-		paddingLeft: 20,
-		paddingRight: 20
+		paddingLeft: MARGIN,
+		paddingRight: MARGIN
+	},
+	title: {
+		width: '100%',
+		height: 40,
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingBottom: 10,
+	},
+	txtTitle: {
+		fontWeight: 'bold',
+    fontSize: 20,
+		color: '#555'
 	},
 	backgroundText: {
 		textAlign: 'center',

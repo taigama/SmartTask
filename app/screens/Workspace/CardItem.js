@@ -17,7 +17,10 @@ export default class CardItem extends Component<IData> {
 
   render() {
     return (
-      <TouchableOpacity style={styles.container} onPress={() => Actions.detail(this.state.card)}  activeOpacity={0.8}>
+      <TouchableOpacity style={styles.container} onPress={() => Actions.detail({
+        data: this.state.card,
+        deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
+      })}  activeOpacity={0.8}>
         <View style={styles.labelContainer}>
         </View>
         <View style={styles.titleContainer}>

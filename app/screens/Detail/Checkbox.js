@@ -20,7 +20,7 @@ export default class Checkbox extends Component {
 
 		this.state = {
 			size: size || 24,
-			color: color || '#333',
+			color: color || '#555',
 			isCheck: isCheck || false,
 		};
 
