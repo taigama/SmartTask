@@ -54,9 +54,10 @@ export default class CheckLine extends React.Component {
 				<TextInput
 					underlineColorAndroid='#3f51b555'
 					style={styles.center}
-					placeholder='Specify what to do...'
+					placeholder='...comfirm empty to delete this line'
 					defaultValue={this.state.data.content}
 					onSubmitEditing={this.onChangeText}
+					blurOnSubmit={false}
 				/>
 			</View>
 		)

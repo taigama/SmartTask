@@ -36,6 +36,7 @@ export default class FakeCheckLine extends React.Component {
 					style={styles.center}
 					placeholder='Add a specific task...'
 					onSubmitEditing={this.onChangeText}
+					blurOnSubmit={false}
 				/>
 
 			</View>

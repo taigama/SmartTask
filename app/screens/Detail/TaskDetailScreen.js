@@ -71,6 +71,8 @@ export default class TaskDetailScreen extends Component {
       },
 
       cardGroup: data.cardGroup[0],
+      selectedValue: data.cardGroup[0].id,
+
       board: data.cardGroup[0].board[0],
 
       archived: data.archived,

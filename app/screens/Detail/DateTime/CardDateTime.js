@@ -7,6 +7,8 @@ import PropTypes from "prop-types";
 import CardWrapper from '../CardWrapper';
 import realm from '../../../Realm/Realm';
 
+
+
 const MARGIN = 10;
 
 
@@ -89,8 +91,55 @@ export default class CardDateTime extends Component {
 	}
 
 	renderDateSection() {
+		var countDownDate = this.state.dateTime.getTime();
+
+		var now = (new Date()).getTime();
+
+		var remainString = "";
+
+		var distance;
+
+		if(countDownDate > now)
+		{
+      remainString = "Due in: ";
+
+      distance = countDownDate - now;
+
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      if(days > 0)
+        remainString += days + "d ";
+
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      if(hours > 0)
+        remainString += hours + "h ";
+
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+      remainString += minutes + "m ";
+    }
+    else if(countDownDate < now)
+    {
+      remainString = "Overdue by: ";
+
+      distance = now - countDownDate;
+
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      if(days > 0)
+        remainString += days + "d ";
+
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      if(hours > 0)
+        remainString += hours + "h ";
+
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+      remainString += minutes + "m ";
+    }
+
 		return <View style={styles.dateSection}>
-			<Text>Due:</Text>
+			<Text style={{color: this.state.color}}>
+				{remainString}
+			</Text>
 			<View style={styles.dateSectionContent}>
 				<TouchableOpacity
 					style={styles.dateSectionButton}
@@ -103,7 +152,7 @@ export default class CardDateTime extends Component {
 					style={styles.dateSectionButton}
 					onPress={this.showTimePicker}
 				>
-					<Text>{this.state.dateTime.toLocaleTimeString()}</Text>
+					<Text>{this.state.dateTime.toLocaleTimeString().replace(/^([^\d]*\d{1,2}:\d{1,2}):\d{1,2}([^\d]*)$/, '$1$2')}</Text>
 				</TouchableOpacity>
 			</View>
 

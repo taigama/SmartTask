@@ -62,7 +62,9 @@ export default class CheckList extends Component {
 
         <View style={styles.childSection}>
           {this.renderChildren()}
-          <FakeCheckLine callback={this.onAddNewLine}/>
+          <FakeCheckLine
+            ref={(fake) => { this._fakeLine = fake; }}
+            callback={this.onAddNewLine}/>
         </View>
       </View>
     )
@@ -83,6 +85,7 @@ export default class CheckList extends Component {
     });
 
     this.forceUpdate();
+    this._fakeLine.input.focus();
   }
 }
 
