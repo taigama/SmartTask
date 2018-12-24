@@ -78,12 +78,6 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 
-// project.ext.vectoricons = [
-//     iconFontNames: [ 'AntDesign.ttf', 'MaterialIcons.ttf', 'EvilIcons.ttf' ] // Name of the font files you want to copy
-// ]
-
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -121,10 +115,21 @@ android {
             include "armeabi-v7a", "x86"
         }
     }
+    signingConfigs {
+            release {
+                if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                    storeFile file(MYAPP_RELEASE_STORE_FILE)
+                    storePassword MYAPP_RELEASE_STORE_PASSWORD
+                    keyAlias MYAPP_RELEASE_KEY_ALIAS
+                    keyPassword MYAPP_RELEASE_KEY_PASSWORD
+                }
+            }
+        }
     buildTypes {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -143,6 +148,7 @@ android {
 }
 
 dependencies {
+    compile project(':realm')
     compile project(':react-native-vector-icons')
     compile project(':react-native-gesture-handler')
     implementation fileTree(dir: "libs", include: ["*.jar"])
