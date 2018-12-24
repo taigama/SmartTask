@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 		marginRight: CHECK_LINE_MARGIN,
 	},
 	left: {
-		marginRight: CHECK_LINE_MARGIN,
+		marginRight: CHECK_LINE_MARGIN - 4,
 		width: 30,
 		height: LINE_HEIGHT,
 		justifyContent: 'center',
@@ -71,6 +71,6 @@ const styles = StyleSheet.create({
 		height: LINE_HEIGHT,
 		justifyContent: 'center',
 		flex: 1,
-		paddingRight: CHECK_LINE_MARGIN
+		paddingRight: CHECK_LINE_MARGIN,
 	}
 });

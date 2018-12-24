@@ -133,7 +133,7 @@ export default class CardDateTime extends Component {
 			<Icon
 				name={this.state.isCheck ? 'check-box' : 'check-box-outline-blank'}
 				color={this.state.color}
-				size={24}
+				size={30}
 			/>
 		</TouchableOpacity>
 	}
@@ -146,7 +146,7 @@ export default class CardDateTime extends Component {
 				}}
 				iconName='event'
 				iconColor={this.state.color}
-				iconSize={24}
+				iconSize={30}
 				minHeight={0}
 				flexStyle={styles.wraperAdditionStyle}
 			>

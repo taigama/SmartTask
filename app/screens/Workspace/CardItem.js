@@ -33,8 +33,7 @@ export default class CardItem extends Component<CardItemProps> {
     let archiveCardStr = this.state.card.archived ? 'Unarchive card' : 'Archive card';
     return (
       <TouchableOpacity style={styles.container} onLongPress={() => this.onLongPress()} onPress={() => Actions.detail({
-        data: this.state.card,
-        deleteCallback: (task) => alert('this task is marked for deleted: ' + task.title)
+        data: this.state.card
       })} activeOpacity={0.8}>
         <Menu ref={ref => (this._menu = ref)} button={<View style={{ alignSelf: 'flex-end' }} />}>
           <MenuItem onPress={() => this.requestMenuAction(ActionType.MOVE_CARD)}>Move card</MenuItem><MenuDivider />

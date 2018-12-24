@@ -60,6 +60,16 @@ export default class CardEditLabel extends React.PureComponent {
 		);
 	}
 
+	renderTitle() {
+		if(this.isEdit)
+			return <Text style={styles.txtTitle}>
+        Edit Label
+      </Text>;
+
+		return <Text style={styles.txtTitle}>
+      New Label
+    </Text>;
+	}
 
 	renderDelete() {
 		if (this.isEdit === true) {
@@ -84,15 +94,13 @@ export default class CardEditLabel extends React.PureComponent {
 		if (this.state.haveLabel === false)
 			return <View
 				style={styles.main}
-			><Text>Hello World!</Text></View>;
+			><Text>You has got a bug! Welcome!</Text></View>;
 
 		return <View
 			style={styles.main}
 		>
 			<View style={styles.title}>
-				<Text style={styles.txtTitle}>
-					Edit Label
-				</Text>
+				{this.renderTitle()}
 			</View>
 			<TextInput
 
@@ -208,10 +216,10 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		width: '100%',
-		height: 40,
+		height: 50,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingBottom: 10,
+    padding: 10,
 	},
 	txtTitle: {
 		fontWeight: 'bold',

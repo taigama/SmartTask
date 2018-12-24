@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 		marginRight: CHECK_LINE_MARGIN,
 	},
 	left: {
-		marginRight: CHECK_LINE_MARGIN,
+		marginRight: CHECK_LINE_MARGIN - 4,
 		width: 30,
 		height: 5,
 		justifyContent: 'flex-end',

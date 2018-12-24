@@ -14,7 +14,7 @@ import {
   Button,
   ScrollView,
   Dimensions,
-  Alert
+  Alert, Picker
 } from 'react-native';
 import {Icon} from 'react-native-elements';
 import {Header, Left, Body, Title} from 'native-base';
@@ -26,6 +26,11 @@ import Helper from '../../_Commons/Helper';
 import realm from '../../Realm/Realm';
 import CheckList from "./CheckList/CheckList";
 import {Actions} from 'react-native-router-flux';
+import {MenuDivider, MenuItem} from "react-native-material-menu";
+import {ActionType, DialogType} from "../Workspace/Constants";
+import Menu from "react-native-material-menu";
+import FormModal from "../../_Commons/FormModal";
+import Toast from "react-native-easy-toast";
 
 
 const optionsImg = {
@@ -40,8 +45,7 @@ const optionsImg = {
  * ================================================================================
  * this.props.
  *
- * @param data : TaskChema
- * @param deleteCallback: function(task) (when this task be deleted)
+ * @param data : Card Chema
  *
  * ------------------------------------------------------------------------------ */
 export default class TaskDetailScreen extends Component {
@@ -51,6 +55,7 @@ export default class TaskDetailScreen extends Component {
     var data = this.props.data;// Card
 
     this.state = {
+      id: data.id,
       title: data.title,
       description: data.description,
       groupLabel: data.labelGroup,
@@ -67,6 +72,8 @@ export default class TaskDetailScreen extends Component {
 
       cardGroup: data.cardGroup[0],
       board: data.cardGroup[0].board[0],
+
+      archived: data.archived,
     };
 
     this.initData();
@@ -86,8 +93,23 @@ export default class TaskDetailScreen extends Component {
 
     this.onChangeDateTime = this.onChangeDateTime.bind(this);
 
-    this.onClickDeleteTask = this.onClickDeleteTask.bind(this);
-    this.onTrulyDeleteTask = this.onTrulyDeleteTask.bind(this);
+    this.onClickMoveCard = this.onClickMoveCard.bind(this);
+    this.moveOneCard = this.moveOneCard.bind(this);
+
+    this.onClickUnarchiveCard = this.onClickUnarchiveCard.bind(this);
+    this.onClickArchiveCard = this.onClickArchiveCard.bind(this);
+  }
+
+  renderMenuArchiveItem() {
+    if(this.state.archived)
+    {
+      return <MenuItem onPress={this.onClickUnarchiveCard}>
+        Unarchive this card
+      </MenuItem>
+    }
+    return <MenuItem onPress={this.onClickArchiveCard}>
+      Archive this card
+    </MenuItem>
   }
 
   renderHeader() {
@@ -106,32 +128,36 @@ export default class TaskDetailScreen extends Component {
             <Icon
               name='arrow-back'
               type="MaterialIcons"
-              style={{fontSize: 25, color: 'white'}}
               color='#fff'
+              size={25}
             />
           </TouchableOpacity>
         </View>
 
         <View style={styles.navHalfRight}>
-          <TouchableOpacity
+          <Menu
+            ref={ref => (this._menu = ref)}
+            button={
+              <TouchableOpacity
+                onPress={() => this._menu.show()}
+                style={styles.navButton}
+              >
+                <Icon
+                  name="more-vert"
+                  type="MaterialIcons"
+                  color='#fff'
+                  size={25}
+                />
+              </TouchableOpacity>
+            }>
+            <MenuItem onPress={this.onClickMoveCard}>
+              Move this card
+            </MenuItem>
+            <MenuDivider/>
+            {this.renderMenuArchiveItem()}
 
-            onPress={() => {
-              Actions.pop();
-              setTimeout(() => {
-                Actions.refresh();
-              }, 10)
-            }}
-            style={styles.navButton}>
-            <Icon
-              name='more-vert'
-              type="MaterialIcons"
-              style={{fontSize: 25, color: 'white'}}
-              color='#fff'
-            />
-          </TouchableOpacity>
+          </Menu>
         </View>
-
-        <View style={styles.navRight}/>
       </View>
 
     );
@@ -163,7 +189,7 @@ export default class TaskDetailScreen extends Component {
 
       <TextInput
         style={styles.titleBellowImg}
-        placeholder="Name of this task..."
+        placeholder="Name of this card..."
         placeholderTextColor="#aaa"
         defaultValue={this.state.title}
         onChangeText={this.onChangeTitle}
@@ -177,7 +203,7 @@ export default class TaskDetailScreen extends Component {
         <Text style={styles.subTitleSeparate}>in list</Text>
 
         <Text style={styles.subTitleBellowImg}>
-          {this.state.cardGroup.title || "A list" }
+          {this.state.cardGroup.title || "A list"}
         </Text>
       </View>
 
@@ -221,6 +247,57 @@ export default class TaskDetailScreen extends Component {
     />
   }
 
+  renderMoveOneCardDialog() {
+    return (
+      <FormModal
+        ref={(dialogMoveCard) => { this._dialogMoveCard = dialogMoveCard; }}
+        isVisible={false}
+        titleStyle={{ color: '#32383B' }}
+        onBackdropPress={() => this._dialogMoveCard.hide()}
+        onBackButtonPress={() => this._dialogMoveCard.hide()}
+        onSwipe={() => this._dialogMoveCard.hide()}
+        swipeDirection='left'
+        title='Move a cards...'>
+        <View style={{
+          height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white',
+          paddingLeft: 20, marginBottom: 10
+        }}>
+          <Picker
+            mode="dialog"
+            selectedValue={this.state.selectedValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({ selectedValue: itemValue })}>
+            {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
+              return (
+                <Picker.Item key={group.id} label={group.title} value={group.id} />
+              );
+            })}
+          </Picker>
+        </View>
+        <Button
+          title="MOVE"
+          fontWeight='bold'
+          fontSize={20}
+          raised
+          buttonStyle={{
+            backgroundColor: "#6E60F9",
+            width: '100%',
+            height: 45,
+            borderColor: "transparent",
+            borderWidth: 0,
+            borderRadius: 5,
+            margin: 0,
+          }}
+          onPress={() => {
+            this.moveOneCard(this.state.selectedValue);
+            this._dialogMoveCard.hide();
+            this.forceUpdate();
+          }}
+          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+        />
+      </FormModal>
+    );
+  }
+
 
   render() {
     return (
@@ -255,6 +332,8 @@ export default class TaskDetailScreen extends Component {
         </ParallaxScrollView>
 
         {this.renderHeader()}
+        <Toast ref="toast" />
+        {this.renderMoveOneCardDialog()}
       </View>
 
     );
@@ -295,23 +374,57 @@ export default class TaskDetailScreen extends Component {
     });
   }
 
-  onClickDeleteTask() {
-    Alert.alert(
-      'Deleting task',
-      'Do you really want to delete this task?',
-      [
-        {text: 'Cancel'},
-        {text: 'OK', onPress: this.onTrulyDeleteTask},
-      ]
-    );
+  onClickMoveCard() {
+    this._menu.hide();
+    this._dialogMoveCard.show();
   }
 
-  onTrulyDeleteTask() {
-    Actions.pop();
-    setTimeout(() => {
-      Actions.refresh();
-      this.props.deleteCallback(this.props.data);
-    }, 10)
+  moveOneCard(desGroupId?: string) {
+    let srcGroup = this.state.cardGroup;
+    if (desGroupId && desGroupId !== srcGroup.id) {
+      realm.write(() => {
+        let desGroup = realm.objectForPrimaryKey('CardGroup', desGroupId);
+        let length = srcGroup.cards.length;
+        let index = 0;
+        for (let i = 0; i < length; i++) {
+          if (srcGroup.cards[i].id === this.state.id) {
+            index = i;
+            break;
+          }
+        }
+        let movedCards = srcGroup.cards.splice(index, 1);
+        for (let i = 0; i < movedCards.length; i++) {
+          desGroup.cards.push(movedCards[i]);
+        }
+        this.setState({cardGroup: desGroup});
+        this.showToaster('Move card from [' + srcGroup.title + '] to [' + desGroup.title + ']')
+      })
+    } else {
+      this.showToaster('Actions is not valid');
+    };
+  }
+
+  onClickUnarchiveCard() {
+    this._menu.hide();
+    realm.write(() => {
+      this.props.data.archived = false;
+    });
+    this.setState({archived: false});
+    this.showToaster('This card has been unarchived');
+  }
+
+  onClickArchiveCard() {
+    this._menu.hide();
+    realm.write(() => {
+      this.props.data.archived = true;
+    });
+
+    this.setState({archived: true});
+    this.showToaster('This card has been archived');
+  }
+
+  showToaster(message?: string) {
+    this.refs.toast.show(message);
   }
 }
 
@@ -384,8 +497,8 @@ const styles = StyleSheet.create({
   },
   desc: {
     padding: 0,
-    marginLeft: 10,
-    marginRight: 10,
+    marginLeft: 6,
+    marginRight: 6,
   },
   item: {
     marginTop: -2,

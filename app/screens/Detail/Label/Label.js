@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		marginRight: LABEL_MARGIN,
-		marginTop: LABEL_MARGIN
+		marginBottom: LABEL_MARGIN
 	},
 	labelText: {
 		color: 'white',

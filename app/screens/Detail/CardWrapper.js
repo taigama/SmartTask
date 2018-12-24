@@ -45,8 +45,10 @@ export default class CardWrapper extends React.Component {
 		return (
 			<View style={[styles.wrapCard, { minHeight: this.state.minHeight }]}>
 				<View style={{
-					width: this.state.iconSize,
-					margin: MARGIN + this.state.margin,
+					width: 50,
+					height: 50,
+					padding: MARGIN + this.state.margin,
+					alignItems: 'center'
 				}}>
 					<Icon
 						name={this.state.iconName}

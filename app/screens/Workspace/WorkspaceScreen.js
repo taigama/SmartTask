@@ -474,7 +474,7 @@ class WorkspaceScreen extends Component<IData> {
         onBackButtonPress={() => this.refs[DialogType.MOVE_ONE_CARD].hide()}
         onSwipe={() => this.refs[DialogType.MOVE_ONE_CARD].hide()}
         swipeDirection='left'
-        title='Move all cards...'>
+        title='Move a card...'>
         <View style={{ height: 50, width: '100%', borderRadius: 50, backgroundColor: 'white', paddingLeft: 20 }}>
           <Picker
             mode="dialog"

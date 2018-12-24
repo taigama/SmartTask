@@ -98,7 +98,7 @@ export default class CardLabel extends Component {
 			<CardWrapper
 				iconName='dns'
 				iconColor='#555'
-				iconSize={24}
+				iconSize={30}
 				minHeight={0}
 			>
 				{this.renderChild()}
