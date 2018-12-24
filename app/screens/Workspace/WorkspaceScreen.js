@@ -566,6 +566,7 @@ class WorkspaceScreen extends Component<IData> {
   addCard(title?: string) {
     realm.write(() => {
       this.state.currentGroup.cards.push(Card.create(title));
+      this.refresh();
     });
   }
 
