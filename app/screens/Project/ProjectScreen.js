@@ -99,13 +99,13 @@ class ProjectScreen extends Component {
           <Title>    {this.screenTitle}</Title>
         </Body>
         <Right>
-        <TouchableOpacity onPress={() => realm.write(() => { realm.deleteAll(); this.refresh(); })} style={{marginRight: 30}}>
-            <Icon 
-              name='alert'
-              type="MaterialCommunityIcons"
-              style={{fontSize: 25, color: 'white'}}
-            /> 
-          </TouchableOpacity>
+        {/*<TouchableOpacity onPress={() => realm.write(() => { realm.deleteAll(); this.refresh(); })} style={{marginRight: 30}}>*/}
+            {/*<Icon */}
+              {/*name='alert'*/}
+              {/*type="MaterialCommunityIcons"*/}
+              {/*style={{fontSize: 25, color: 'white'}}*/}
+            {/*/> */}
+          {/*</TouchableOpacity>*/}
           <TouchableOpacity onPress={() => Actions.search()} style={{marginRight: 10}}>
             <Icon 
               name='search'

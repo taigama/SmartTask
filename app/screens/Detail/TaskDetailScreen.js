@@ -87,6 +87,7 @@ export default class TaskDetailScreen extends Component {
     this.renderStickyHeader = this.renderStickyHeader.bind(this);
     this.renderForeground = this.renderForeground.bind(this);
 
+    this.onClickBack = this.onClickBack.bind(this);
 
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
@@ -103,8 +104,7 @@ export default class TaskDetailScreen extends Component {
   }
 
   renderMenuArchiveItem() {
-    if(this.state.archived)
-    {
+    if (this.state.archived) {
       return <MenuItem onPress={this.onClickUnarchiveCard}>
         Unarchive this card
       </MenuItem>
@@ -120,12 +120,7 @@ export default class TaskDetailScreen extends Component {
         <View style={styles.navHalfLeft}>
           <TouchableOpacity
 
-            onPress={() => {
-              Actions.pop();
-              setTimeout(() => {
-                Actions.refresh();
-              }, 10)
-            }}
+            onPress={this.onClickBack}
             style={styles.navButton}>
             <Icon
               name='arrow-back'
@@ -202,7 +197,7 @@ export default class TaskDetailScreen extends Component {
           {this.state.board.title || "A project"}
         </Text>
 
-        <Text style={styles.subTitleSeparate}>in list</Text>
+        <Text style={styles.subTitleSeparate}>in group</Text>
 
         <Text style={styles.subTitleBellowImg}>
           {this.state.cardGroup.title || "A list"}
@@ -252,9 +247,11 @@ export default class TaskDetailScreen extends Component {
   renderMoveOneCardDialog() {
     return (
       <FormModal
-        ref={(dialogMoveCard) => { this._dialogMoveCard = dialogMoveCard; }}
+        ref={(dialogMoveCard) => {
+          this._dialogMoveCard = dialogMoveCard;
+        }}
         isVisible={false}
-        titleStyle={{ color: '#32383B' }}
+        titleStyle={{color: '#32383B'}}
         onBackdropPress={() => this._dialogMoveCard.hide()}
         onBackButtonPress={() => this._dialogMoveCard.hide()}
         onSwipe={() => this._dialogMoveCard.hide()}
@@ -267,10 +264,10 @@ export default class TaskDetailScreen extends Component {
           <Picker
             mode="dialog"
             selectedValue={this.state.selectedValue}
-            onValueChange={(itemValue, itemIndex) => this.setState({ selectedValue: itemValue })}>
+            onValueChange={(itemValue, itemIndex) => this.setState({selectedValue: itemValue})}>
             {this.state.board.cardGroups.filtered('archived = false').map((group, i) => {
               return (
-                <Picker.Item key={group.id} label={group.title} value={group.id} />
+                <Picker.Item key={group.id} label={group.title} value={group.id}/>
               );
             })}
           </Picker>
@@ -294,7 +291,7 @@ export default class TaskDetailScreen extends Component {
             this._dialogMoveCard.hide();
             this.forceUpdate();
           }}
-          containerViewStyle={{ width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5, }}
+          containerViewStyle={{width: '100%', marginLeft: 0, marginTop: 10, borderRadius: 5,}}
         />
       </FormModal>
     );
@@ -334,11 +331,18 @@ export default class TaskDetailScreen extends Component {
         </ParallaxScrollView>
 
         {this.renderHeader()}
-        <Toast ref="toast" />
+        <Toast ref="toast"/>
         {this.renderMoveOneCardDialog()}
       </View>
 
     );
+  }
+
+  onClickBack() {
+    Actions.pop();
+    setTimeout(() => {
+      Actions.refresh();
+    }, 10)
   }
 
   onChangeTitle(txt) {
@@ -403,7 +407,8 @@ export default class TaskDetailScreen extends Component {
       })
     } else {
       this.showToaster('Actions is not valid');
-    };
+    }
+    ;
   }
 
   onClickUnarchiveCard() {
