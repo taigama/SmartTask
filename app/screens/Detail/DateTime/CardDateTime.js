@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import CardWrapper from '../CardWrapper';
 import realm from '../../../Realm/Realm';
 
+import Helper from '../../../_Commons/Helper';
 
 
 const MARGIN = 10;
@@ -91,50 +92,7 @@ export default class CardDateTime extends Component {
 	}
 
 	renderDateSection() {
-		var countDownDate = this.state.dateTime.getTime();
-
-		var now = (new Date()).getTime();
-
-		var remainString = "";
-
-		var distance;
-
-		if(countDownDate > now)
-		{
-      remainString = "Due in: ";
-
-      distance = countDownDate - now;
-
-      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      if(days > 0)
-        remainString += days + "d ";
-
-      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if(hours > 0)
-        remainString += hours + "h ";
-
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-      remainString += minutes + "m ";
-    }
-    else if(countDownDate < now)
-    {
-      remainString = "Overdue by: ";
-
-      distance = now - countDownDate;
-
-      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      if(days > 0)
-        remainString += days + "d ";
-
-      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if(hours > 0)
-        remainString += hours + "h ";
-
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-      remainString += minutes + "m ";
-    }
+		var remainString = Helper.remainTimeString(this.state.dateTime);
 
 		return <View style={styles.dateSection}>
 			<Text style={{color: this.state.color}}>

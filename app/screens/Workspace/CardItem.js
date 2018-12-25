@@ -9,6 +9,9 @@ import { Badge } from "react-native-elements";
 import { Icon } from "native-base";
 import { Actions } from "react-native-router-flux";
 import { ActionType } from './Constants';
+import SubCardLabel from "./Label/SubCardLabel";
+import SubDateTime from "./DateTime/SubDateTime";
+import SubCheckList from "./CheckList/SubCheckList";
 
 type CardItemProps = {
   data?: any,
@@ -22,6 +25,10 @@ export default class CardItem extends Component<CardItemProps> {
     this.state = {
       card: this.props.data,
     }
+  }
+
+  componentWillReceiveProps({data}) {
+    this.setState({card: data});
   }
 
   requestMenuAction(actionType: string) {
@@ -40,17 +47,23 @@ export default class CardItem extends Component<CardItemProps> {
           <MenuItem onPress={() => this.requestMenuAction(ActionType.ARCHIVE_CARD)}>{archiveCardStr}</MenuItem><MenuDivider />
         </Menu>
         <View style={styles.labelContainer}>
+          <SubCardLabel groupLabel={this.state.card.labelGroup}/>
         </View>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{this.state.card.title}</Text>
         </View>
-        {/* <Space /> */}
-        {/* <View style={styles.dueDateContainer}>
-          <View style={{ flexDirection: "row",  backgroundColor: '#FF7B7B', borderRadius: 10, justifyContent: 'center', height: 30, alignContent: "center", alignItems: 'center' }}> 
-            <Icon name="clock-alert" type="MaterialCommunityIcons" style={{ fontSize: 15, color: "white"}} />
-            <Text style={{color: "white", fontWeight: "bold"}}>  DUE DATE</Text>
-          </View>
-        </View> */}
+         <Space />
+         <View style={styles.dueDateContainer}>
+          {/*<View style={{ flexDirection: "row",  backgroundColor: '#FF7B7B', borderRadius: 10, justifyContent: 'center', height: 30, alignContent: "center", alignItems: 'center' }}>*/}
+            {/*<Icon name="clock-alert" type="MaterialCommunityIcons" style={{ fontSize: 15, color: "white"}} />*/}
+            {/*<Text style={{color: "white", fontWeight: "bold"}}>  DUE DATE</Text>*/}
+          {/*</View>*/}
+          <SubDateTime
+          date={this.state.card.dueDate}
+          isCheck={this.state.card.dueDateCheck}
+          />
+           <SubCheckList data={this.state.card.checkList}/>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -81,18 +94,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: "wrap",
     alignItems: 'flex-start',
+    minHeight: 0,
   },
   titleContainer: {
     flex: 1,
     flexDirection: 'row',
   },
   dueDateContainer: {
-    width: 100
+    flexDirection: 'row',
+    alignItems: 'flex-start'
   },
   title: {
     color: '#24292E',
     fontSize: 16,
   }
-})
+});
 
 
